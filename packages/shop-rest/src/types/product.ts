@@ -1,0 +1,24 @@
+export type Product = {
+  id: string;
+  name: string;
+  slug: string;
+  description: string;
+  type_id: number;
+  price: number;
+  sale_price: number;
+  sku: string;
+  quantity: number;
+  in_stock: number;
+  is_taxable: number;
+  shipping_class_id: unknown;
+  status: number;
+  unit: number;
+  height: string | null;
+  width: string | null;
+  length: string | null;
+  image: string;
+  gallery: unknown;
+  deleted_at: Date;
+  created_at: Date;
+  updated_at: Date;
+};

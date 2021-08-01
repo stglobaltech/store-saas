@@ -1,0 +1,8 @@
+{
+  "build": {
+    "env": {
+      "NEXT_PUBLIC_STRIPE_PUBLIC_KEY": "pk_test_mlPLdXXoOwSp6eW5ROdsnFml",
+      "NEXT_PUBLIC_REST_API_ENDPOINT": "https://shop-rest.vercel.app"
+    }
+  }
+}

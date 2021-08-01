@@ -1,0 +1,11 @@
+export { Chair } from './chair';
+export { Bed } from './bed';
+export { Bookshelf } from './book-shelf';
+export { CenterTable } from './center-table';
+export { DressingTable } from './dressing-table';
+export { ReadingTable } from './reading-table';
+export { Sofa } from './sofa';
+export { RelaxChair } from './relax-chair';
+export { Storage } from './storage';
+export { Tools } from './tools';
+export { Table } from './table';

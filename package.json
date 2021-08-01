@@ -1,0 +1,45 @@
+{
+  "name": "pick-bazar",
+  "version": "5.0.2",
+  "private": true,
+  "author": "RedQ, Inc.",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "clean": "lerna clean --yes && rimraf node_modules",
+    "clean:build": "lerna exec -- rimraf \"{.next,dist,build}\"",
+    "dev:shop": "lerna run --parallel shop-dev",
+    "dev:shop-rest": "yarn workspace @pick-bazar/shop-rest dev",
+    "dev:shop-restaurant": "yarn workspace @pick-bazar/restaurant dev",
+    "build:shop": "yarn workspace @pick-bazar/shop build",
+    "build:shop-rest": "yarn workspace @pick-bazar/shop-rest build",
+    "build:shop-restaurant": "yarn workspace @pick-bazar/restaurant build",
+    "serve:shop": "lerna run --parallel shop-start",
+    "dev:admin": "concurrently \"yarn workspace @pick-bazar/admin dev\" \"yarn workspace @pick-bazar/api admin\"",
+    "build:admin": "yarn workspace @pick-bazar/admin build",
+    "serve:admin": "lerna run --parallel serve",
+    "dev:api-shop": "yarn workspace @pick-bazar/api shop-dev",
+    "dev:api-admin": "yarn workspace @pick-bazar/api admin",
+    "build:api": "yarn workspace @pick-bazar/api build"
+  },
+  "devDependencies": {
+    "concurrently": "^6.0.2",
+    "cross-env": "^7.0.3",
+    "husky": "^4.3.0",
+    "lerna": "^3.22.1",
+    "lint-staged": "^10.5.4",
+    "prettier": "^2.2.1",
+    "rimraf": "^3.0.2"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.{js,md,css}": [
+      "prettier --trailing-comma es5 --single-quote --write"
+    ]
+  }
+}
