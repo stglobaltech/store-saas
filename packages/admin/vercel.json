@@ -1,7 +1,7 @@
 {
   "build": {
     "env": {
-      "REACT_APP_API_URL": "https://pickbazar-api.now.sh/admin/graphql"
+      "REACT_APP_API_URL": "https://stg-saas-apis.vercel.app/admin/graphql"
     }
   }
 }
