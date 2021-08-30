@@ -2,7 +2,7 @@
   "build": {
     "env": {
       "NEXT_PUBLIC_STRIPE_PUBLIC_KEY": "pk_test_mlPLdXXoOwSp6eW5ROdsnFml",
-      "NEXT_PUBLIC_GRAPHQL_API_ENDPOINT": "https://stg-saas-apis.vercel.app/shop/graphql"
+      "NEXT_PUBLIC_GRAPHQL_API_ENDPOINT": "https://api-dev-nest.stglobaltech.in/graphql"
     }
   }
 }

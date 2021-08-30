@@ -10,6 +10,7 @@
     "clean": "lerna clean --yes && rimraf node_modules",
     "clean:build": "lerna exec -- rimraf \"{.next,dist,build}\"",
     "dev:shop": "lerna run --parallel shop-dev",
+    "dev:shop-gql": "lerna run --parallel --scope @pick-bazar/shop dev",
     "dev:shop-rest": "yarn workspace @pick-bazar/shop-rest dev",
     "dev:shop-restaurant": "yarn workspace @pick-bazar/restaurant dev",
     "build:shop": "yarn workspace @pick-bazar/shop build",

@@ -2,23 +2,55 @@ import { useMemo } from 'react';
 import {
   ApolloClient,
   InMemoryCache,
-  HttpLink,
   NormalizedCacheObject,
+  createHttpLink,
+  ApolloLink,
+  concat,
 } from '@apollo/client';
+
+import { getLocalStateAccessToken } from './localStorage';
 
 let apolloClient: ApolloClient<NormalizedCacheObject> | undefined;
 
-function createIsomorphLink() {
-  return new HttpLink({
-    uri: process.env.NEXT_PUBLIC_GRAPHQL_API_ENDPOINT, // Server URL (must be absolute)
-    credentials: 'same-origin', // Additional fetch() options like `credentials` or `headers`
-  });
-}
+const apiLink = createHttpLink({
+  uri: process.env.NEXT_PUBLIC_GRAPHQL_API_ENDPOINT,
+  credentials: 'same-origin',
+});
+
+const authLink = createHttpLink({
+  uri: process.env.NEXT_PUBLIC_GRAPHQL_AUTH_API_ENDPOINT,
+});
+
+const link = ApolloLink.split(
+  (operation) => {
+    return operation.getContext().clientName === 'auth';
+  },
+  authLink,
+  apiLink
+);
+
+const authMiddleware = new ApolloLink((operation, forward) => {
+  let token;
+
+  // get the authentication token from local storage if it exists
+  if (typeof window !== 'undefined') {
+    token = getLocalStateAccessToken();
+  }
+
+  operation.setContext(({ headers = {} }) => ({
+    headers: {
+      ...headers,
+      authorization: token ? `Bearer ${token}` : '',
+    },
+  }));
+
+  return forward(operation);
+});
 
 function createApolloClient() {
   return new ApolloClient({
     ssrMode: typeof window === 'undefined',
-    link: createIsomorphLink(),
+    link: concat(authMiddleware, link),
     cache: new InMemoryCache({
       typePolicies: {
         Query: {
