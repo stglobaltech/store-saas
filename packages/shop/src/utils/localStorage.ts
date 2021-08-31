@@ -22,11 +22,7 @@ export const setLocalState = (key, value) => {
 
 export const getLocalStateAccessToken = () => {
   try {
-    const serializedState = localStorage.getItem('access_token');
-    if (serializedState === null) {
-      return undefined;
-    }
-    return JSON.parse(serializedState);
+    return localStorage.getItem('access_token');
   } catch (err) {
     return undefined;
   }
@@ -34,8 +30,7 @@ export const getLocalStateAccessToken = () => {
 
 export const setLocalStateAccessToken = (value) => {
   try {
-    const serializedState = JSON.stringify(value);
-    localStorage.setItem('access_token', serializedState);
+    localStorage.setItem('access_token', value);
   } catch {
     // ignore write errors
   }

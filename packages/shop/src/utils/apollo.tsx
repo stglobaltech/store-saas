@@ -14,7 +14,7 @@ let apolloClient: ApolloClient<NormalizedCacheObject> | undefined;
 
 const apiLink = createHttpLink({
   uri: process.env.NEXT_PUBLIC_GRAPHQL_API_ENDPOINT,
-  credentials: 'same-origin',
+  credentials: 'same-origin', // Additional fetch() options like `credentials` or `headers`
 });
 
 const authLink = createHttpLink({
