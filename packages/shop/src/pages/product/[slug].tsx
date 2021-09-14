@@ -9,11 +9,9 @@ import ProductSingleWrapper, {
 import { GET_PRODUCT_DETAILS } from 'graphql/query/product.query';
 import { initializeApollo } from 'utils/apollo';
 
-const ProductDetails = dynamic(() =>
-  import('components/product-details/product-details-one/product-details-one')
-);
-const ProductDetailsBook = dynamic(() =>
-  import('components/product-details/product-details-two/product-details-two')
+const ProductDetails = dynamic(
+  () =>
+    import('components/product-details/product-details-one/product-details-one')
 );
 
 const CartPopUp = dynamic(() => import('features/carts/cart-popup'), {
@@ -31,15 +29,11 @@ type Props = {
 };
 
 const ProductPage: NextPage<Props> = ({ data, deviceType }) => {
-  let content = (
+  console.log('pages -> product -> slug -> ProductPage:', { data, deviceType });
+  const content = (
     <ProductDetails product={data.product} deviceType={deviceType} />
   );
 
-  if (data.product.type === 'BOOK') {
-    content = (
-      <ProductDetailsBook product={data.product} deviceType={deviceType} />
-    );
-  }
   return (
     <>
       <SEO
@@ -58,7 +52,9 @@ const ProductPage: NextPage<Props> = ({ data, deviceType }) => {
     </>
   );
 };
+
 export async function getServerSideProps({ params }) {
+  console.log('pages -> product -> slug:', { params });
   const apolloClient = initializeApollo();
 
   const { data } = await apolloClient.query({
@@ -73,4 +69,5 @@ export async function getServerSideProps({ params }) {
     },
   };
 }
+
 export default ProductPage;

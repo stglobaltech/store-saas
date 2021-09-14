@@ -23,7 +23,7 @@ const authLink = createHttpLink({
 
 const link = ApolloLink.split(
   (operation) => {
-    return operation.getContext().clientName === 'auth';
+    return operation.getContext().linkName === 'auth';
   },
   authLink,
   apiLink

@@ -1,13 +1,15 @@
 import React, { useReducer } from 'react';
+import { getLocalStateAccessToken } from 'utils/localStorage';
 import { AuthContext } from './auth.context';
+
 const isBrowser = typeof window !== 'undefined';
 const INITIAL_STATE = {
-  isAuthenticated: isBrowser && !!localStorage.getItem('access_token'),
+  isAuthenticated: isBrowser && !!getLocalStateAccessToken(),
   currentForm: 'signIn',
 };
 
 function reducer(state: any, action: any) {
-  console.log(state, 'auth');
+  console.log('contexts -> auth -> authProvider -> reducer:', state);
 
   switch (action.type) {
     case 'SIGNIN':

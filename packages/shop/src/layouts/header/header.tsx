@@ -10,6 +10,7 @@ import LogoImage from 'assets/images/logo.svg';
 import UserImage from 'assets/images/user.jpg';
 import { isCategoryPage } from '../is-home-page';
 import Search from 'features/search/search';
+import { removeLocalStateAccessToken } from 'utils/localStorage';
 type Props = {
   className?: string;
 };
@@ -20,9 +21,10 @@ const Header: React.FC<Props> = ({ className }) => {
     authDispatch,
   } = React.useContext<any>(AuthContext);
   const { pathname, query } = useRouter();
+
   const handleLogout = () => {
     if (typeof window !== 'undefined') {
-      localStorage.removeItem('access_token');
+      removeLocalStateAccessToken();
       authDispatch({ type: 'SIGN_OUT' });
       Router.push('/');
     }
