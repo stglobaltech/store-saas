@@ -63,11 +63,11 @@ export const LeftMenu: React.FC<Props> = ({ logo }) => {
     <LeftMenuBox>
       <Logo
         imageUrl={logo}
-        alt={'Shop Logo'}
+        alt={'orderznow Logo'}
         onClick={() => setActiveMenu(CATEGORY_MENU_ITEMS[0])}
       />
 
-      <MainMenu>
+      {/* <MainMenu>
         <Popover
           className="right"
           handler={
@@ -90,7 +90,7 @@ export const LeftMenu: React.FC<Props> = ({ logo }) => {
           }
           content={<CategoryMenu onClick={setActiveMenu} />}
         />
-      </MainMenu>
+      </MainMenu> */}
     </LeftMenuBox>
   );
 };

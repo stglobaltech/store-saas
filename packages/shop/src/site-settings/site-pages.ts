@@ -16,7 +16,7 @@ export const sitePages = {
     banner_image_url: groceryImage,
   },
   bakery: {
-    page_title: 'Bakery - PickBazar',
+    page_title: 'orderznow',
     page_description: 'Bakery Details',
     banner_title_id: 'bakeryTitle',
     banner_description_id: 'bakerySubTitle',
