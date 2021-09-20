@@ -43,7 +43,7 @@ const GiftCardPage: NextPage<GiftCardProps> = ({ deviceType }) => {
 
   return (
     <Modal>
-      <SEO title="Offer - PickBazar" description="Offer Details" />
+      <SEO title="Offer - orderznow" description="Offer Details" />
       <OfferPageWrapper>
         <MainContentArea>
           <div style={{ width: '100%' }}>

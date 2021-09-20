@@ -5,7 +5,7 @@ import OrderReceived from 'features/order-received/order-received';
 const OrderReceivedPage = () => {
   return (
     <>
-      <SEO title="Invoice - PickBazar" description="Invoice Details" />
+      <SEO title="Invoice - orderznow" description="Invoice Details" />
       <OrderReceived />
     </>
   );

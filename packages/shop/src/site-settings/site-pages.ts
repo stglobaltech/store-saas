@@ -9,7 +9,7 @@ import bakeryImage from 'assets/images/banner/bakery.jpg';
 
 export const sitePages = {
   grocery: {
-    page_title: 'Grocery - PickBazar',
+    page_title: 'Grocery - orderznow',
     page_description: 'Grocery Details',
     banner_title_id: 'groceriesTitle',
     banner_description_id: 'groceriesSubTitle',
@@ -23,42 +23,42 @@ export const sitePages = {
     banner_image_url: bakeryImage,
   },
   makeup: {
-    page_title: 'Makeup - PickBazar',
+    page_title: 'Makeup - orderznow',
     page_description: 'Makeup Details',
     banner_title_id: 'makeupTitle',
     banner_description_id: 'makeupSubTitle',
     banner_image_url: makeupImage,
   },
   bags: {
-    page_title: 'Bags - PickBazar',
+    page_title: 'Bags - orderznow',
     page_description: 'Bags Details',
     banner_title_id: 'bagsTitle',
     banner_description_id: 'bagsSubTitle',
     banner_image_url: bagsImage,
   },
   clothing: {
-    page_title: 'Clothing - PickBazar',
+    page_title: 'Clothing - orderznow',
     page_description: 'Clothing Details',
     banner_title_id: 'womenClothsTitle',
     banner_description_id: 'womenClothsSubTitle',
     banner_image_url: clothingImage,
   },
   furniture: {
-    page_title: 'Furniture - PickBazar',
+    page_title: 'Furniture - orderznow',
     page_description: 'Furniture Details',
     banner_title_id: 'furnitureTitle',
     banner_description_id: 'furnitureSubTitle',
     banner_image_url: furnitureImage,
   },
   book: {
-    page_title: 'Book - PickBazar',
+    page_title: 'Book - orderznow',
     page_description: 'Book Details',
     banner_title_id: 'booksTitle',
     banner_description_id: 'booksSubTitle',
     banner_image_url: booksImage,
   },
   medicine: {
-    page_title: 'Medicine - PickBazar',
+    page_title: 'Medicine - orderznow',
     page_description: 'Medicine Details',
     banner_title_id: 'medicineTitle',
     banner_description_id: 'medicineSubTitle',
