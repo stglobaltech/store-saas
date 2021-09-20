@@ -27,11 +27,11 @@ const Footer = () => {
     <Box>
       <FormattedMessage
         id='siteFooter'
-        defaultMessage='orderznow is a product of'
+        defaultMessage='Orderznow is a product of'
       />
       &nbsp;
       <a href='#' target='_blank'>
-        RedQ, Inc.
+        STZ Tech.
       </a>
     </Box>
   );
