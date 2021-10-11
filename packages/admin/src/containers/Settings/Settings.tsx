@@ -49,6 +49,11 @@ export default function Settings() {
     [dispatch]
   );
 
+  const openQrForm = useCallback(
+    () => dispatch({ type: 'OPEN_DRAWER', drawerComponent: 'QR_CODE_FORM' }),
+    [dispatch]
+  );
+
   return (
     <Grid fluid={true}>
       <Row>
@@ -105,6 +110,17 @@ export default function Settings() {
             title="Add Coupons"
             subtitle="Add coupons from here"
             onClick={openCouponForm}
+          />
+        </Col>
+      </Row>
+
+      <Row>
+        <Col md={6}>
+          <SettingsCard
+            icon={<OrderIcon width="56px" height="56px" />}
+            title="Generate QR Code"
+            subtitle="Generate qr code from here"
+            onClick={openQrForm}
           />
         </Col>
       </Row>
