@@ -75,8 +75,7 @@ const StoreSettingsForm: React.FC<Props> = () => {
         description: {
           en: data.description,
           ar: ""
-        },
-        logo: data.storeLogo
+        }
       }
     } });
   }
