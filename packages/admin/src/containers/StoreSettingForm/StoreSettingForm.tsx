@@ -11,6 +11,11 @@ import { useQuery, useMutation } from '@apollo/client';
 import { Q_GET_USER_ID, Q_GET_RESTAURANT, M_UPDATE_RESTAURANT } from '../../services/GQL';
 import { InLineLoader } from '../../components/InlineLoader/InlineLoader';
 import { useDrawerDispatch } from 'context/DrawerContext';
+import { uploadFile } from '../../services/REST/restaurant.service';
+
+interface imgUploadRes {[
+  urlText: string
+]: any}
 
 type Props = {};
 
@@ -23,6 +28,10 @@ const StoreSettingsForm: React.FC<Props> = () => {
 
   const { register, handleSubmit, setValue, formState: { errors } } = useForm();
   const [storeId, setStoreId] = useState("");
+  const [state, setState] = useState({
+    storeLogo: undefined,
+    storeLogoLoader: false
+  });
   const [updateStatus, setUpdateStatus] = useState({
     success : false,
     message: ""
@@ -44,10 +53,6 @@ const StoreSettingsForm: React.FC<Props> = () => {
   });
 
   useEffect(() => {
-    register({ name: 'storeLogo' });
-  }, [register]);
-
-  useEffect(() => {
     if(data && data.getStore) {
       const { getStore } = data;
       setStoreId(getStore._id);
@@ -59,12 +64,25 @@ const StoreSettingsForm: React.FC<Props> = () => {
     }
   }, [data])
 
-  const handleUploader = (files) => {
-    setValue('storeLogo', files[0]);
+  const uploadImage = (files) => {
+    setState({ ...state, storeLogoLoader: true });
+    const formData = new FormData();
+    formData.append("file", files[0], files[0].name);
+    uploadFile(formData)
+      .then((result: imgUploadRes) => {
+        setState({
+          ...state,
+          storeLogo: result.urlText,
+          storeLogoLoader: false,
+        });
+      })
+      .catch((err) => {
+        console.error(err, 'on image upload for store logo');
+        setState({ ...state, storeLogoLoader: false });
+      });
   };
 
   const onSubmit = (data) => {
-    console.log(data);
     docreate({ variables: {
       storeEditInput: {
         _id: storeId,
@@ -75,7 +93,8 @@ const StoreSettingsForm: React.FC<Props> = () => {
         description: {
           en: data.description,
           ar: ""
-        }
+        },
+        logo: state.storeLogo
       }
     } });
   }
@@ -124,7 +143,7 @@ const StoreSettingsForm: React.FC<Props> = () => {
 
           <Col md={8}>
             <DrawerBox>
-              <Uploader onChange={handleUploader} />
+              <Uploader onChange={uploadImage} imageURL={data.getStore.logo} />
             </DrawerBox>
           </Col>
         </Row>
@@ -256,7 +275,7 @@ const StoreSettingsForm: React.FC<Props> = () => {
                 <Col md={6}>
                   <Button
                     type="submit"
-                    disabled={updating}
+                    disabled={updating || state.storeLogoLoader}
                     overrides={{
                       BaseButton: {
                         style: ({ $theme }) => ({
