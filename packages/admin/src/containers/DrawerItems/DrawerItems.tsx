@@ -10,6 +10,7 @@ import ProductUpdateForm from '../ProductForm/ProductUpdateForm';
 import CampaingForm from '../CampaingForm/CampaingForm';
 import CategoryForm from '../CategoryForm/CategoryForm';
 import StaffMemberForm from '../StaffMemberForm/StaffMemberForm';
+import QrCodeForm from '../QrCodeForm/QrCodeForm';
 import Sidebar from '../Layout/Sidebar/Sidebar';
 
 /** Components Name Constants */
@@ -19,6 +20,7 @@ const DRAWER_COMPONENTS = {
   CAMPAING_FORM: CampaingForm,
   CATEGORY_FORM: CategoryForm,
   STAFF_MEMBER_FORM: StaffMemberForm,
+  QR_CODE_FORM: QrCodeForm,
   SIDEBAR: Sidebar,
 };
 

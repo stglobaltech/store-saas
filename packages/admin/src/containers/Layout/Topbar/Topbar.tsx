@@ -38,7 +38,7 @@ const data = [
     message: 'Order #34567 had been placed',
   },
 ];
-const Topbar = ({ refs }: any) => {
+const Topbar = ({ refs, onLogout }: any) => {
   const dispatch = useDrawerDispatch();
   const { signout } = React.useContext(AuthContext);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -139,7 +139,7 @@ const Topbar = ({ refs }: any) => {
               </NavLink>
               <LogoutBtn
                 onClick={() => {
-                  signout();
+                  onLogout();
                   close();
                 }}
               >

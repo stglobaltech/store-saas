@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
 import SettingsCard from 'components/SettingsCard/SettingsCard';
 import { useDrawerDispatch } from 'context/DrawerContext';
-import { STAFF_MEMBERS, SITE_SETTINGS } from 'settings/constants';
+import { STAFF_MEMBERS, STORE_SETTINGS } from 'settings/constants';
 import { withStyle } from 'baseui';
 
 import { SiteSettings } from 'assets/icons/SiteSettings';
@@ -49,6 +49,11 @@ export default function Settings() {
     [dispatch]
   );
 
+  const openQrForm = useCallback(
+    () => dispatch({ type: 'OPEN_DRAWER', drawerComponent: 'QR_CODE_FORM' }),
+    [dispatch]
+  );
+
   return (
     <Grid fluid={true}>
       <Row>
@@ -63,9 +68,9 @@ export default function Settings() {
         <Col md={6}>
           <SettingsCard
             icon={<SiteSettings />}
-            title="Site Settings"
-            subtitle="View and update your site settings"
-            onClick={() => history.push(SITE_SETTINGS)}
+            title="Store Settings"
+            subtitle="View and update your store settings"
+            onClick={() => history.push(STORE_SETTINGS)}
           />
         </Col>
       </Row>
@@ -105,6 +110,17 @@ export default function Settings() {
             title="Add Coupons"
             subtitle="Add coupons from here"
             onClick={openCouponForm}
+          />
+        </Col>
+      </Row>
+
+      <Row>
+        <Col md={6}>
+          <SettingsCard
+            icon={<OrderIcon width="56px" height="56px" />}
+            title="Generate QR Code"
+            subtitle="Generate qr code from here"
+            onClick={openQrForm}
           />
         </Col>
       </Row>

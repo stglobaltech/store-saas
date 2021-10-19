@@ -4,16 +4,12 @@ import { BrowserRouter } from 'react-router-dom';
 import { Client as Styletron } from 'styletron-engine-atomic';
 import { Provider as StyletronProvider } from 'styletron-react';
 import { BaseProvider } from 'baseui';
-import { ApolloProvider, ApolloClient, InMemoryCache } from '@apollo/client';
+import { ApolloProvider } from '@apollo/client';
+import { client } from "./services/GQL";
 import { theme } from './theme';
 import Routes from './routes';
 import * as serviceWorker from './serviceWorker';
 import './theme/global.css';
-
-const client = new ApolloClient({
-  uri: process.env.REACT_APP_API_URL,
-  cache: new InMemoryCache(),
-});
 
 function App() {
   const engine = new Styletron();

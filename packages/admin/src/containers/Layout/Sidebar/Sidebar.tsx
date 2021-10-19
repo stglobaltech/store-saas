@@ -76,8 +76,8 @@ export default withRouter(function Sidebar({
   refs,
   style,
   onMenuItemClick,
+  onLogout
 }: any) {
-  const { signout } = useContext(AuthContext);
   return (
     <SidebarWrapper ref={refs} style={style}>
       <MenuWrapper>
@@ -100,9 +100,7 @@ export default withRouter(function Sidebar({
       </MenuWrapper>
 
       <LogoutBtn
-        onClick={() => {
-          signout();
-        }}
+        onClick={onLogout}
       >
         <Svg>
           <LogoutIcon />

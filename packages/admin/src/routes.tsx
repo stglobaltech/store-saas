@@ -10,18 +10,21 @@ import {
   CUSTOMERS,
   COUPONS,
   STAFF_MEMBERS,
-  SITE_SETTINGS,
+  STORE_SETTINGS,
 } from 'settings/constants';
 import AuthProvider, { AuthContext } from 'context/auth';
 import { InLineLoader } from 'components/InlineLoader/InlineLoader';
+import { useQuery } from '@apollo/client';
+import { Q_IS_LOGGED_IN } from 'services/GQL';
+
 const Products = lazy(() => import('containers/Products/Products'));
 const AdminLayout = lazy(() => import('containers/Layout/Layout'));
 const Dashboard = lazy(() => import('containers/Dashboard/Dashboard'));
 const Category = lazy(() => import('containers/Category/Category'));
 const Orders = lazy(() => import('containers/Orders/Orders'));
 const Settings = lazy(() => import('containers/Settings/Settings'));
-const SiteSettingForm = lazy(() =>
-  import('containers/SiteSettingForm/SiteSettingForm')
+const StoreSettingForm = lazy(() =>
+  import('containers/StoreSettingForm/StoreSettingForm')
 );
 const StaffMembers = lazy(() => import('containers/StaffMembers/StaffMembers'));
 const Customers = lazy(() => import('containers/Customers/Customers'));
@@ -37,13 +40,13 @@ const NotFound = lazy(() => import('containers/NotFound/NotFound'));
  */
 
 function PrivateRoute({ children, ...rest }) {
-  const { isAuthenticated } = useContext(AuthContext);
+  const { data: { isLoggedIn = false } } = useQuery(Q_IS_LOGGED_IN);
 
   return (
     <Route
       {...rest}
       render={({ location }) =>
-        isAuthenticated ? (
+        isLoggedIn ? (
           children
         ) : (
           <Redirect
@@ -119,10 +122,10 @@ const Routes = () => {
               </Suspense>
             </AdminLayout>
           </PrivateRoute>
-          <PrivateRoute path={SITE_SETTINGS}>
+          <PrivateRoute path={STORE_SETTINGS}>
             <AdminLayout>
               <Suspense fallback={<InLineLoader />}>
-                <SiteSettingForm />
+                <StoreSettingForm />
               </Suspense>
             </AdminLayout>
           </PrivateRoute>
