@@ -14,6 +14,9 @@ import {
   ButtonGroup,
 } from "../DrawerItems/DrawerItems.style";
 import { FormFields, FormLabel } from "components/FormFields/FormFields";
+import { useQuery, useMutation } from '@apollo/client';
+import { Q_GET_STORE_ID, Q_WORK_FLOW_POLICY, M_UPDATE_WORK_FLOW_POLICY } from '../../services/GQL';
+import axios from "axios";
 
 type Props = any;
 
@@ -23,8 +26,31 @@ const GenerateQrCode: React.FC<Props> = (props) => {
     dispatch,
   ]);
 
-  const { register, handleSubmit, getValues } = useForm();
+  const { register, handleSubmit, setValue, getValues } = useForm();
   const [qrcode, setQrcode] = useState("");
+
+  const { data: { storeId } } = useQuery(Q_GET_STORE_ID);
+
+  const { loading, error } = useQuery(Q_WORK_FLOW_POLICY, {
+    context: { clientName: "CONTENT_SERVER" },
+    onCompleted: ({ workFlowPolicyApi }) => {
+      const { plan } = workFlowPolicyApi;
+      if(plan) {
+        const storeInfo = plan.filter(function(stores) {
+          return stores.storeId === storeId;
+        });
+        
+        setValue("name", storeInfo[0].storeName);
+        setValue("url", storeInfo[0].url);
+      }
+    }
+  });
+
+  const [docreate, { loading: updating }] = useMutation(M_UPDATE_WORK_FLOW_POLICY, {
+    onCompleted: (data) => {
+      console.log(data);      
+    }
+  });
 
   const generate = () => {
     const url = getValues("url");
@@ -34,7 +60,41 @@ const GenerateQrCode: React.FC<Props> = (props) => {
       );
   };
 
+  const downloadQr = () => {
+    axios({
+      url: `http://api.qrserver.com/v1/create-qr-code/?data=stg.com&size=120x120`,
+      method: "GET",
+      responseType: "blob"
+    }).then((res) => {
+      // const url = window.URL.createObjectURL(new Blob([res.data]));
+      // const link = document.createElement("a");
+      // link.href = url;
+      // link.setAttribute("download", "image.png");
+      // document.body.appendChild(link);
+      // link.click();
+      console.log(res);
+    });
+  };
+
+  const printQr = () => {
+
+  };
+
   const onSubmit = (data) => {
+    // docreate({ variables: {
+    //   configUpdateDto: {
+    //     isFleetRequired: false,
+    //     isAggregator: false,
+    //     plan: {
+    //       planName: "",
+    //       storeId: "",
+    //       storeName: "",
+    //       entityId: "",
+    //       expiryDate: "",
+    //       url: ""
+    //     }
+    //   }
+    // }});
     closeDrawer();
     console.log(data);
   };
@@ -101,6 +161,40 @@ const GenerateQrCode: React.FC<Props> = (props) => {
                       </Button>
                     )}
                   </div>
+
+                  {qrcode && (
+                    <div style={{marginTop: "16px", textAlign: "center"}}>
+                      <Button type="button" onClick={downloadQr}
+                        overrides={{
+                          BaseButton: {
+                            style: ({ $theme }) => ({
+                              borderTopLeftRadius: "3px",
+                              borderTopRightRadius: "3px",
+                              borderBottomRightRadius: "3px",
+                              borderBottomLeftRadius: "3px",
+                              marginRight: "15px"
+                            }),
+                          },
+                        }}
+                      >
+                        Download
+                      </Button>
+                      <Button type="button" onClick={printQr}
+                        overrides={{
+                          BaseButton: {
+                            style: ({ $theme }) => ({
+                              borderTopLeftRadius: "3px",
+                              borderTopRightRadius: "3px",
+                              borderBottomRightRadius: "3px",
+                              borderBottomLeftRadius: "3px"
+                            }),
+                          },
+                        }}
+                      >
+                        Print
+                      </Button>
+                    </div>
+                  )}
                 </FormFields>
               </DrawerBox>
             </Col>
@@ -143,7 +237,7 @@ const GenerateQrCode: React.FC<Props> = (props) => {
               },
             }}
           >
-            Generate Code
+            Save
           </Button>
         </ButtonGroup>
       </Form>
