@@ -1,8 +1,7 @@
-import React, { useContext } from 'react';
-import { Redirect, useHistory, useLocation } from 'react-router-dom';
+import React from 'react';
+import { Redirect, useLocation } from 'react-router-dom';
 import { Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
-import { AuthContext } from 'context/auth';
 import {
   FormFields,
   FormLabel,
@@ -31,7 +30,6 @@ interface DecodedToken {
 }
 
 export default function Login() {
-  const history = useHistory();
   const location = useLocation();
   const cache = useApolloClient();
   const { data: { isLoggedIn = false } } = useQuery(Q_IS_LOGGED_IN);
@@ -97,7 +95,7 @@ export default function Login() {
   const [doLogin, { loading, error, data }] = useMutation(M_LOGIN, {
     context: { clientName: "AUTH_SERVER" },
     onCompleted({ gateLogin }) {
-      const { success, accessToken, userId, refreshToken, message } = gateLogin;
+      const { success, accessToken, userId, refreshToken } = gateLogin;
       if (success && accessToken) {
         const { exp, roles } = jwtDecode<DecodedToken>(accessToken);
 
