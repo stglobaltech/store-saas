@@ -62,7 +62,7 @@ const StoreSettingsForm: React.FC<Props> = () => {
       setValue('address', getStore.address);
       setValue('contactNumber', getStore.contactNumber);
     }
-  }, [data])
+  }, [data, setValue])
 
   const uploadImage = (files) => {
     setState({ ...state, storeLogoLoader: true });

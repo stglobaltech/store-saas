@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { withRouter } from 'react-router-dom';
 import {
   SidebarWrapper,
@@ -16,7 +16,6 @@ import {
   COUPONS,
   SETTINGS,
 } from 'settings/constants';
-import { AuthContext } from 'context/auth';
 
 import { DashboardIcon } from 'assets/icons/DashboardIcon';
 import { ProductIcon } from 'assets/icons/ProductIcon';

@@ -1,4 +1,4 @@
-import React, { useContext, lazy, Suspense } from 'react';
+import React, { lazy, Suspense } from 'react';
 import { Route, Switch, Redirect } from 'react-router-dom';
 import {
   LOGIN,
@@ -12,7 +12,7 @@ import {
   STAFF_MEMBERS,
   STORE_SETTINGS,
 } from 'settings/constants';
-import AuthProvider, { AuthContext } from 'context/auth';
+import AuthProvider from 'context/auth';
 import { InLineLoader } from 'components/InlineLoader/InlineLoader';
 import { useQuery } from '@apollo/client';
 import { Q_IS_LOGGED_IN } from 'services/GQL';

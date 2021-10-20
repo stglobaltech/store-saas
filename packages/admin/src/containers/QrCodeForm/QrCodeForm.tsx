@@ -94,7 +94,7 @@ const GenerateQrCode: React.FC<Props> = (props) => {
                     }}
                   >
                     {qrcode ? (
-                      <img src={qrcode} />
+                      <img src={qrcode} alt="" />
                     ) : (
                       <Button type="button" onClick={generate}>
                         Generate
