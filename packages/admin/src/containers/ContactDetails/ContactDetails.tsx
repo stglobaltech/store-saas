@@ -89,6 +89,10 @@ const ContactDetails: React.FC<Props> = () => {
     });
   }, []);
 
+  const checkKeyDownForOnSubmit = (e) => {
+    if (e.keyCode === 13) e.preventDefault();
+  };
+
   const onSubmit = (values) => {
     const countryCodes = {
       IND: "+91",
@@ -123,7 +127,11 @@ const ContactDetails: React.FC<Props> = () => {
 
   return (
     <Grid fluid={true}>
-      <Form onSubmit={handleSubmit(onSubmit)} style={{ paddingBottom: 0 }}>
+      <Form
+        onKeyDown={checkKeyDownForOnSubmit}
+        onSubmit={handleSubmit(onSubmit)}
+        style={{ paddingBottom: 0 }}
+      >
         {updateStatus.message &&
           (updateStatus.success ? (
             <div
