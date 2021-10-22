@@ -41,6 +41,8 @@ export const Q_GET_RESTAURANT = gql`
         chargesPerKm
       }
       minimumOrderCost
+      domain
+      url
     }
   }
 `;
