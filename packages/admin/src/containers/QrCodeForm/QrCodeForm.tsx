@@ -26,7 +26,6 @@ interface DownloadRes {[
 type Props = any;
 
 const GenerateQrCode: React.FC<Props> = (props) => {
-  const baseUrl = "https://shop.orderznow.com";
   const dispatch = useDrawerDispatch();
   const closeDrawer = useCallback(() => dispatch({ type: "CLOSE_DRAWER" }), [
     dispatch,
@@ -48,10 +47,9 @@ const GenerateQrCode: React.FC<Props> = (props) => {
     variables: { ownerId: userId },
     onCompleted: ({ getStore }) => {
       const { _id, domain, url } = getStore;
-      const newUrl = url ? url : baseUrl;
       setStoreId(_id);
       setValue("domain", domain);
-      setValue("url", newUrl);
+      setValue("url", url);
       generate();
     }
   });
@@ -66,7 +64,7 @@ const GenerateQrCode: React.FC<Props> = (props) => {
   });
 
   const onChangeDomain = () => {
-    setValue("url", `${baseUrl}/${getValues("domain")}`);
+    setValue("url", `https://${getValues("domain")}.orderznow.com`);
     setQrcode("");
   };
 
