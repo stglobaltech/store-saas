@@ -7,6 +7,7 @@ export const Q_WORK_FLOW_POLICY = gql`
         storeId
         storeName
         url
+        domain
       }
     }
   }

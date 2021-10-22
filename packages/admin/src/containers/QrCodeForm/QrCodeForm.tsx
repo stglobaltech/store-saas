@@ -14,9 +14,14 @@ import {
   ButtonGroup,
 } from "../DrawerItems/DrawerItems.style";
 import { FormFields, FormLabel } from "components/FormFields/FormFields";
-import { useQuery, useMutation } from '@apollo/client';
-import { Q_GET_STORE_ID, Q_WORK_FLOW_POLICY, M_UPDATE_WORK_FLOW_POLICY } from '../../services/GQL';
+import { useQuery } from '@apollo/client';
+import { Q_GET_STORE_ID, Q_WORK_FLOW_POLICY } from '../../services/GQL';
+import { InLineLoader } from '../../components/InlineLoader/InlineLoader';
 import axios from "axios";
+
+interface DownloadRes {[
+  data: string
+]: any}
 
 type Props = any;
 
@@ -40,44 +45,49 @@ const GenerateQrCode: React.FC<Props> = (props) => {
           return stores.storeId === storeId;
         });
         
-        setValue("name", storeInfo[0].storeName);
-        setValue("url", storeInfo[0].url);
+        const newUrl = storeInfo[0].url && storeInfo[0].domain ? storeInfo[0].url + "/" + storeInfo[0].domain : storeInfo[0].url
+        setValue("name", storeInfo[0].domain);
+        setValue("url", newUrl);
+        generate();
       }
     }
   });
 
-  const [docreate, { loading: updating }] = useMutation(M_UPDATE_WORK_FLOW_POLICY, {
-    onCompleted: (data) => {
-      console.log(data);      
-    }
-  });
+  // const [docreate, { loading: updating }] = useMutation(M_UPDATE_WORK_FLOW_POLICY, {
+  //   onCompleted: (data) => {
+  //     console.log(data);      
+  //   }
+  // });
 
   const generate = () => {
     const url = getValues("url");
-    url &&
-      setQrcode(
-        `http://api.qrserver.com/v1/create-qr-code/?data=${url}&size=120x120`
-      );
+    const domain = getValues("name");
+    if(url && domain) {
+      axios({
+        url: `http://api.qrserver.com/v1/create-qr-code/?data=${url}&size=120x120`,
+        method: "GET",
+        responseType: "blob"
+      }).then((res: DownloadRes) => {
+        const url = window.URL.createObjectURL(new Blob([res.data]));
+        setQrcode(url);
+      });
+    }
   };
 
   const downloadQr = () => {
-    axios({
-      url: `http://api.qrserver.com/v1/create-qr-code/?data=stg.com&size=120x120`,
-      method: "GET",
-      responseType: "blob"
-    }).then((res) => {
-      // const url = window.URL.createObjectURL(new Blob([res.data]));
-      // const link = document.createElement("a");
-      // link.href = url;
-      // link.setAttribute("download", "image.png");
-      // document.body.appendChild(link);
-      // link.click();
-      console.log(res);
-    });
+      const link = document.createElement("a");
+      link.href = qrcode;
+      link.setAttribute("download", "image.png");
+      document.body.appendChild(link);
+      link.click();
   };
 
   const printQr = () => {
-
+    const toPrint = `<img src="${qrcode}" />`;
+    const w = window.open();
+    w.document.write(toPrint);
+    w.print();
+    w.close();
   };
 
   const onSubmit = (data) => {
@@ -95,9 +105,15 @@ const GenerateQrCode: React.FC<Props> = (props) => {
     //     }
     //   }
     // }});
-    closeDrawer();
+    // closeDrawer();
     console.log(data);
   };
+
+  if(loading)
+    return <InLineLoader />;
+  
+  if(error)
+    return <div>Error! {error.message}</div>;
 
   return (
     <>
@@ -130,14 +146,18 @@ const GenerateQrCode: React.FC<Props> = (props) => {
               <DrawerBox>
                 <FormFields>
                   <FormLabel>Name</FormLabel>
-                  <Input inputRef={register({ required: true })} name="name" />
+                  <Input
+                    name="name"
+                    inputRef={register({ required: true })}
+                    onChange={() => setQrcode("")}
+                  />
                 </FormFields>
 
                 <FormFields>
                   <FormLabel>Menu URL</FormLabel>
                   <Input
-                    inputRef={register({ required: true })}
                     name="url"
+                    inputRef={register({ required: true })}
                     onChange={() => setQrcode("")}
                   />
                 </FormFields>
