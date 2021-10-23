@@ -24,8 +24,8 @@ import { GET_PRODUCTS } from 'graphql/query/products.query';
 import { GET_CATEGORIES } from 'graphql/query/category.query';
 import { ModalProvider } from 'contexts/modal/modal.provider';
 const Sidebar = dynamic(() => import('layouts/sidebar/sidebar'));
-const Products = dynamic(() =>
-  import('components/product-grid/product-list/product-list')
+const Products = dynamic(
+  () => import('components/product-grid/product-list/product-list')
 );
 const CartPopUp = dynamic(() => import('features/carts/cart-popup'), {
   ssr: false,
@@ -91,15 +91,19 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
   await apolloClient.query({
     query: GET_PRODUCTS,
     variables: {
-      type: params.type,
-      offset: 0,
-      limit: 20,
+      userStoreProductsFindInputDto: {
+        storeId: params.type,
+        paginate: {
+          page: 1,
+          perPage: 10,
+        },
+      },
     },
   });
   await apolloClient.query({
     query: GET_CATEGORIES,
     variables: {
-      type: params.type,
+      storeId: params.type,
     },
   });
 
@@ -113,15 +117,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
 
 export async function getStaticPaths() {
   return {
-    paths: [
-      { params: { type: 'grocery' } },
-      { params: { type: 'makeup' } },
-      { params: { type: 'bags' } },
-      { params: { type: 'book' } },
-      { params: { type: 'medicine' } },
-      { params: { type: 'furniture' } },
-      { params: { type: 'clothing' } },
-    ],
+    paths: [{ params: { type: process.env.NEXT_PUBLIC_STG_CLIENT_ID } }],
     fallback: false,
   };
 }
