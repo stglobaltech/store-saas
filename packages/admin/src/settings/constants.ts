@@ -11,6 +11,7 @@ export const COUPONS = '/coupons';
 export const SETTINGS = '/settings';
 export const STAFF_MEMBERS = '/staff-members';
 export const STORE_SETTINGS = '/store-settings';
+export const CONTACT_DETAILS = '/contact-details';
 // **************** ROUTE CONSTANT END **************************
 
 export const CURRENCY = '$';
