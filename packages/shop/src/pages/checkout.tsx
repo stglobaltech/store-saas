@@ -36,17 +36,17 @@ const CheckoutPage: NextPage<Props> = ({ deviceType }) => {
   );
 };
 
-export const getStaticProps: GetStaticProps = async () => {
-  const apolloClient = initializeApollo();
+// export const getStaticProps: GetStaticProps = async () => {
+//   const apolloClient = initializeApollo();
 
-  await apolloClient.query({
-    query: GET_LOGGED_IN_CUSTOMER,
-  });
+//   await apolloClient.query({
+//     query: GET_LOGGED_IN_CUSTOMER,
+//   });
 
-  return {
-    props: {
-      initialApolloState: apolloClient.cache.extract(),
-    },
-  };
-};
+//   return {
+//     props: {
+//       initialApolloState: apolloClient.cache.extract(),
+//     },
+//   };
+// };
 export default CheckoutPage;

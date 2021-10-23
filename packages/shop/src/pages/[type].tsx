@@ -44,7 +44,7 @@ const CategoryPage: React.FC<any> = ({ deviceType }) => {
     }
   }, [query.text, query.category]);
   const PAGE_TYPE: any = query.type;
-  const page = sitePages[PAGE_TYPE];
+  const page = sitePages[PAGE_TYPE || process.env.NEXT_PUBLIC_STG_CLIENT_ID];
 
   return (
     <>
@@ -85,40 +85,44 @@ const CategoryPage: React.FC<any> = ({ deviceType }) => {
     </>
   );
 };
-export const getStaticProps: GetStaticProps = async ({ params }) => {
-  const apolloClient = initializeApollo();
 
-  await apolloClient.query({
-    query: GET_PRODUCTS,
-    variables: {
-      userStoreProductsFindInputDto: {
-        storeId: params.type,
-        paginate: {
-          page: 1,
-          perPage: 10,
-        },
-      },
-    },
-  });
-  await apolloClient.query({
-    query: GET_CATEGORIES,
-    variables: {
-      storeId: params.type,
-    },
-  });
+/**
+ * TODO Uncomment after making these two queries no auth
+ */
+// export const getStaticProps: GetStaticProps = async ({ params }) => {
+//   const apolloClient = initializeApollo();
 
-  return {
-    props: {
-      initialApolloState: apolloClient.cache.extract(),
-    },
-    revalidate: 1,
-  };
-};
+//   await apolloClient.query({
+//     query: GET_PRODUCTS,
+//     variables: {
+//       userStoreProductsFindInputDto: {
+//         storeId: params.type,
+//         paginate: {
+//           page: 1,
+//           perPage: 10,
+//         },
+//       },
+//     },
+//   });
+//   await apolloClient.query({
+//     query: GET_CATEGORIES,
+//     variables: {
+//       storeId: params.type,
+//     },
+//   });
 
-export async function getStaticPaths() {
-  return {
-    paths: [{ params: { type: process.env.NEXT_PUBLIC_STG_CLIENT_ID } }],
-    fallback: false,
-  };
-}
+//   return {
+//     props: {
+//       initialApolloState: apolloClient.cache.extract(),
+//     },
+//     revalidate: 1,
+//   };
+// };
+
+// export async function getStaticPaths() {
+//   return {
+//     paths: [{ params: { type: process.env.NEXT_PUBLIC_STG_CLIENT_ID } }],
+//     fallback: false,
+//   };
+// }
 export default CategoryPage;

@@ -26,31 +26,31 @@ export const Main = styled.div<any>(
 );
 
 const PAGE_TYPE = 'bakery';
-export const getStaticProps: GetStaticProps = async () => {
-  const apolloClient = initializeApollo();
+// export const getStaticProps: GetStaticProps = async () => {
+//   const apolloClient = initializeApollo();
 
-  await apolloClient.query({
-    query: GET_PRODUCTS,
-    variables: {
-      type: PAGE_TYPE,
-      offset: 0,
-      limit: 20,
-    },
-  });
-  await apolloClient.query({
-    query: GET_CATEGORIES,
-    variables: {
-      type: PAGE_TYPE,
-    },
-  });
+//   await apolloClient.query({
+//     query: GET_PRODUCTS,
+//     variables: {
+//       type: PAGE_TYPE,
+//       offset: 0,
+//       limit: 20,
+//     },
+//   });
+//   await apolloClient.query({
+//     query: GET_CATEGORIES,
+//     variables: {
+//       type: PAGE_TYPE,
+//     },
+//   });
 
-  return {
-    props: {
-      initialApolloState: apolloClient.cache.extract(),
-    },
-    revalidate: 1,
-  };
-};
+//   return {
+//     props: {
+//       initialApolloState: apolloClient.cache.extract(),
+//     },
+//     revalidate: 1,
+//   };
+// };
 
 export default function BakeryPage({ deviceType }) {
   const page = sitePages[PAGE_TYPE];

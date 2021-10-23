@@ -66,17 +66,17 @@ const GiftCardPage: NextPage<GiftCardProps> = ({ deviceType }) => {
   );
 };
 
-export const getStaticProps: GetStaticProps = async () => {
-  const apolloClient = initializeApollo();
+// export const getStaticProps: GetStaticProps = async () => {
+//   const apolloClient = initializeApollo();
 
-  await apolloClient.query({
-    query: GET_COUPON,
-  });
+//   await apolloClient.query({
+//     query: GET_COUPON,
+//   });
 
-  return {
-    props: {
-      initialApolloState: apolloClient.cache.extract(),
-    },
-  };
-};
+//   return {
+//     props: {
+//       initialApolloState: apolloClient.cache.extract(),
+//     },
+//   };
+// };
 export default GiftCardPage;
