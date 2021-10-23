@@ -15728,6 +15728,11 @@ react-focus-lock@^2.2.1:
     use-callback-ref "^1.2.1"
     use-sidecar "^1.0.1"
 
+react-headless-notifier@^0.1.6:
+  version "0.1.6"
+  resolved "https://registry.yarnpkg.com/react-headless-notifier/-/react-headless-notifier-0.1.6.tgz#757ddfd33a26ed10276846240be1ea5f0b4c0f9c"
+  integrity sha512-idgAYF2AYW8cZN9cfaPvSUyeUrGyLoOT5RyKj77MQ1S/zCIv73Wajgp3fVxJkA2exBxGiQbo8Ng/p8ZnQUz3wg==
+
 react-hook-form@6.15.5:
   version "6.15.5"
   resolved "https://registry.yarnpkg.com/react-hook-form/-/react-hook-form-6.15.5.tgz#c2578f9ce6a6df7b33015587d40cd880dc13e2db"

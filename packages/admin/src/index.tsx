@@ -10,6 +10,7 @@ import { theme } from './theme';
 import Routes from './routes';
 import * as serviceWorker from './serviceWorker';
 import './theme/global.css';
+import { NotifierContextProvider } from 'react-headless-notifier';
 
 function App() {
   const engine = new Styletron();
@@ -18,9 +19,17 @@ function App() {
     <ApolloProvider client={client as any}>
       <StyletronProvider value={engine}>
         <BaseProvider theme={theme}>
-          <BrowserRouter>
-            <Routes />
-          </BrowserRouter>
+          <NotifierContextProvider
+            config={{
+              max: null,
+              duration: 5000,
+              position: 'topRight',
+            }}
+          >
+            <BrowserRouter>
+              <Routes />
+            </BrowserRouter>
+          </NotifierContextProvider>
         </BaseProvider>
       </StyletronProvider>
     </ApolloProvider>
