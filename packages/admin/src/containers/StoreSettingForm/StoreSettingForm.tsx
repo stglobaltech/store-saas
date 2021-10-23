@@ -12,6 +12,9 @@ import { Q_GET_USER_ID, Q_GET_RESTAURANT, M_UPDATE_RESTAURANT } from '../../serv
 import { InLineLoader } from '../../components/InlineLoader/InlineLoader';
 import { useDrawerDispatch } from 'context/DrawerContext';
 import { uploadFile } from '../../services/REST/restaurant.service';
+import { useNotifier } from 'react-headless-notifier';
+import SuccessNotification from '../../components/Notification/SuccessNotification';
+import DangerNotification from '../../components/Notification/DangerNotification';
 
 interface imgUploadRes {[
   urlText: string
@@ -26,15 +29,13 @@ const StoreSettingsForm: React.FC<Props> = () => {
     [dispatch]
   );
 
+  const { notify } = useNotifier();
+
   const { register, handleSubmit, setValue, formState: { errors } } = useForm();
   const [storeId, setStoreId] = useState("");
   const [state, setState] = useState({
     storeLogo: undefined,
     storeLogoLoader: false
-  });
-  const [updateStatus, setUpdateStatus] = useState({
-    success : false,
-    message: ""
   });
   const { data: { userId } } = useQuery(Q_GET_USER_ID);
 
@@ -46,9 +47,19 @@ const StoreSettingsForm: React.FC<Props> = () => {
   const [docreate, { loading: updating }] = useMutation(M_UPDATE_RESTAURANT, {
     onCompleted: (data) => {
       if (data && data.editStore)
-        setUpdateStatus({success: true, message: "Store Updated Successfully"});
+        notify(
+          <SuccessNotification
+            message="Store Updated Successfully"
+            dismiss
+          />
+        );
       else
-        setUpdateStatus({success: false, message: "Store Could Not Be Updated"});
+        notify(
+          <DangerNotification
+            message="Store Could Not Be Updated"
+            dismiss
+          />
+        );
     }
   });
 
@@ -108,34 +119,6 @@ const StoreSettingsForm: React.FC<Props> = () => {
   return (
     <Grid fluid={true}>
       <Form onSubmit={handleSubmit(onSubmit)} style={{ paddingBottom: 0 }}>
-
-        {updateStatus.message && (
-          updateStatus.success ? (
-            <div style={{
-              padding: "0.75rem 1.25rem",
-              marginBottom: "1rem",
-              border: "1px solid transparent",
-              borderRadius: "0.25rem",
-              color: "#155724",
-              backgroundColor: "#d4edda",
-              borderColor: "#c3e6cb"
-            }}>
-              {updateStatus.message}
-            </div>
-          ) : (
-            <div style={{
-              padding: "0.75rem 1.25rem",
-              marginBottom: "1rem",
-              border: "1px solid transparent",
-              borderRadius: "0.25rem",
-              color: "#721c24",
-              backgroundColor: "#f8d7da",
-              borderColor: "#f5c6cb"
-            }}>
-              {updateStatus.message}
-            </div>
-        ))}
-
         <Row>
           <Col md={4}>
             <FieldDetails>Upload your store logo here</FieldDetails>

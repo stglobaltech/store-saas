@@ -22,6 +22,7 @@
     "react-dropzone": "^11.3.2",
     "react-flexbox-grid": "^2.1.2",
     "react-google-maps": "^9.4.5",
+    "react-headless-notifier": "^0.1.6",
     "react-hook-form": "6.15.5",
     "react-image": "^4.0.3",
     "react-reveal": "^1.2.2",
