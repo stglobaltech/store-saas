@@ -60,18 +60,18 @@ type CartItemProps = {
 };
 
 const OrderItem: React.FC<CartItemProps> = ({ product }) => {
-  const { id, quantity, title, name, unit, price, salePrice } = product;
+  const { _id, quantity, title, productName, unit, price, salePrice } = product;
   const displayPrice = salePrice ? salePrice : price;
   return (
-    <Items key={id}>
+    <Items key={_id}>
       <Quantity>{quantity}</Quantity>
       <Multiplier>x</Multiplier>
       <ItemInfo>
-        {name ? name : title} {unit ? `| ${unit}` : ''}
+        {productName ? productName.en : title} {unit ? `| ${unit}` : ''}
       </ItemInfo>
       <Price>
         {CURRENCY}
-        {(displayPrice * quantity).toFixed(2)}
+        {(displayPrice.price * quantity).toFixed(2)}
       </Price>
     </Items>
   );
@@ -95,7 +95,7 @@ const CheckoutWithSidebar: React.FC<MyFormProps> = ({ token, deviceType }) => {
   } = useCart();
   const [loading, setLoading] = useState(false);
   const [isValid, setIsValid] = useState(false);
-  const { address, contact, card, schedules } = state;
+  //const { address, contact, card, schedules } = state;
   const size = useWindowSize();
 
   const handleSubmit = async () => {
@@ -110,11 +110,11 @@ const CheckoutWithSidebar: React.FC<MyFormProps> = ({ token, deviceType }) => {
   useEffect(() => {
     if (
       calculatePrice() > 0 &&
-      cartItemsCount > 0 &&
-      address.length &&
-      contact.length &&
-      card.length &&
-      schedules.length
+      cartItemsCount > 0 
+      // address.length &&
+      // contact.length &&
+      // card.length &&
+      // schedules.length
     ) {
       setIsValid(true);
     }
@@ -148,14 +148,14 @@ const CheckoutWithSidebar: React.FC<MyFormProps> = ({ token, deviceType }) => {
             </InformationBox>
 
             {/* DeliverySchedule */}
-            <InformationBox>
+            {/* <InformationBox>
               <DeliverySchedule>
                 <Schedules increment={true} />
               </DeliverySchedule>
-            </InformationBox>
+            </InformationBox> */}
 
             {/* Contact number */}
-            <InformationBox>
+            {/* <InformationBox>
               <Contact
                 increment={true}
                 flexStart={true}
@@ -166,14 +166,14 @@ const CheckoutWithSidebar: React.FC<MyFormProps> = ({ token, deviceType }) => {
                 }}
                 icon={true}
               />
-            </InformationBox>
+            </InformationBox> */}
             {/* PaymentOption */}
 
             <InformationBox
               className='paymentBox'
               style={{ paddingBottom: 30 }}
             >
-              <Payment increment={true} deviceType={deviceType} />
+              {/* <Payment increment={true} deviceType={deviceType} /> */}
 
               {/* Coupon start */}
               {coupon ? (
@@ -230,7 +230,7 @@ const CheckoutWithSidebar: React.FC<MyFormProps> = ({ token, deviceType }) => {
                 <Button
                   type='button'
                   onClick={handleSubmit}
-                  disabled={!isValid}
+                  disabled={true}
                   size='big'
                   loading={loading}
                   style={{ width: '100%' }}
@@ -262,7 +262,7 @@ const CheckoutWithSidebar: React.FC<MyFormProps> = ({ token, deviceType }) => {
                   <ItemsWrapper>
                     {cartItemsCount > 0 ? (
                       items.map((item) => (
-                        <OrderItem key={`cartItem-${item.id}`} product={item} />
+                        <OrderItem key={`cartItem-${item._id}`} product={item} />
                       ))
                     ) : (
                       <>

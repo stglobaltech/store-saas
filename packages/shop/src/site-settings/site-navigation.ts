@@ -54,33 +54,33 @@ export const PROFILE_MENU_ITEM = {
   href: PROFILE_PAGE,
 };
 export const AUTHORIZED_MENU_ITEMS = [
-  PROFILE_MENU_ITEM,
+  //PROFILE_MENU_ITEM,
   {
     id: 'nav.checkout',
     defaultMessage: 'Checkout',
     href: CHECKOUT_PAGE,
   },
-  {
-    id: 'alternativeCheckout',
-    href: CHECKOUT_PAGE_TWO,
-    defaultMessage: 'Checkout Alternative',
-  },
-  ORDER_MENU_ITEM,
-  {
-    id: 'nav.order_received',
-    href: ORDER_RECEIVED_PAGE,
-    defaultMessage: 'Order invoice',
-  },
-  {
-    id: 'nav.terms_and_services',
-    defaultMessage: 'Terms and Services',
-    href: TERMS_AND_SERVICES_PAGE,
-  },
-  {
-    id: 'nav.privacy_policy',
-    defaultMessage: 'Privacy Policy',
-    href: PRIVACY_POLICY_PAGE,
-  },
+  // {
+  //   id: 'alternativeCheckout',
+  //   href: CHECKOUT_PAGE_TWO,
+  //   defaultMessage: 'Checkout Alternative',
+  // },
+  // ORDER_MENU_ITEM,
+  // {
+  //   id: 'nav.order_received',
+  //   href: ORDER_RECEIVED_PAGE,
+  //   defaultMessage: 'Order invoice',
+  // },
+  // {
+  //   id: 'nav.terms_and_services',
+  //   defaultMessage: 'Terms and Services',
+  //   href: TERMS_AND_SERVICES_PAGE,
+  // },
+  // {
+  //   id: 'nav.privacy_policy',
+  //   defaultMessage: 'Privacy Policy',
+  //   href: PRIVACY_POLICY_PAGE,
+  // },
 ];
 // category menu items for header navigation
 export const CATEGORY_MENU_ITEMS = [

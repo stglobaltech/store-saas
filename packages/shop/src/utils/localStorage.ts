@@ -22,15 +22,19 @@ export const setLocalState = (key, value) => {
 
 export const getLocalStateAccessToken = () => {
   try {
-    return localStorage.getItem('access_token');
+    return (
+      localStorage.getItem("accessToken")
+    );
   } catch (err) {
     return undefined;
   }
 };
 
-export const setLocalStateAccessToken = (value) => {
+export const setLocalStateAccessToken = (accessToken, refreshToken, userId) => {
   try {
-    localStorage.setItem('access_token', value);
+    localStorage.setItem("accessToken", accessToken);
+    localStorage.setItem("refreshToken", refreshToken);
+    localStorage.setItem("userId", userId);
   } catch {
     // ignore write errors
   }
@@ -38,7 +42,9 @@ export const setLocalStateAccessToken = (value) => {
 
 export const removeLocalStateAccessToken = () => {
   try {
-    localStorage.removeItem('access_token');
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken");
+    localStorage.removeItem("userId");
   } catch {
     // ignore write errors
   }

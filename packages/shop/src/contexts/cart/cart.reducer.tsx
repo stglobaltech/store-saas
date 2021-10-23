@@ -5,7 +5,7 @@ export const cartItemsTotalPrice = (items, coupon = null) => {
     if (item.salePrice) {
       return total + item.salePrice * item.quantity;
     }
-    return total + item.price * item.quantity;
+    return total + item.price.price * item.quantity;
   }, 0);
   // const discountRate = 1 - discountInPercent;
   const discount = coupon
@@ -18,7 +18,7 @@ export const cartItemsTotalPrice = (items, coupon = null) => {
 // cartItems, cartItemToAdd
 const addItemToCart = (state, action) => {
   const existingCartItemIndex = state.items.findIndex(
-    (item) => item.id === action.payload.id
+    (item) => item._id === action.payload._id
   );
 
   if (existingCartItemIndex > -1) {
@@ -32,7 +32,7 @@ const addItemToCart = (state, action) => {
 // cartItems, cartItemToRemove
 const removeItemFromCart = (state, action) => {
   return state.items.reduce((acc, item) => {
-    if (item.id === action.payload.id) {
+    if (item._id === action.payload._id) {
       const newQuantity = item.quantity - action.payload.quantity;
 
       return newQuantity > 0
@@ -44,7 +44,7 @@ const removeItemFromCart = (state, action) => {
 };
 
 const clearItemFromCart = (state, action) => {
-  return state.items.filter((item) => item.id !== action.payload.id);
+  return state.items.filter((item) => item._id !== action.payload._id);
 };
 
 export const reducer = (state, action) => {

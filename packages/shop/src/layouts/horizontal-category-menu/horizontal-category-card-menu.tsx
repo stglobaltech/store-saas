@@ -27,7 +27,7 @@ interface Props {
 export const HorizontalCategoryCardMenu = ({ type }: Props) => {
   const router = useRouter();
   const { data, loading, error } = useQuery(GET_CATEGORIES, {
-    variables: { type },
+    variables: { storeId:type },
   });
   if (error) return <ErrorMessage message={error.message} />;
   if (loading) return <p>Loading...</p>;
@@ -81,17 +81,17 @@ export const HorizontalCategoryCardMenu = ({ type }: Props) => {
           slidesPerView={7}
           spaceBetween={10}
         >
-          {data.categories.map((category, idx) => (
+          {data.getCategoriesForUser.productCategories.map((category, idx) => (
             <SwiperSlide key={idx}>
               <ItemCard
                 role='button'
-                onClick={() => onCategoryClick(category.slug)}
+                onClick={() => onCategoryClick(category._id)}
                 active={selectedQueries === category.slug}
               >
                 <ImageWrapper>
                   <Image url={category.icon} alt={category.title} />
                 </ImageWrapper>
-                <Title>{category.title}</Title>
+                <Title>{category.name.en}</Title>
               </ItemCard>
             </SwiperSlide>
           ))}

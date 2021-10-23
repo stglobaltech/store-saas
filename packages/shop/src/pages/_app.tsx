@@ -51,7 +51,6 @@ export default function ExtendedApp({ Component, pageProps }) {
                     {...pageProps}
                     deviceType={{ mobile, tablet, desktop }}
                   />
-                  <DemoSwitcher />
                 </AppLayout>
               </AuthProvider>
             </AppProvider>

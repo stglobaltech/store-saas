@@ -141,7 +141,6 @@ export const ProfileProvider: React.FunctionComponent<ProfileProviderProps> = ({
   initData,
 }) => {
   const [state, dispatch] = useReducer(reducer, { ...initData, schedules });
-  // console.log(state, 'profile provider state');
 
   return (
     <ProfileContext.Provider value={{ state, dispatch }}>

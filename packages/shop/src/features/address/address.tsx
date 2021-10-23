@@ -60,7 +60,7 @@ const Address = ({
               id={item.id}
               key={item.id}
               title={item.name}
-              content={item.info}
+              content={item.address}
               name='address'
               checked={item.type === 'primary'}
               onChange={() =>
@@ -73,7 +73,7 @@ const Address = ({
               onDelete={() => handleOnDelete(item)}
             />
           )}
-          secondaryComponent={
+          secondaryComponent={  
             <Button
               {...buttonProps}
               onClick={() => handleModal(UpdateAddress, 'add-address-modal')}

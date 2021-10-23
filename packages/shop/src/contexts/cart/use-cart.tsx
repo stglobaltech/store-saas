@@ -1,6 +1,6 @@
-import React, { useReducer, useContext, createContext } from 'react';
-import { reducer, cartItemsTotalPrice } from './cart.reducer';
-import { useStorage } from 'utils/use-storage';
+import React, { useReducer, useContext, createContext } from "react";
+import { reducer, cartItemsTotalPrice } from "./cart.reducer";
+import { useStorage } from "utils/use-storage";
 const CartContext = createContext({} as any);
 const INITIAL_STATE = {
   isOpen: false,
@@ -13,40 +13,40 @@ const useCartActions = (initialCart = INITIAL_STATE) => {
   const [state, dispatch] = useReducer(reducer, initialCart);
 
   const addItemHandler = (item, quantity = 1) => {
-    dispatch({ type: 'ADD_ITEM', payload: { ...item, quantity } });
+    dispatch({ type: "ADD_ITEM", payload: { ...item, quantity } });
   };
 
   const removeItemHandler = (item, quantity = 1) => {
-    dispatch({ type: 'REMOVE_ITEM', payload: { ...item, quantity } });
+    dispatch({ type: "REMOVE_ITEM", payload: { ...item, quantity } });
   };
 
   const clearItemFromCartHandler = (item) => {
-    dispatch({ type: 'CLEAR_ITEM_FROM_CART', payload: item });
+    dispatch({ type: "CLEAR_ITEM_FROM_CART", payload: item });
   };
 
   const clearCartHandler = () => {
-    dispatch({ type: 'CLEAR_CART' });
+    dispatch({ type: "CLEAR_CART" });
   };
   const toggleCartHandler = () => {
-    dispatch({ type: 'TOGGLE_CART' });
+    dispatch({ type: "TOGGLE_CART" });
   };
   const couponHandler = (coupon) => {
-    dispatch({ type: 'APPLY_COUPON', payload: coupon });
+    dispatch({ type: "APPLY_COUPON", payload: coupon });
   };
   const removeCouponHandler = () => {
-    dispatch({ type: 'REMOVE_COUPON' });
+    dispatch({ type: "REMOVE_COUPON" });
   };
   const rehydrateLocalState = (payload) => {
-    dispatch({ type: 'REHYDRATE', payload });
+    dispatch({ type: "REHYDRATE", payload });
   };
   const toggleRestaurant = () => {
-    dispatch({ type: 'TOGGLE_RESTAURANT' });
+    dispatch({ type: "TOGGLE_RESTAURANT" });
   };
   const isInCartHandler = (id) => {
-    return state.items?.some((item) => item.id === id);
+    return state.items?.some((item) => item._id === id);
   };
   const getItemHandler = (id) => {
-    return state.items?.find((item) => item.id === id);
+    return state.items?.find((item) => item._id === id);
   };
   const getCartItemsPrice = () => cartItemsTotalPrice(state.items).toFixed(2);
   const getCartItemsTotalPrice = () =>

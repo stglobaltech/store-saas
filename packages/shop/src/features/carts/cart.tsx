@@ -79,7 +79,7 @@ const Cart: React.FC<CartPropsType> = ({
           {!!cartItemsCount ? (
             items.map((item) => (
               <CartItem
-                key={`cartItem-${item.id}`}
+                key={`cartItem-${item._id}`}
                 onIncrement={() => addItem(item)}
                 onDecrement={() => removeItem(item)}
                 onRemove={() => removeItemFromCart(item)}

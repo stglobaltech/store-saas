@@ -9,7 +9,6 @@ const INITIAL_STATE = {
 };
 
 function reducer(state: any, action: any) {
-  console.log('contexts -> auth -> authProvider -> reducer:', state);
 
   switch (action.type) {
     case 'SIGNIN':

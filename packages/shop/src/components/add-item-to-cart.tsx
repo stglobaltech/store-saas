@@ -66,7 +66,7 @@ interface Props {
 }
 
 export const AddItemToCart = ({ data, variant, buttonText }: Props) => {
-  const { addItem, removeItem, getItem, isInCart } = useCart();
+  const { addItem, removeItem, getItem, isInCart,items } = useCart();
   const handleAddClick = (e) => {
     e.stopPropagation();
     addItem(data);
@@ -78,7 +78,7 @@ export const AddItemToCart = ({ data, variant, buttonText }: Props) => {
     e.stopPropagation();
     removeItem(data);
   };
-  return !isInCart(data.id) ? (
+  return !isInCart(data._id) ? (
     <Button
       aria-label="add item to cart"
       onClick={handleAddClick}
@@ -103,7 +103,7 @@ export const AddItemToCart = ({ data, variant, buttonText }: Props) => {
     </Button>
   ) : (
     <Counter
-      value={getItem(data.id).quantity}
+      value={getItem(data._id).quantity}
       onDecrement={handleRemoveClick}
       onIncrement={handleAddClick}
       className="card-counter"

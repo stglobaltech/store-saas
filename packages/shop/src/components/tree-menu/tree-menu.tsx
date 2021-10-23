@@ -114,7 +114,7 @@ export const TreeMenu: React.FC<Props> = ({
             active === subOption.slug ||
             subOption.children.some((item) => item.slug === active)
           }
-        >
+        > 
           {handler(subOption.children)}
         </Tree>
       );

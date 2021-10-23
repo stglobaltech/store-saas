@@ -1,11 +1,11 @@
-import groceryImage from 'assets/images/banner/grocery.png';
+import restaurantBanner from "assets/images/banner/restaurant.png";
 
 export const sitePages = {
-  [process.env.NEXT_PUBLIC_STG_CLIENT_ID]: {
-    page_title: 'Store - STG',
-    page_description: 'Grocery Details',
-    banner_title_id: 'groceriesTitle',
-    banner_description_id: 'groceriesSubTitle',
-    banner_image_url: groceryImage,
+  categories: {
+    page_title: "storeCategoriesPageTitle",
+    page_description: "storeCategoriesPageDescription",
+    banner_title_id: "storeCategoriesBannerTitle",
+    banner_description_id: "storeCategoriesDescription",
+    banner_image_url: restaurantBanner,
   },
 };
