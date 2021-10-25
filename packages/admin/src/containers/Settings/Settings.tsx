@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
 import SettingsCard from 'components/SettingsCard/SettingsCard';
 import { useDrawerDispatch } from 'context/DrawerContext';
-import { STAFF_MEMBERS, STORE_SETTINGS } from 'settings/constants';
+import { CONTACT_DETAILS, STORE_SETTINGS } from 'settings/constants';
 import { withStyle } from 'baseui';
 
 import { SiteSettings } from 'assets/icons/SiteSettings';
@@ -59,18 +59,19 @@ export default function Settings() {
       <Row>
         <Col md={6}>
           <SettingsCard
-            icon={<Members />}
-            title="Staff Members"
-            subtitle="Manage your employees and their permission"
-            onClick={() => history.push(STAFF_MEMBERS)}
-          />
-        </Col>
-        <Col md={6}>
-          <SettingsCard
             icon={<SiteSettings />}
             title="Store Settings"
             subtitle="View and update your store settings"
             onClick={() => history.push(STORE_SETTINGS)}
+          />
+        </Col>
+
+        <Col md={6}>
+          <SettingsCard
+            icon={<Members />}
+            title="Contact Address"
+            subtitle="View and update your contact details"
+            onClick={() => history.push(CONTACT_DETAILS)}
           />
         </Col>
       </Row>

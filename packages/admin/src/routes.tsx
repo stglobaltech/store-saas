@@ -9,7 +9,7 @@ import {
   SETTINGS,
   CUSTOMERS,
   COUPONS,
-  STAFF_MEMBERS,
+  CONTACT_DETAILS,
   STORE_SETTINGS,
 } from 'settings/constants';
 import AuthProvider from 'context/auth';
@@ -26,7 +26,7 @@ const Settings = lazy(() => import('containers/Settings/Settings'));
 const StoreSettingForm = lazy(() =>
   import('containers/StoreSettingForm/StoreSettingForm')
 );
-const StaffMembers = lazy(() => import('containers/StaffMembers/StaffMembers'));
+const ContactDetails = lazy(() => import('containers/ContactDetails/ContactDetails'));
 const Customers = lazy(() => import('containers/Customers/Customers'));
 const Coupons = lazy(() => import('containers/Coupons/Coupons'));
 const Login = lazy(() => import('containers/Login/Login'));
@@ -115,10 +115,10 @@ const Routes = () => {
               </Suspense>
             </AdminLayout>
           </PrivateRoute>
-          <PrivateRoute path={STAFF_MEMBERS}>
+          <PrivateRoute path={CONTACT_DETAILS}>
             <AdminLayout>
               <Suspense fallback={<InLineLoader />}>
-                <StaffMembers />
+                <ContactDetails />
               </Suspense>
             </AdminLayout>
           </PrivateRoute>
