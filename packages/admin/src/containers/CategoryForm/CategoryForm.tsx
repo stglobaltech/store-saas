@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import { useForm } from 'react-hook-form';
 import { v4 as uuidv4 } from 'uuid';
-import { useMutation, gql } from '@apollo/client';
+import { useMutation, gql, useQuery } from '@apollo/client';
 import { useDrawerDispatch } from 'context/DrawerContext';
 import { Scrollbars } from 'react-custom-scrollbars';
 import Uploader from 'components/Uploader/Uploader';
@@ -18,83 +18,108 @@ import {
   ButtonGroup,
 } from '../DrawerItems/DrawerItems.style';
 import { FormFields, FormLabel } from 'components/FormFields/FormFields';
+import {
+  GET_PRODUCT_CATEGORIES,
+  M_CREATE_PRODUCT_CATEGORY,
+  Q_GET_STORE_ID,
+} from 'services/GQL';
 
-const GET_CATEGORIES = gql`
-  query getCategories($type: String, $searchBy: String) {
-    categories(type: $type, searchBy: $searchBy) {
-      id
-      icon
-      name
-      slug
-      type
-    }
-  }
-`;
-const CREATE_CATEGORY = gql`
-  mutation createCategory($category: AddCategoryInput!) {
-    createCategory(category: $category) {
-      id
-      name
-      type
-      icon
-      # creation_date
-      slug
-      # number_of_product
-    }
-  }
-`;
+// const GET_CATEGORIES = gql`
+//   query getCategories($type: String, $searchBy: String) {
+//     categories(type: $type, searchBy: $searchBy) {
+//       id
+//       icon
+//       name
+//       slug
+//       type
+//     }
+//   }
+// `;
+// const CREATE_CATEGORY = gql`
+//   mutation createCategory($category: AddCategoryInput!) {
+//     createCategory(category: $category) {
+//       id
+//       name
+//       type
+//       icon
+//       # creation_date
+//       slug
+//       # number_of_product
+//     }
+//   }
+// `;
 
-const options = [
-  { value: 'grocery', name: 'Grocery', id: '1' },
-  { value: 'women-cloths', name: 'Women Cloths', id: '2' },
-  { value: 'bags', name: 'Bags', id: '3' },
-  { value: 'makeup', name: 'Makeup', id: '4' },
-];
+// const options = [
+//   { value: 'grocery', name: 'Grocery', id: '1' },
+//   { value: 'women-cloths', name: 'Women Cloths', id: '2' },
+//   { value: 'bags', name: 'Bags', id: '3' },
+//   { value: 'makeup', name: 'Makeup', id: '4' },
+// ];
 type Props = any;
 
 const AddCategory: React.FC<Props> = (props) => {
+  const {
+    data: { storeId },
+  } = useQuery(Q_GET_STORE_ID);
+
   const dispatch = useDrawerDispatch();
   const closeDrawer = useCallback(() => dispatch({ type: 'CLOSE_DRAWER' }), [
     dispatch,
   ]);
-  const { register, handleSubmit, setValue } = useForm();
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    formState: { errors, isValid },
+  } = useForm({ mode: 'onChange' });
   const [category, setCategory] = useState([]);
   React.useEffect(() => {
     register({ name: 'parent' });
     register({ name: 'image' });
   }, [register]);
-  const [createCategory] = useMutation(CREATE_CATEGORY, {
-    update(cache, { data: { createCategory } }) {
-      const { categories } = cache.readQuery({
-        query: GET_CATEGORIES,
-      });
+  // const [createCategory, { loading }] = useMutation(M_CREATE_CATEGORY, {
+  //   refetchQueries: [
+  //     {
+  //       query: GET_PRODUCT_CATEGORIES,
+  //       variables: { storeId: storeId },
+  //     },
+  //   ],
+  //   onCompleted: (data) => {
+  //     if (data.createCategory.success === true) {
+  //       closeCloneMultipleProductModel();
+  //       toast.success("Category Created Successfully");
+  //     } else {
+  //       toast.error("Category Is Not created");
+  //     }
 
-      cache.writeQuery({
-        query: GET_CATEGORIES,
-        data: { categories: categories.concat([createCategory]) },
-      });
-    },
+  //     toggleLarge();
+  //   },
+  // });
+
+  const [createCategory] = useMutation(M_CREATE_PRODUCT_CATEGORY, {
+    refetchQueries: [
+      {
+        query: GET_PRODUCT_CATEGORIES,
+        variables: { storeId: storeId },
+      },
+    ],
   });
 
-  const onSubmit = ({ name, slug, parent, image }) => {
+  const onSubmit = (values) => {
     const newCategory = {
-      id: uuidv4(),
-      name: name,
-      type: parent[0].value,
-      slug: slug,
-      icon: image,
-      creation_date: new Date(),
+      name: { en: values.categoryName, ar: values.categoryNameRl },
+      isEnable: true,
+      storeCode: storeId,
     };
-    createCategory({
-      variables: { category: newCategory },
-    });
+    createCategory({ variables: { categoryCreateInput: newCategory } });
     closeDrawer();
-    console.log(newCategory, 'newCategory');
   };
-  const handleChange = ({ value }) => {
-    setValue('parent', value);
-    setCategory(value);
-  };
+
+  // const handleChange = ({ value }) => {
+  //   setValue("parent", value);
+  //   setCategory(value);
+  // };
+
   const handleUploader = (files) => {
     setValue('image', files[0].path);
   };
@@ -115,7 +140,7 @@ const AddCategory: React.FC<Props> = (props) => {
             <div
               {...props}
               style={{ display: 'none' }}
-              className="track-horizontal"
+              className='track-horizontal'
             />
           )}
         >
@@ -158,26 +183,68 @@ const AddCategory: React.FC<Props> = (props) => {
                 <FormFields>
                   <FormLabel>Category Name</FormLabel>
                   <Input
-                    inputRef={register({ required: true, maxLength: 20 })}
-                    name="name"
+                    name='categoryName'
+                    inputRef={register({
+                      required: true,
+                      minLength: 3,
+                      maxLength: 20,
+                    })}
                   />
+                  {errors.categoryName && (
+                    <div
+                      style={{
+                        margin: '5px 0 0 auto',
+                        fontFamily: 'Lato, sans-serif',
+                        fontSize: '12px',
+                        fontWeight: 'bold',
+                        color: 'rgb(252, 92, 99)',
+                      }}
+                    >
+                      {errors.categoryName.type === 'required'
+                        ? 'Required'
+                        : (errors.categoryName.type === 'minLength' ||
+                            errors.categoryName.type === 'maxLength') &&
+                          'Store Name must be 3-20 characters'}
+                    </div>
+                  )}
                 </FormFields>
 
                 <FormFields>
-                  <FormLabel>Slug</FormLabel>
+                  <FormLabel>Category Name (Regional Language)</FormLabel>
                   <Input
-                    inputRef={register({ pattern: /^[A-Za-z]+$/i })}
-                    name="slug"
+                    name='categoryNameRl'
+                    inputRef={register({
+                      required: true,
+                      minLength: 3,
+                      maxLength: 20,
+                    })}
                   />
+                  {errors.categoryNameRl && (
+                    <div
+                      style={{
+                        margin: '5px 0 0 auto',
+                        fontFamily: 'Lato, sans-serif',
+                        fontSize: '12px',
+                        fontWeight: 'bold',
+                        color: 'rgb(252, 92, 99)',
+                      }}
+                    >
+                      {errors.categoryNameRl.type === 'required'
+                        ? 'Required'
+                        : (errors.categoryNameRl.type === 'minLength' ||
+                            errors.categoryNameRl.type === 'maxLength') &&
+                          'Store Name must be 3-20 characters'}
+                    </div>
+                  )}
                 </FormFields>
 
-                <FormFields>
+                {/* <FormFields>
                   <FormLabel>Parent</FormLabel>
                   <Select
                     options={options}
-                    labelKey="name"
-                    valueKey="value"
-                    placeholder="Ex: Choose parent category"
+                    labelKey='name'
+                    valueKey='value'
+                    placeholder='Ex: Choose parent category'
                     value={category}
                     searchable={false}
                     onChange={handleChange}
@@ -227,7 +294,7 @@ const AddCategory: React.FC<Props> = (props) => {
                       },
                     }}
                   />
-                </FormFields>
+                  </FormFields>*/}
               </DrawerBox>
             </Col>
           </Row>
@@ -255,7 +322,7 @@ const AddCategory: React.FC<Props> = (props) => {
           </Button>
 
           <Button
-            type="submit"
+            type='submit'
             overrides={{
               BaseButton: {
                 style: ({ $theme }) => ({
