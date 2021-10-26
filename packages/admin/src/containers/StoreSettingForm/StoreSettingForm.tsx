@@ -69,9 +69,6 @@ const StoreSettingsForm: React.FC<Props> = () => {
       setStoreId(getStore._id);
       setValue('storeName', getStore.name ? getStore.name.en : "");
       setValue('description', getStore.description ? getStore.description.en : "");
-      setValue('displayName', getStore.displayName ? getStore.displayName.en : "");
-      setValue('address', getStore.address);
-      setValue('contactNumber', getStore.contactNumber);
     }
   }, [data, setValue])
 
@@ -168,70 +165,6 @@ const StoreSettingsForm: React.FC<Props> = () => {
                   name="description"
                   inputRef={register}
                 />
-              </FormFields>
-
-              <FormFields>
-                <FormLabel>Display Name</FormLabel>
-                <Input
-                  name="displayName"
-                  inputRef={register({ required: true, minLength: 3, maxLength: 20 })}
-                />
-                {errors.displayName &&
-                  <div style={{
-                    margin: "5px 0 0 auto",
-                    fontFamily: "Lato, sans-serif",
-                    fontSize: "12px",
-                    fontWeight: "bold",
-                    color: "rgb(252, 92, 99)"
-                  }}>
-                    {errors.displayName.type === "required" ? "Required" : (
-                      (errors.displayName.type === "minLength" || errors.displayName.type === "maxLength") &&
-                      "Display Name must be 3-20 characters"
-                    )}
-                  </div>
-                }
-              </FormFields>
-
-              <FormFields>
-                <FormLabel>Address</FormLabel>
-                <Input
-                  name="address"
-                  inputRef={register({ required: true })}
-                />
-                {errors.address &&
-                  <div style={{
-                    margin: "5px 0 0 auto",
-                    fontFamily: "Lato, sans-serif",
-                    fontSize: "12px",
-                    fontWeight: "bold",
-                    color: "rgb(252, 92, 99)"
-                  }}>
-                    {errors.address.type === "required" && "Required"}
-                  </div>
-                }
-              </FormFields>
-
-              <FormFields>
-                <FormLabel>Contact Number</FormLabel>
-                <Input
-                  type="number"
-                  name="contactNumber"
-                  inputRef={register({ required: true, minLength: 8, maxLength: 15 })}
-                />
-                {errors.contactNumber &&
-                  <div style={{
-                    margin: "5px 0 0 auto",
-                    fontFamily: "Lato, sans-serif",
-                    fontSize: "12px",
-                    fontWeight: "bold",
-                    color: "rgb(252, 92, 99)"
-                  }}>
-                    {errors.contactNumber.type === "required" ? "Required" : (
-                      (errors.contactNumber.type === "minLength" || errors.contactNumber.type === "maxLength") &&
-                      "Contact Number must be 8-15 characters"
-                    )}
-                  </div>
-                }
               </FormFields>
 
               <Row>
