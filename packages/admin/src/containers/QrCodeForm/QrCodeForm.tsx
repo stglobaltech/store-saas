@@ -74,7 +74,7 @@ const GenerateQrCode: React.FC<Props> = (props) => {
     if(domain && url) {
       setDownloading(true);
       axios({
-        url: `http://api.qrserver.com/v1/create-qr-code/?data=${url}&size=120x120`,
+        url: `https://api.qrserver.com/v1/create-qr-code/?data=${url}&size=120x120`,
         method: "GET",
         responseType: "blob"
       }).then((res: DownloadRes) => {
