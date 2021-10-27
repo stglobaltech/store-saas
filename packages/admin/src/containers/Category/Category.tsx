@@ -5,6 +5,9 @@ import { useDrawerDispatch, useDrawerState } from 'context/DrawerContext';
 import Button from 'components/Button/Button';
 import { useQuery } from '@apollo/client';
 import { Wrapper, Header, Heading } from 'components/Wrapper.style';
+import Select from "components/Select/Select";
+import Input from "components/Input/Input";
+import Checkbox from "components/CheckBox/CheckBox";
 import {
   TableWrapper,
   StyledTable,
@@ -31,7 +34,7 @@ const Col = withStyle(Cols, () => ({
   '@media only screen and (max-width: 767px)': {
     marginBottom: '20px',
 
-    ':last-child': {
+    ":last-child": {
       marginBottom: 0,
     },
   },
@@ -39,8 +42,8 @@ const Col = withStyle(Cols, () => ({
 let OpenDeleteConfirmDrawer;
 
 const Row = withStyle(Rows, () => ({
-  '@media only screen and (min-width: 768px)': {
-    alignItems: 'center',
+  "@media only screen and (min-width: 768px)": {
+    alignItems: "center",
   },
 }));
 
@@ -56,7 +59,7 @@ export default function Category() {
   const [checked, setChecked] = useState(false);
 
   const openDrawer = useCallback(
-    () => dispatch({ type: 'OPEN_DRAWER', drawerComponent: 'CATEGORY_FORM' }),
+    () => dispatch({ type: "OPEN_DRAWER", drawerComponent: "CATEGORY_FORM" }),
     [dispatch]
   );
 
@@ -169,7 +172,7 @@ export default function Category() {
           <Header
             style={{
               marginBottom: 30,
-              boxShadow: '0 0 5px rgba(0, 0 ,0, 0.05)',
+              boxShadow: "0 0 5px rgba(0, 0 ,0, 0.05)",
             }}
           >
             <Col md={2}>
@@ -206,11 +209,11 @@ export default function Category() {
                     overrides={{
                       BaseButton: {
                         style: () => ({
-                          width: '100%',
-                          borderTopLeftRadius: '3px',
-                          borderTopRightRadius: '3px',
-                          borderBottomLeftRadius: '3px',
-                          borderBottomRightRadius: '3px',
+                          width: "100%",
+                          borderTopLeftRadius: "3px",
+                          borderTopRightRadius: "3px",
+                          borderBottomLeftRadius: "3px",
+                          borderBottomRightRadius: "3px",
                         }),
                       },
                     }}
@@ -222,7 +225,7 @@ export default function Category() {
             </Col>
           </Header>
 
-          <Wrapper style={{ boxShadow: '0 0 5px rgba(0, 0 , 0, 0.05)' }}>
+          <Wrapper style={{ boxShadow: "0 0 5px rgba(0, 0 , 0, 0.05)" }}>
             <TableWrapper>
               <StyledTable $gridTemplateColumns='minmax(40px, 400px) minmax(70px, auto) minmax(40px, auto) '>
                 <StyledHeadCell>Id</StyledHeadCell>
@@ -256,8 +259,8 @@ export default function Category() {
                     <NoResult
                       hideButton={false}
                       style={{
-                        gridColumnStart: '1',
-                        gridColumnEnd: 'one',
+                        gridColumnStart: "1",
+                        gridColumnEnd: "one",
                       }}
                     />
                   )

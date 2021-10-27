@@ -1,13 +1,13 @@
 import React, { useCallback } from 'react';
-import { useMutation, useQuery } from '@apollo/client';
 import { useDrawerDispatch, useDrawerState } from 'context/DrawerContext';
 import Button, { KIND } from 'components/Button/Button';
+import { useNotifier } from 'react-headless-notifier';
+import { useMutation, useQuery } from "@apollo/client";
 import {
   DrawerTitleWrapper,
   DrawerTitle,
   ButtonGroup,
-} from '../DrawerItems/DrawerItems.style';
-import { useNotifier } from 'react-headless-notifier';
+} from "../DrawerItems/DrawerItems.style";
 import {
   GET_PRODUCT_CATEGORIES,
   M_DELETE_PRODUCT_CATEGORY,

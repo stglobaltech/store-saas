@@ -35,6 +35,7 @@ const AddCategory: React.FC<Props> = (props) => {
   const closeDrawer = useCallback(() => dispatch({ type: 'CLOSE_DRAWER' }), [
     dispatch,
   ]);
+
   const { notify } = useNotifier();
 
   const {
@@ -43,30 +44,14 @@ const AddCategory: React.FC<Props> = (props) => {
     setValue,
     formState: { errors, isValid },
   } = useForm({ mode: 'onChange' });
+  
   const [category, setCategory] = useState([]);
+  
   React.useEffect(() => {
     register({ name: 'parent' });
     register({ name: 'image' });
   }, [register]);
-  // const [createCategory, { loading }] = useMutation(M_CREATE_CATEGORY, {
-  //   refetchQueries: [
-  //     {
-  //       query: GET_PRODUCT_CATEGORIES,
-  //       variables: { storeId: storeId },
-  //     },
-  //   ],
-  //   onCompleted: (data) => {
-  //     if (data.createCategory.success === true) {
-  //       closeCloneMultipleProductModel();
-  //       toast.success("Category Created Successfully");
-  //     } else {
-  //       toast.error("Category Is Not created");
-  //     }
-
-  //     toggleLarge();
-  //   },
-  // });
-
+  
   const [createCategory] = useMutation(M_CREATE_PRODUCT_CATEGORY, {
     onCompleted: (data) => {
       if (data && data.createCategory)
