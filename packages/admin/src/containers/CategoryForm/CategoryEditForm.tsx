@@ -34,6 +34,7 @@ const EditCategory: React.FC<Props> = () => {
   const category = useDrawerState('data');
 
   const dispatch = useDrawerDispatch();
+
   const closeDrawer = useCallback(() => dispatch({ type: 'CLOSE_DRAWER' }), [
     dispatch,
   ]);
@@ -43,8 +44,7 @@ const EditCategory: React.FC<Props> = () => {
   const {
     register,
     handleSubmit,
-    setValue,
-    formState: { errors, isValid },
+    formState: { errors },
   } = useForm({
     mode: 'onChange',
     defaultValues: {
@@ -52,11 +52,12 @@ const EditCategory: React.FC<Props> = () => {
       categoryNameRl: category.nameAr,
     },
   });
+
   React.useEffect(() => {
     register({ name: 'parent' });
     register({ name: 'image' });
   }, [register]);
-  
+
   const [editCategory] = useMutation(M_EDIT_PRODUCT_CATEGORY, {
     onCompleted: (data) => {
       if (data && data.editCategory)
@@ -92,10 +93,6 @@ const EditCategory: React.FC<Props> = () => {
     closeDrawer();
   };
 
-  // const handleUploader = (files) => {
-  //   setValue('image', files[0].path);
-  // };
-
   return (
     <>
       <DrawerTitleWrapper>
@@ -116,32 +113,6 @@ const EditCategory: React.FC<Props> = () => {
             />
           )}
         >
-          {/* <Row>
-            <Col lg={4}>
-              <FieldDetails>Upload your Category image here</FieldDetails>
-            </Col>
-            <Col lg={8}>
-              <DrawerBox
-                overrides={{
-                  Block: {
-                    style: {
-                      width: '100%',
-                      height: 'auto',
-                      padding: '30px',
-                      borderRadius: '3px',
-                      backgroundColor: '#ffffff',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                    },
-                  },
-                }}
-              >
-                <Uploader onChange={handleUploader} />
-              </DrawerBox>
-            </Col>
-          </Row> */}
-
           <Row>
             <Col lg={4}>
               <FieldDetails>
@@ -149,7 +120,6 @@ const EditCategory: React.FC<Props> = () => {
                 here
               </FieldDetails>
             </Col>
-
             <Col lg={8}>
               <DrawerBox>
                 <FormFields>
@@ -211,69 +181,10 @@ const EditCategory: React.FC<Props> = () => {
                     </div>
                   )}
                 </FormFields>
-
-                {/* <FormFields>
-                  <FormLabel>Parent</FormLabel>
-                  <Select
-                    options={options}
-                    labelKey='name'
-                    valueKey='value'
-                    placeholder='Ex: Choose parent category'
-                    value={category}
-                    searchable={false}
-                    onChange={handleChange}
-                    overrides={{
-                      Placeholder: {
-                        style: ({ $theme }) => {
-                          return {
-                            ...$theme.typography.fontBold14,
-                            color: $theme.colors.textNormal,
-                          };
-                        },
-                      },
-                      DropdownListItem: {
-                        style: ({ $theme }) => {
-                          return {
-                            ...$theme.typography.fontBold14,
-                            color: $theme.colors.textNormal,
-                          };
-                        },
-                      },
-                      OptionContent: {
-                        style: ({ $theme, $selected }) => {
-                          return {
-                            ...$theme.typography.fontBold14,
-                            color: $selected
-                              ? $theme.colors.textDark
-                              : $theme.colors.textNormal,
-                          };
-                        },
-                      },
-                      SingleValue: {
-                        style: ({ $theme }) => {
-                          return {
-                            ...$theme.typography.fontBold14,
-                            color: $theme.colors.textNormal,
-                          };
-                        },
-                      },
-                      Popover: {
-                        props: {
-                          overrides: {
-                            Body: {
-                              style: { zIndex: 5 },
-                            },
-                          },
-                        },
-                      },
-                    }}
-                  />
-                  </FormFields>*/}
               </DrawerBox>
             </Col>
           </Row>
         </Scrollbars>
-
         <ButtonGroup>
           <Button
             kind={KIND.minimal}

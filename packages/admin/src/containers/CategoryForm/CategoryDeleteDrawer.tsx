@@ -19,11 +19,13 @@ import DangerNotification from 'components/Notification/DangerNotification';
 type Props = any;
 
 const DeleteCategory: React.FC<Props> = (props) => {
+  
   const category = useDrawerState('data');
+  
   const {
     data: { storeId },
   } = useQuery(Q_GET_STORE_ID);
-  console.log(category);
+
   const dispatch = useDrawerDispatch();
 
   const closeDrawer = useCallback(() => dispatch({ type: 'CLOSE_DRAWER' }), [
@@ -103,7 +105,6 @@ const DeleteCategory: React.FC<Props> = (props) => {
         >
           Cancel
         </Button>
-
         <Button
           type='button'
           onClick={(e) => handleDelete(e, category)}

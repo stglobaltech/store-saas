@@ -1,6 +1,6 @@
-import React, { useState, useCallback } from 'react';
+import React, { useCallback } from 'react';
 import { useForm } from 'react-hook-form';
-import { useMutation, gql, useQuery } from '@apollo/client';
+import { useMutation, useQuery } from '@apollo/client';
 import { useDrawerDispatch } from 'context/DrawerContext';
 import { Scrollbars } from 'react-custom-scrollbars';
 import Input from 'components/Input/Input';
@@ -32,6 +32,7 @@ const AddCategory: React.FC<Props> = (props) => {
   } = useQuery(Q_GET_STORE_ID);
 
   const dispatch = useDrawerDispatch();
+
   const closeDrawer = useCallback(() => dispatch({ type: 'CLOSE_DRAWER' }), [
     dispatch,
   ]);
@@ -44,14 +45,12 @@ const AddCategory: React.FC<Props> = (props) => {
     setValue,
     formState: { errors, isValid },
   } = useForm({ mode: 'onChange' });
-  
-  const [category, setCategory] = useState([]);
-  
+
   React.useEffect(() => {
     register({ name: 'parent' });
     register({ name: 'image' });
   }, [register]);
-  
+
   const [createCategory] = useMutation(M_CREATE_PRODUCT_CATEGORY, {
     onCompleted: (data) => {
       if (data && data.createCategory)
@@ -87,10 +86,6 @@ const AddCategory: React.FC<Props> = (props) => {
     closeDrawer();
   };
 
-  // const handleUploader = (files) => {
-  //   setValue('image', files[0].path);
-  // };
-
   return (
     <>
       <DrawerTitleWrapper>
@@ -111,32 +106,6 @@ const AddCategory: React.FC<Props> = (props) => {
             />
           )}
         >
-          {/* <Row>
-            <Col lg={4}>
-              <FieldDetails>Upload your Category image here</FieldDetails>
-            </Col>
-            <Col lg={8}>
-              <DrawerBox
-                overrides={{
-                  Block: {
-                    style: {
-                      width: '100%',
-                      height: 'auto',
-                      padding: '30px',
-                      borderRadius: '3px',
-                      backgroundColor: '#ffffff',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                    },
-                  },
-                }}
-              >
-                <Uploader onChange={handleUploader} />
-              </DrawerBox>
-            </Col>
-          </Row> */}
-
           <Row>
             <Col lg={4}>
               <FieldDetails>
@@ -175,7 +144,6 @@ const AddCategory: React.FC<Props> = (props) => {
                     </div>
                   )}
                 </FormFields>
-
                 <FormFields>
                   <FormLabel>Category Name (Regional Language)</FormLabel>
                   <Input
@@ -204,69 +172,10 @@ const AddCategory: React.FC<Props> = (props) => {
                     </div>
                   )}
                 </FormFields>
-
-                {/* <FormFields>
-                  <FormLabel>Parent</FormLabel>
-                  <Select
-                    options={options}
-                    labelKey='name'
-                    valueKey='value'
-                    placeholder='Ex: Choose parent category'
-                    value={category}
-                    searchable={false}
-                    onChange={handleChange}
-                    overrides={{
-                      Placeholder: {
-                        style: ({ $theme }) => {
-                          return {
-                            ...$theme.typography.fontBold14,
-                            color: $theme.colors.textNormal,
-                          };
-                        },
-                      },
-                      DropdownListItem: {
-                        style: ({ $theme }) => {
-                          return {
-                            ...$theme.typography.fontBold14,
-                            color: $theme.colors.textNormal,
-                          };
-                        },
-                      },
-                      OptionContent: {
-                        style: ({ $theme, $selected }) => {
-                          return {
-                            ...$theme.typography.fontBold14,
-                            color: $selected
-                              ? $theme.colors.textDark
-                              : $theme.colors.textNormal,
-                          };
-                        },
-                      },
-                      SingleValue: {
-                        style: ({ $theme }) => {
-                          return {
-                            ...$theme.typography.fontBold14,
-                            color: $theme.colors.textNormal,
-                          };
-                        },
-                      },
-                      Popover: {
-                        props: {
-                          overrides: {
-                            Body: {
-                              style: { zIndex: 5 },
-                            },
-                          },
-                        },
-                      },
-                    }}
-                  />
-                  </FormFields>*/}
               </DrawerBox>
             </Col>
           </Row>
         </Scrollbars>
-
         <ButtonGroup>
           <Button
             kind={KIND.minimal}
