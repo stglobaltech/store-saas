@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import { useForm } from 'react-hook-form';
-import { useMutation, gql, useQuery } from '@apollo/client';
-import { useDrawerDispatch } from 'context/DrawerContext';
+import { useMutation, useQuery } from '@apollo/client';
+import { useDrawerDispatch, useDrawerState } from 'context/DrawerContext';
 import { Scrollbars } from 'react-custom-scrollbars';
 import Input from 'components/Input/Input';
 import Button, { KIND } from 'components/Button/Button';
@@ -18,23 +18,26 @@ import { useNotifier } from 'react-headless-notifier';
 import { FormFields, FormLabel } from 'components/FormFields/FormFields';
 import {
   GET_PRODUCT_CATEGORIES,
-  M_CREATE_PRODUCT_CATEGORY,
+  M_EDIT_PRODUCT_CATEGORY,
   Q_GET_STORE_ID,
 } from 'services/GQL';
-import SuccessNotification from 'components/Notification/SuccessNotification';
 import DangerNotification from 'components/Notification/DangerNotification';
+import SuccessNotification from 'components/Notification/SuccessNotification';
 
 type Props = any;
 
-const AddCategory: React.FC<Props> = (props) => {
+const EditCategory: React.FC<Props> = () => {
   const {
     data: { storeId },
   } = useQuery(Q_GET_STORE_ID);
+
+  const category = useDrawerState('data');
 
   const dispatch = useDrawerDispatch();
   const closeDrawer = useCallback(() => dispatch({ type: 'CLOSE_DRAWER' }), [
     dispatch,
   ]);
+
   const { notify } = useNotifier();
 
   const {
@@ -42,46 +45,27 @@ const AddCategory: React.FC<Props> = (props) => {
     handleSubmit,
     setValue,
     formState: { errors, isValid },
-  } = useForm({ mode: 'onChange' });
-  const [category, setCategory] = useState([]);
+  } = useForm({
+    mode: 'onChange',
+    defaultValues: {
+      categoryName: category.nameEn,
+      categoryNameRl: category.nameAr,
+    },
+  });
   React.useEffect(() => {
     register({ name: 'parent' });
     register({ name: 'image' });
   }, [register]);
-  // const [createCategory, { loading }] = useMutation(M_CREATE_CATEGORY, {
-  //   refetchQueries: [
-  //     {
-  //       query: GET_PRODUCT_CATEGORIES,
-  //       variables: { storeId: storeId },
-  //     },
-  //   ],
-  //   onCompleted: (data) => {
-  //     if (data.createCategory.success === true) {
-  //       closeCloneMultipleProductModel();
-  //       toast.success("Category Created Successfully");
-  //     } else {
-  //       toast.error("Category Is Not created");
-  //     }
-
-  //     toggleLarge();
-  //   },
-  // });
-
-  const [createCategory] = useMutation(M_CREATE_PRODUCT_CATEGORY, {
+  
+  const [editCategory] = useMutation(M_EDIT_PRODUCT_CATEGORY, {
     onCompleted: (data) => {
-      if (data && data.createCategory)
+      if (data && data.editCategory)
         notify(
-          <SuccessNotification
-            message={data.createCategory.message.en}
-            dismiss
-          />
+          <SuccessNotification message={data.editCategory.message.en} dismiss />
         );
       else
         notify(
-          <DangerNotification
-            message={data.createCategory.message.en}
-            dismiss
-          />
+          <DangerNotification message={data.editCategory.message.en} dismiss />
         );
     },
     refetchQueries: [
@@ -93,12 +77,18 @@ const AddCategory: React.FC<Props> = (props) => {
   });
 
   const onSubmit = (values) => {
-    const newCategory = {
-      name: { en: values.categoryName, ar: values.categoryNameRl },
-      isEnable: true,
-      storeCode: storeId,
-    };
-    createCategory({ variables: { categoryCreateInput: newCategory } });
+    editCategory({
+      variables: {
+        categoryEditInput: {
+          _id: `${category.id}`,
+          storeId: storeId,
+          name: {
+            en: `${values.categoryName}`,
+            ar: `${values.categoryNameRl}`,
+          },
+        },
+      },
+    });
     closeDrawer();
   };
 
@@ -109,7 +99,7 @@ const AddCategory: React.FC<Props> = (props) => {
   return (
     <>
       <DrawerTitleWrapper>
-        <DrawerTitle>Add Category</DrawerTitle>
+        <DrawerTitle>Edit Category</DrawerTitle>
       </DrawerTitleWrapper>
 
       <Form onSubmit={handleSubmit(onSubmit)} style={{ height: '100%' }}>
@@ -165,6 +155,7 @@ const AddCategory: React.FC<Props> = (props) => {
                 <FormFields>
                   <FormLabel>Category Name</FormLabel>
                   <Input
+                    placeholder={category.nameEn}
                     name='categoryName'
                     inputRef={register({
                       required: true,
@@ -194,6 +185,7 @@ const AddCategory: React.FC<Props> = (props) => {
                 <FormFields>
                   <FormLabel>Category Name (Regional Language)</FormLabel>
                   <Input
+                    placeholder={category.nameAr}
                     name='categoryNameRl'
                     inputRef={register({
                       required: true,
@@ -317,7 +309,7 @@ const AddCategory: React.FC<Props> = (props) => {
               },
             }}
           >
-            Create Category
+            Edit Category
           </Button>
         </ButtonGroup>
       </Form>
@@ -325,4 +317,4 @@ const AddCategory: React.FC<Props> = (props) => {
   );
 };
 
-export default AddCategory;
+export default EditCategory;
