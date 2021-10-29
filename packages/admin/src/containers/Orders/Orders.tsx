@@ -1,15 +1,10 @@
 import React, { useState } from 'react';
 import { styled, withStyle, createThemedUseStyletron } from 'baseui';
-import dayjs from 'dayjs';
 import { Grid, Row as Rows, Col as Column } from 'components/FlexBox/FlexBox';
 import Select from 'components/Select/Select';
 import Input from 'components/Input/Input';
-import { useQuery, gql } from '@apollo/client';
-import {
-  Wrapper,
-  Header,
-  Heading,
-} from 'components/Wrapper.style';
+import { useQuery } from '@apollo/client';
+import { Wrapper, Header, Heading } from 'components/Wrapper.style';
 import {
   TableWrapper,
   StyledTable,
@@ -62,10 +57,13 @@ const Row = withStyle(Rows, () => ({
 }));
 
 const statusSelectOptions = [
-  { value: 'delivered', label: 'Delivered' },
-  { value: 'pending', label: 'Pending' },
-  { value: 'processing', label: 'Processing' },
-  { value: 'failed', label: 'Failed' },
+  { value: 'FIN', label: 'Finished' },
+  { value: 'PEN', label: 'Pending' },
+  { value: 'EXP', label: 'Expired' },
+  { value: 'CONF', label: 'Confirmed' },
+  { value: 'CAN', label: 'Cancelled' },
+  { value: 'EXP', label: 'Expired' },
+  { value: 'REJ', label: 'Rejected' },
 ];
 const limitSelectOptions = [
   { value: 7, label: 'Last 7 orders' },
@@ -114,12 +112,14 @@ export default function Orders() {
       backgroundColor: theme.colors.blue400,
     },
   });
-
+  // eslint-disable-next-line
   const [status, setStatus] = useState([]);
+  // eslint-disable-next-line
   const [limit, setLimit] = useState([]);
+  // eslint-disable-next-line
   const [search, setSearch] = useState([]);
 
-  const { data, error, refetch, fetchMore } = useQuery(Q_GET_ORDERS, {
+  const { data, error } = useQuery(Q_GET_ORDERS, {
     variables: {
       ordersFindInputDto: orderState.ordersFindInputDto,
     },
@@ -128,8 +128,6 @@ export default function Orders() {
   if (error) {
     return <div>Error! {error.message}</div>;
   }
-
-  
 
   // function handleLimit({ value }) {
   //   setLimit(value);
@@ -151,42 +149,12 @@ export default function Orders() {
   //   refetch({ searchText: value });
   // }
 
-  // function onAllCheck(event) {
-  //   if (event.target.checked) {
-  //     const idx = data && data.orders.map((order) => order.id);
-  //     setCheckedId(idx);
-  //   } else {
-  //     setCheckedId([]);
-  //   }
-  //   setChecked(event.target.checked);
-  // }
-
-  // function handleCheckbox(event) {
-  //   const { name } = event.currentTarget;
-  //   if (!checkedId.includes(name)) {
-  //     setCheckedId((prevState) => [...prevState, name]);
-  //   } else {
-  //     setCheckedId((prevState) => prevState.filter((id) => id !== name));
-  //   }
-  // }
-
   const fetchNextPage = (page) => {
     setOrderState({
       ...orderState,
       ordersFindInputDto: {
         ...orderState.ordersFindInputDto,
         paginate: { page, perPage: 10 },
-      },
-    });
-    return fetchMore({
-      variables: {
-        ordersFindInputDto: {
-          ...orderState.ordersFindInputDto,
-          paginate: { page, perPage: 10 },
-        },
-      },
-      updateQuery: (prev, { fetchMoreResult }) => {
-        return fetchMoreResult;
       },
     });
   };
@@ -245,29 +213,7 @@ export default function Orders() {
 
           <Wrapper style={{ boxShadow: '0 0 5px rgba(0, 0 , 0, 0.05)' }}>
             <TableWrapper>
-              <StyledTable $gridTemplateColumns='minmax(150px, auto) minmax(150px, auto) minmax(120px, auto) minmax(100px, auto) minmax(100px, auto) minmax(150px, auto)'>
-                {/* <StyledHeadCell>
-                  <Checkbox
-                    type='checkbox'
-                    value='checkAll'
-                    checked={checked}
-                    onChange={onAllCheck}
-                    overrides={{
-                      Checkmark: {
-                        style: {
-                          borderTopWidth: '2px',
-                          borderRightWidth: '2px',
-                          borderBottomWidth: '2px',
-                          borderLeftWidth: '2px',
-                          borderTopLeftRadius: '4px',
-                          borderTopRightRadius: '4px',
-                          borderBottomRightRadius: '4px',
-                          borderBottomLeftRadius: '4px',
-                        },
-                      },
-                    }}
-                  />
-                </StyledHeadCell> */}
+              <StyledTable style = {{borderBottom:'0px'}} $gridTemplateColumns='minmax(150px, auto) minmax(150px, auto) minmax(120px, auto) minmax(100px, auto) minmax(100px, auto) minmax(150px, auto)'>
                 <StyledHeadCell>ID</StyledHeadCell>
                 <StyledHeadCell>User Name</StyledHeadCell>
                 <StyledHeadCell>User Contact</StyledHeadCell>
@@ -278,60 +224,30 @@ export default function Orders() {
                   data.gateGetOrders && data.gateGetOrders.orders.length ? (
                     data.gateGetOrders.orders.map((item, index) => (
                       <React.Fragment key={index}>
-                        {/* <StyledCell>
-                            <Checkbox
-                              name={row[1]}
-                              checked={checkedId.includes(row[1])}
-                              onChange={handleCheckbox}
-                              overrides={{
-                                Checkmark: {
-                                  style: {
-                                    borderTopWidth: '2px',
-                                    borderRightWidth: '2px',
-                                    borderBottomWidth: '2px',
-                                    borderLeftWidth: '2px',
-                                    borderTopLeftRadius: '4px',
-                                    borderTopRightRadius: '4px',
-                                    borderBottomRightRadius: '4px',
-                                    borderBottomLeftRadius: '4px',
-                                  },
-                                },
-                              }}
-                            />
-                          </StyledCell> */}
                         <StyledCell>{item.shortOrderId}</StyledCell>
                         <StyledCell>{item.user.name}</StyledCell>
                         <StyledCell>{item.user.mobile}</StyledCell>
-                        <StyledCell>{item.orderCart.totalPrice.toFixed()}</StyledCell>
-                        <StyledCell>{item.status}</StyledCell>
+                        <StyledCell>
+                          {item.orderCart.totalPrice.toFixed()}
+                        </StyledCell>
+                        <StyledCell>
+                          <Status
+                            className={
+                              item.status === 'FIN'
+                                ? sent
+                                : item.status === 'CONF'
+                                ? paid
+                                : item.status === 'PEN'
+                                ? processing
+                                : failed
+                            }
+                          >
+                            {item.status}
+                          </Status>
+                        </StyledCell>
                         <StyledCell>
                           {new Date(item.createdAt).toLocaleString()}
                         </StyledCell>
-
-                        {/* <StyledCell>
-                            {dayjs(row[3]).format('DD MMM YYYY')}
-                          </StyledCell>
-                          <StyledCell>{row[4]}</StyledCell>
-                          <StyledCell>${row[5]}</StyledCell>
-                          <StyledCell>{row[6]}</StyledCell>
-                          <StyledCell>{row[7]}</StyledCell>
-                          <StyledCell style={{ justifyContent: 'center' }}>
-                            <Status
-                              className={
-                                row[8].toLowerCase() === 'delivered'
-                                  ? sent
-                                  : row[8].toLowerCase() === 'pending'
-                                  ? paid
-                                  : row[8].toLowerCase() === 'processing'
-                                  ? processing
-                                  : row[8].toLowerCase() === 'failed'
-                                  ? failed
-                                  : ''
-                              }
-                            >
-                              {row[8]}
-                            </Status>
-                          </StyledCell> */}
                       </React.Fragment>
                     ))
                   ) : (
@@ -353,6 +269,19 @@ export default function Orders() {
                   style={{ display: 'flex', justifyContent: 'center' }}
                 >
                   <Button
+                    overrides={{
+                      BaseButton: {
+                        style: ({ $theme }) => ({
+                          marginTop:'0px',
+                          height: '25px',
+                          marginRight: '5px',
+                          borderTopLeftRadius: '3px',
+                          borderTopRightRadius: '3px',
+                          borderBottomLeftRadius: '3px',
+                          borderBottomRightRadius: '3px',
+                        }),
+                      },
+                    }}
                     disabled={!data.gateGetOrders.pagination.hasPrevPage}
                     onClick={() =>
                       fetchNextPage(
@@ -362,8 +291,34 @@ export default function Orders() {
                   >
                     Prev
                   </Button>
-                  <Button>{data.gateGetOrders.pagination.page}</Button>
                   <Button
+                    overrides={{
+                      BaseButton: {
+                        style: ({ $theme }) => ({
+                          height: '25px',
+                          marginRight: '5px',
+                          borderTopLeftRadius: '3px',
+                          borderTopRightRadius: '3px',
+                          borderBottomLeftRadius: '3px',
+                          borderBottomRightRadius: '3px',
+                        }),
+                      },
+                    }}
+                  >
+                    {data.gateGetOrders.pagination.page}
+                  </Button>
+                  <Button
+                    overrides={{
+                      BaseButton: {
+                        style: ({ $theme }) => ({
+                          height: '25px',
+                          borderTopLeftRadius: '3px',
+                          borderTopRightRadius: '3px',
+                          borderBottomLeftRadius: '3px',
+                          borderBottomRightRadius: '3px',
+                        }),
+                      },
+                    }}
                     disabled={!data.gateGetOrders.pagination.hasNextPage}
                     onClick={() =>
                       fetchNextPage(
