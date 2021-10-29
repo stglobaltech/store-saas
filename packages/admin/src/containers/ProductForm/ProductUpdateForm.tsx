@@ -17,8 +17,11 @@ import {
   FieldDetails,
   ButtonGroup,
 } from '../DrawerItems/DrawerItems.style';
-import { useQuery } from '@apollo/client';
-import { Q_GET_STORE_ID } from 'services/GQL';
+import { useQuery, useMutation } from '@apollo/client';
+import { Q_GET_STORE_ID, M_EDIT_PRODUCT } from 'services/GQL';
+import { useNotifier } from 'react-headless-notifier';
+import SuccessNotification from '../../components/Notification/SuccessNotification';
+import DangerNotification from '../../components/Notification/DangerNotification';
 
 interface imgUploadRes {[
   urlText: string
@@ -32,8 +35,10 @@ const AddProduct: React.FC<Props> = () => {
     dispatch,
   ]);
 
+  const { notify } = useNotifier();
+
   const data = useDrawerState('data');
-  const { doUpdate, updating } = data;
+  const { queryToRefetch } = data;
 
   const { data: { storeId } } = useQuery(Q_GET_STORE_ID);
 
@@ -54,6 +59,29 @@ const AddProduct: React.FC<Props> = () => {
     price: data.price.price,
     priceWithoutVat: data.price.basePrice,
     vatPrice: data.price.vatPrice
+  });
+
+  const [doUpdate, { loading: updating }] = useMutation(M_EDIT_PRODUCT, {
+    onCompleted: (data) => {
+      closeDrawer();
+      if (data.editProduct.success) {
+        notify(
+          <SuccessNotification
+            message={data.editProduct.message.en}
+            dismiss
+          />
+        );
+        
+        queryToRefetch();
+      }
+      else
+        notify(
+          <DangerNotification
+            message={data.editProduct.message.en}
+            dismiss
+          />
+        );
+    }
   });
 
   const uploadImage = (files) => {

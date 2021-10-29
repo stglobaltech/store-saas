@@ -4,7 +4,7 @@ import Button from 'components/Button/Button';
 import { Grid, Row as Rows, Col as Column } from 'components/FlexBox/FlexBox';
 import Input from 'components/Input/Input';
 import Select from 'components/Select/Select';
-import { useQuery, useLazyQuery, useMutation } from '@apollo/client';
+import { useQuery, useLazyQuery } from '@apollo/client';
 import { Header, Heading } from 'components/Wrapper.style';
 import Fade from 'react-reveal/Fade';
 import ProductCard from 'components/ProductCard/ProductCard';
@@ -12,16 +12,11 @@ import NoResult from 'components/NoResult/NoResult';
 import { CURRENCY } from 'settings/constants';
 import Placeholder from 'components/Placeholder/Placeholder';
 import { useDrawerDispatch } from 'context/DrawerContext';
-import { useNotifier } from 'react-headless-notifier';
-import SuccessNotification from '../../components/Notification/SuccessNotification';
-import DangerNotification from '../../components/Notification/DangerNotification';
 import {
   Q_GET_STORE_ID,
   Q_GET_CATEGORIES,
   Q_GET_PRODUCTS_BASED_ON_STORE,
-  Q_GET_PRODUCTS_BASED_ON_CATEGORY,
-  M_CREATE_PRODUCT,
-  M_EDIT_PRODUCT
+  Q_GET_PRODUCTS_BASED_ON_CATEGORY
 } from 'services/GQL';
 
 export const ProductsRow = styled('div', ({ $theme }) => ({
@@ -79,12 +74,6 @@ export default function Products() {
     [dispatch]
   );
 
-  const closeDrawer = useCallback(() => dispatch({ type: 'CLOSE_DRAWER' }), [
-    dispatch,
-  ]);
-
-  const { notify } = useNotifier();
-
   const { data: { storeId } } = useQuery(Q_GET_STORE_ID);
 
   const [categories, setCategories] = useState([]);
@@ -130,58 +119,6 @@ export default function Products() {
   const [getCategoryBasedProducts, {
     data: categoryBasedData, loading: categoryBasedLoading, error: categoryBasedError, refetch: categoryBasedRefetch
   }] = useLazyQuery(Q_GET_PRODUCTS_BASED_ON_CATEGORY);
-
-  const [doCreate, { loading: saving }] = useMutation(M_CREATE_PRODUCT, {
-    onCompleted: (data) => {
-      closeDrawer();
-      if (data.createProduct) {
-        notify(
-          <SuccessNotification
-            message="Product Created Successfully"
-            dismiss
-          />
-        );
-
-        if(category.length)
-          categoryBasedRefetch();
-        else
-          storeBasedRefetch();
-      }
-      else
-        notify(
-          <DangerNotification
-            message="Product Is Not Created"
-            dismiss
-          />
-        );
-    }
-  });
-
-  const [doUpdate, { loading: updating }] = useMutation(M_EDIT_PRODUCT, {
-    onCompleted: (data) => {
-      closeDrawer();
-      if (data.editProduct.success) {
-        notify(
-          <SuccessNotification
-            message={data.editProduct.message.en}
-            dismiss
-          />
-        );
-
-        if(category.length)
-          categoryBasedRefetch();
-        else
-          storeBasedRefetch();
-      }
-      else
-        notify(
-          <DangerNotification
-            message={data.editProduct.message.en}
-            dismiss
-          />
-        );
-    }
-  });
 
   useEffect(() => {
     if(category.length && categoryBasedData) {
@@ -285,7 +222,7 @@ export default function Products() {
 
                 <Col md={3} xs={12}>
                   <Button
-                    onClick={() => openCreateDrawer({doCreate, saving})}
+                    onClick={() => openCreateDrawer({queryToRefetch: category.length ? categoryBasedRefetch : storeBasedRefetch})}
                     overrides={{
                       BaseButton: {
                         style: () => ({
@@ -323,7 +260,9 @@ export default function Products() {
                         image={item.picture}
                         currency={CURRENCY}
                         price={item.price.price}
-                        data={{...item, doUpdate, updating}}
+                        data={{...item,
+                          queryToRefetch: category.length ? categoryBasedRefetch : storeBasedRefetch
+                        }}
                       />
                     </Fade>
                   </Col>

@@ -11,7 +11,7 @@ import { Textarea } from 'components/Textarea/Textarea';
 import Select from 'components/Select/Select';
 import { FormFields, FormLabel } from 'components/FormFields/FormFields';
 import { uploadFile } from 'services/REST/restaurant.service';
-import { useQuery } from '@apollo/client';
+import { useQuery, useMutation } from '@apollo/client';
 import {
   Form,
   DrawerTitleWrapper,
@@ -23,8 +23,12 @@ import {
   Q_GET_STORE_ID,
   Q_GET_USER_ID,
   Q_GET_PARENTRESTAURANTID,
-  Q_GET_CATEGORIES
+  Q_GET_CATEGORIES,
+  M_CREATE_PRODUCT
 } from 'services/GQL';
+import { useNotifier } from 'react-headless-notifier';
+import SuccessNotification from '../../components/Notification/SuccessNotification';
+import DangerNotification from '../../components/Notification/DangerNotification';
 
 interface imgUploadRes {[
   urlText: string
@@ -38,8 +42,10 @@ const AddProduct: React.FC<Props> = (props) => {
     dispatch,
   ]);
 
+  const { notify } = useNotifier();
+
   const data = useDrawerState('data');
-  const { doCreate, saving } = data;
+  const { queryToRefetch } = data;
 
   const { data: { storeId } } = useQuery(Q_GET_STORE_ID);
   const { data: { userId } } = useQuery(Q_GET_USER_ID);
@@ -70,6 +76,29 @@ const AddProduct: React.FC<Props> = (props) => {
 
         setCategories(categoryOptions);
       }
+    }
+  });
+
+  const [doCreate, { loading: saving }] = useMutation(M_CREATE_PRODUCT, {
+    onCompleted: (data) => {
+      closeDrawer();
+      if (data.createProduct) {
+        notify(
+          <SuccessNotification
+            message="Product Created Successfully"
+            dismiss
+          />
+        );
+
+        queryToRefetch();
+      }
+      else
+        notify(
+          <DangerNotification
+            message="Product Is Not Created"
+            dismiss
+          />
+        );
     }
   });
 
