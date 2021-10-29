@@ -13,7 +13,7 @@ import {
 } from './Orders.style';
 import NoResult from 'components/NoResult/NoResult';
 import { Q_GET_ORDERS, Q_GET_STORE_ID } from 'services/GQL';
-import { Button } from 'baseui/button';
+import Pagination from 'components/Pagination/Pagination';
 
 type CustomThemeT = { red400: string; textNormal: string; colors: any };
 const themedUseStyletron = createThemedUseStyletron<CustomThemeT>();
@@ -119,7 +119,7 @@ export default function Orders() {
   // eslint-disable-next-line
   const [search, setSearch] = useState([]);
 
-  const { data, error } = useQuery(Q_GET_ORDERS, {
+  const { data, loading, error } = useQuery(Q_GET_ORDERS, {
     variables: {
       ordersFindInputDto: orderState.ordersFindInputDto,
     },
@@ -159,181 +159,159 @@ export default function Orders() {
     });
   };
 
+  let loadingContent,
+    errorContent,
+    hasNextPage = false,
+    hasPrevPage = false,
+    page;
+
+  if (loading)
+    loadingContent = (
+      <div>
+        <p>Loading</p>
+      </div>
+    );
+  else if (error)
+    errorContent = <div className='text-center'>Error Fetching Data</div>;
+  else {
+    const {
+      gateGetOrders: { pagination },
+    } = data;
+    hasNextPage = pagination.hasNextPage;
+    hasPrevPage = pagination.hasPrevPage;
+    page = pagination.page;
+  }
+
   return (
     <Grid fluid={true}>
-      <Row>
-        <Col md={12}>
-          <Header
-            style={{
-              marginBottom: 30,
-              boxShadow: '0 0 8px rgba(0, 0 ,0, 0.1)',
-            }}
-          >
-            <Col md={3} xs={12}>
-              <Heading>Orders</Heading>
-            </Col>
+      {error ? (
+        errorContent
+      ) : loading ? (
+        loadingContent
+      ) : (
+        <Row>
+          <Col md={12}>
+            <Header
+              style={{
+                marginBottom: 30,
+                boxShadow: '0 0 8px rgba(0, 0 ,0, 0.1)',
+              }}
+            >
+              <Col md={3} xs={12}>
+                <Heading>Orders</Heading>
+              </Col>
 
-            <Col md={9} xs={12}>
-              <Row>
-                <Col md={3} xs={12}>
-                  <Select
-                    options={statusSelectOptions}
-                    labelKey='label'
-                    valueKey='value'
-                    placeholder='Status'
-                    value={status}
-                    searchable={false}
-                    // onChange={handleStatus}
-                  />
-                </Col>
-
-                <Col md={3} xs={12}>
-                  <Select
-                    options={limitSelectOptions}
-                    labelKey='label'
-                    valueKey='value'
-                    value={limit}
-                    placeholder='Order Limits'
-                    searchable={false}
-                    // onChange={handleLimit}
-                  />
-                </Col>
-
-                <Col md={6} xs={12}>
-                  <Input
-                    value={search}
-                    placeholder='Ex: Search By Address'
-                    // onChange={handleSearch}
-                    clearable
-                  />
-                </Col>
-              </Row>
-            </Col>
-          </Header>
-
-          <Wrapper style={{ boxShadow: '0 0 5px rgba(0, 0 , 0, 0.05)' }}>
-            <TableWrapper>
-              <StyledTable style = {{borderBottom:'0px'}} $gridTemplateColumns='minmax(150px, auto) minmax(150px, auto) minmax(120px, auto) minmax(100px, auto) minmax(100px, auto) minmax(150px, auto)'>
-                <StyledHeadCell>ID</StyledHeadCell>
-                <StyledHeadCell>User Name</StyledHeadCell>
-                <StyledHeadCell>User Contact</StyledHeadCell>
-                <StyledHeadCell>Amount</StyledHeadCell>
-                <StyledHeadCell>Status</StyledHeadCell>
-                <StyledHeadCell>Time</StyledHeadCell>
-                {data ? (
-                  data.gateGetOrders && data.gateGetOrders.orders.length ? (
-                    data.gateGetOrders.orders.map((item, index) => (
-                      <React.Fragment key={index}>
-                        <StyledCell>{item.shortOrderId}</StyledCell>
-                        <StyledCell>{item.user.name}</StyledCell>
-                        <StyledCell>{item.user.mobile}</StyledCell>
-                        <StyledCell>
-                          {item.orderCart.totalPrice.toFixed()}
-                        </StyledCell>
-                        <StyledCell>
-                          <Status
-                            className={
-                              item.status === 'FIN'
-                                ? sent
-                                : item.status === 'CONF'
-                                ? paid
-                                : item.status === 'PEN'
-                                ? processing
-                                : failed
-                            }
-                          >
-                            {item.status}
-                          </Status>
-                        </StyledCell>
-                        <StyledCell>
-                          {new Date(item.createdAt).toLocaleString()}
-                        </StyledCell>
-                      </React.Fragment>
-                    ))
-                  ) : (
-                    <NoResult
-                      hideButton={false}
-                      style={{
-                        gridColumnStart: '1',
-                        gridColumnEnd: 'one',
-                      }}
+              <Col md={9} xs={12}>
+                <Row>
+                  <Col md={3} xs={12}>
+                    <Select
+                      options={statusSelectOptions}
+                      labelKey='label'
+                      valueKey='value'
+                      placeholder='Status'
+                      value={status}
+                      searchable={false}
+                      // onChange={handleStatus}
                     />
-                  )
-                ) : null}
-              </StyledTable>
-            </TableWrapper>
-            {data && data.gateGetOrders && data.gateGetOrders.pagination && (
-              <Row>
-                <Col
-                  md={12}
-                  style={{ display: 'flex', justifyContent: 'center' }}
+                  </Col>
+
+                  <Col md={3} xs={12}>
+                    <Select
+                      options={limitSelectOptions}
+                      labelKey='label'
+                      valueKey='value'
+                      value={limit}
+                      placeholder='Order Limits'
+                      searchable={false}
+                      // onChange={handleLimit}
+                    />
+                  </Col>
+
+                  <Col md={6} xs={12}>
+                    <Input
+                      value={search}
+                      placeholder='Ex: Search By Address'
+                      // onChange={handleSearch}
+                      clearable
+                    />
+                  </Col>
+                </Row>
+              </Col>
+            </Header>
+
+            <Wrapper style={{ boxShadow: '0 0 5px rgba(0, 0 , 0, 0.05)' }}>
+              <TableWrapper>
+                <StyledTable
+                  style={{ borderBottom: '0px' }}
+                  $gridTemplateColumns='minmax(150px, auto) minmax(150px, auto) minmax(120px, auto) minmax(100px, auto) minmax(100px, auto) minmax(150px, auto)'
                 >
-                  <Button
-                    overrides={{
-                      BaseButton: {
-                        style: ({ $theme }) => ({
-                          marginTop:'0px',
-                          height: '25px',
-                          marginRight: '5px',
-                          borderTopLeftRadius: '3px',
-                          borderTopRightRadius: '3px',
-                          borderBottomLeftRadius: '3px',
-                          borderBottomRightRadius: '3px',
-                        }),
-                      },
-                    }}
-                    disabled={!data.gateGetOrders.pagination.hasPrevPage}
-                    onClick={() =>
-                      fetchNextPage(
-                        orderState.ordersFindInputDto.paginate.page - 1
-                      )
-                    }
+                  <StyledHeadCell>ID</StyledHeadCell>
+                  <StyledHeadCell>User Name</StyledHeadCell>
+                  <StyledHeadCell>User Contact</StyledHeadCell>
+                  <StyledHeadCell>Amount</StyledHeadCell>
+                  <StyledHeadCell>Status</StyledHeadCell>
+                  <StyledHeadCell>Time</StyledHeadCell>
+                  {data ? (
+                    data.gateGetOrders && data.gateGetOrders.orders.length ? (
+                      data.gateGetOrders.orders.map((item, index) => (
+                        <React.Fragment key={index}>
+                          <StyledCell>{item.shortOrderId}</StyledCell>
+                          <StyledCell>{item.user.name}</StyledCell>
+                          <StyledCell>{item.user.mobile}</StyledCell>
+                          <StyledCell>
+                            {item.orderCart.totalPrice.toFixed()}
+                          </StyledCell>
+                          <StyledCell>
+                            <Status
+                              className={
+                                item.status === 'FIN'
+                                  ? sent
+                                  : item.status === 'CONF'
+                                  ? paid
+                                  : item.status === 'PEN'
+                                  ? processing
+                                  : failed
+                              }
+                            >
+                              {item.status}
+                            </Status>
+                          </StyledCell>
+                          <StyledCell>
+                            {new Date(item.createdAt).toLocaleString()}
+                          </StyledCell>
+                        </React.Fragment>
+                      ))
+                    ) : (
+                      <NoResult
+                        hideButton={false}
+                        style={{
+                          gridColumnStart: '1',
+                          gridColumnEnd: 'one',
+                        }}
+                      />
+                    )
+                  ) : null}
+                </StyledTable>
+              </TableWrapper>
+              {data && data.gateGetOrders && data.gateGetOrders.pagination && (
+                <Row>
+                  <Col
+                    md={12}
+                    style={{ display: 'flex', justifyContent: 'center' }}
                   >
-                    Prev
-                  </Button>
-                  <Button
-                    overrides={{
-                      BaseButton: {
-                        style: ({ $theme }) => ({
-                          height: '25px',
-                          marginRight: '5px',
-                          borderTopLeftRadius: '3px',
-                          borderTopRightRadius: '3px',
-                          borderBottomLeftRadius: '3px',
-                          borderBottomRightRadius: '3px',
-                        }),
-                      },
-                    }}
-                  >
-                    {data.gateGetOrders.pagination.page}
-                  </Button>
-                  <Button
-                    overrides={{
-                      BaseButton: {
-                        style: ({ $theme }) => ({
-                          height: '25px',
-                          borderTopLeftRadius: '3px',
-                          borderTopRightRadius: '3px',
-                          borderBottomLeftRadius: '3px',
-                          borderBottomRightRadius: '3px',
-                        }),
-                      },
-                    }}
-                    disabled={!data.gateGetOrders.pagination.hasNextPage}
-                    onClick={() =>
-                      fetchNextPage(
-                        orderState.ordersFindInputDto.paginate.page + 1
-                      )
-                    }
-                  >
-                    Next
-                  </Button>
-                </Col>
-              </Row>
-            )}
-          </Wrapper>
-        </Col>
-      </Row>
+                    <Pagination
+                      fetchMore={fetchNextPage}
+                      hasPrevPage={hasPrevPage}
+                      hasNextPage={hasNextPage}
+                      currentPage={page}
+                    />
+                  </Col>
+                </Row>
+              )}
+            </Wrapper>
+          </Col>
+        </Row>
+      )}
     </Grid>
   );
 }
