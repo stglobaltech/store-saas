@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { styled, withStyle, createThemedUseStyletron } from 'baseui';
 import { Grid, Row as Rows, Col as Column } from 'components/FlexBox/FlexBox';
 import Select from 'components/Select/Select';
@@ -14,6 +14,7 @@ import {
 import NoResult from 'components/NoResult/NoResult';
 import { Q_GET_ORDERS, Q_GET_STORE_ID } from 'services/GQL';
 import Pagination from 'components/Pagination/Pagination';
+import { useDrawerDispatch } from 'context/DrawerContext';
 
 type CustomThemeT = { red400: string; textNormal: string; colors: any };
 const themedUseStyletron = createThemedUseStyletron<CustomThemeT>();
@@ -72,6 +73,9 @@ const limitSelectOptions = [
 ];
 
 export default function Orders() {
+  
+  const dispatch = useDrawerDispatch();
+
   const {
     data: { storeId },
   } = useQuery(Q_GET_STORE_ID);
@@ -82,6 +86,16 @@ export default function Orders() {
       paginate: { page: 1, perPage: 10 },
     },
   });
+
+  const openDrawer = useCallback(
+    (item) =>
+      dispatch({
+        type: 'OPEN_DRAWER',
+        drawerComponent: 'ORDER_DETAIL_CARD',
+        data: item,
+      }),
+    [dispatch]
+  );
 
   const [useCss, theme] = themedUseStyletron();
 
@@ -168,7 +182,7 @@ export default function Orders() {
   if (loading)
     loadingContent = (
       <div>
-        <p>Loading</p>
+        <h5>Loading...</h5>
       </div>
     );
   else if (error)
@@ -200,7 +214,6 @@ export default function Orders() {
               <Col md={3} xs={12}>
                 <Heading>Orders</Heading>
               </Col>
-
               <Col md={9} xs={12}>
                 <Row>
                   <Col md={3} xs={12}>
@@ -214,7 +227,6 @@ export default function Orders() {
                       // onChange={handleStatus}
                     />
                   </Col>
-
                   <Col md={3} xs={12}>
                     <Select
                       options={limitSelectOptions}
@@ -226,7 +238,6 @@ export default function Orders() {
                       // onChange={handleLimit}
                     />
                   </Col>
-
                   <Col md={6} xs={12}>
                     <Input
                       value={search}
@@ -238,7 +249,6 @@ export default function Orders() {
                 </Row>
               </Col>
             </Header>
-
             <Wrapper style={{ boxShadow: '0 0 5px rgba(0, 0 , 0, 0.05)' }}>
               <TableWrapper>
                 <StyledTable
@@ -255,7 +265,12 @@ export default function Orders() {
                     data.gateGetOrders && data.gateGetOrders.orders.length ? (
                       data.gateGetOrders.orders.map((item, index) => (
                         <React.Fragment key={index}>
-                          <StyledCell>{item.shortOrderId}</StyledCell>
+                          <StyledCell
+                            onClick={() => openDrawer(item)}
+                            style={{ cursor: 'pointer' }}
+                          >
+                            {item.shortOrderId}
+                          </StyledCell>
                           <StyledCell>{item.user.name}</StyledCell>
                           <StyledCell>{item.user.mobile}</StyledCell>
                           <StyledCell>

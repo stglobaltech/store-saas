@@ -9,10 +9,18 @@ export const Q_GET_ORDERS = gql`
         shortOrderId
         orderType
         user {
+          address
           name
           mobile
         }
+        store {
+          name {
+            en
+            ar
+          }
+        }
         createdAt
+        userId
         orderCart {
           totalPrice
         }

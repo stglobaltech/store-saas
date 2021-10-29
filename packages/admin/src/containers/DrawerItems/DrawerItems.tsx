@@ -12,6 +12,7 @@ import CategoryForm from '../CategoryForm/CategoryForm';
 import StaffMemberForm from '../StaffMemberForm/StaffMemberForm';
 import QrCodeForm from '../QrCodeForm/QrCodeForm';
 import Sidebar from '../Layout/Sidebar/Sidebar';
+import OrderDetail from '../Orders/OrderDetailsDrawer';
 
 /** Components Name Constants */
 const DRAWER_COMPONENTS = {
@@ -21,6 +22,7 @@ const DRAWER_COMPONENTS = {
   CATEGORY_FORM: CategoryForm,
   STAFF_MEMBER_FORM: StaffMemberForm,
   QR_CODE_FORM: QrCodeForm,
+  ORDER_DETAIL_CARD: OrderDetail,
   SIDEBAR: Sidebar,
 };
 
@@ -104,7 +106,7 @@ export default function DrawerItems() {
         Close: {
           component: () => (
             <CloseButton onClick={closeDrawer}>
-              <CloseIcon width="6px" height="6px" />
+              <CloseIcon width='6px' height='6px' />
             </CloseButton>
           ),
         },
