@@ -48,8 +48,8 @@ const EditCategory: React.FC<Props> = () => {
   } = useForm({
     mode: 'onChange',
     defaultValues: {
-      categoryName: category.nameEn,
-      categoryNameRl: category.nameAr,
+      categoryName: category.name.en,
+      categoryNameRl: category.name.ar,
     },
   });
 
@@ -58,8 +58,9 @@ const EditCategory: React.FC<Props> = () => {
     register({ name: 'image' });
   }, [register]);
 
-  const [editCategory] = useMutation(M_EDIT_PRODUCT_CATEGORY, {
+  const [editCategory, { loading: updating }] = useMutation(M_EDIT_PRODUCT_CATEGORY, {
     onCompleted: (data) => {
+      closeDrawer();
       if (data && data.editCategory)
         notify(
           <SuccessNotification message={data.editCategory.message.en} dismiss />
@@ -81,16 +82,15 @@ const EditCategory: React.FC<Props> = () => {
     editCategory({
       variables: {
         categoryEditInput: {
-          _id: `${category.id}`,
-          storeId: storeId,
+          _id: category._id,
+          storeId,
           name: {
-            en: `${values.categoryName}`,
-            ar: `${values.categoryNameRl}`,
+            en: values.categoryName,
+            ar: values.categoryNameRl,
           },
         },
       },
     });
-    closeDrawer();
   };
 
   return (
@@ -125,7 +125,7 @@ const EditCategory: React.FC<Props> = () => {
                 <FormFields>
                   <FormLabel>Category Name</FormLabel>
                   <Input
-                    placeholder={category.nameEn}
+                    placeholder={category.name.en}
                     name='categoryName'
                     inputRef={register({
                       required: true,
@@ -155,7 +155,7 @@ const EditCategory: React.FC<Props> = () => {
                 <FormFields>
                   <FormLabel>Category Name (Regional Language)</FormLabel>
                   <Input
-                    placeholder={category.nameAr}
+                    placeholder={category.name.ar}
                     name='categoryNameRl'
                     inputRef={register({
                       required: true,
@@ -187,6 +187,7 @@ const EditCategory: React.FC<Props> = () => {
         </Scrollbars>
         <ButtonGroup>
           <Button
+            type="button"
             kind={KIND.minimal}
             onClick={closeDrawer}
             overrides={{
@@ -208,6 +209,7 @@ const EditCategory: React.FC<Props> = () => {
 
           <Button
             type='submit'
+            disabled={updating}
             overrides={{
               BaseButton: {
                 style: ({ $theme }) => ({
@@ -220,7 +222,7 @@ const EditCategory: React.FC<Props> = () => {
               },
             }}
           >
-            Edit Category
+            {updating ? "Updating" : "Edit Category"}
           </Button>
         </ButtonGroup>
       </Form>

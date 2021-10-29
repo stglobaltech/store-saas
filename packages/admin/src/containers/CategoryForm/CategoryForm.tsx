@@ -42,8 +42,7 @@ const AddCategory: React.FC<Props> = (props) => {
   const {
     register,
     handleSubmit,
-    setValue,
-    formState: { errors, isValid },
+    formState: { errors },
   } = useForm({ mode: 'onChange' });
 
   React.useEffect(() => {
@@ -51,8 +50,9 @@ const AddCategory: React.FC<Props> = (props) => {
     register({ name: 'image' });
   }, [register]);
 
-  const [createCategory] = useMutation(M_CREATE_PRODUCT_CATEGORY, {
+  const [createCategory, { loading: saving }] = useMutation(M_CREATE_PRODUCT_CATEGORY, {
     onCompleted: (data) => {
+      closeDrawer();
       if (data && data.createCategory)
         notify(
           <SuccessNotification
@@ -83,7 +83,6 @@ const AddCategory: React.FC<Props> = (props) => {
       storeCode: storeId,
     };
     createCategory({ variables: { categoryCreateInput: newCategory } });
-    closeDrawer();
   };
 
   return (
@@ -178,6 +177,7 @@ const AddCategory: React.FC<Props> = (props) => {
         </Scrollbars>
         <ButtonGroup>
           <Button
+            type="button"
             kind={KIND.minimal}
             onClick={closeDrawer}
             overrides={{
@@ -199,6 +199,7 @@ const AddCategory: React.FC<Props> = (props) => {
 
           <Button
             type='submit'
+            disabled={saving}
             overrides={{
               BaseButton: {
                 style: ({ $theme }) => ({
@@ -211,7 +212,7 @@ const AddCategory: React.FC<Props> = (props) => {
               },
             }}
           >
-            Create Category
+            {saving ? "Saving" : "Create Category"}
           </Button>
         </ButtonGroup>
       </Form>

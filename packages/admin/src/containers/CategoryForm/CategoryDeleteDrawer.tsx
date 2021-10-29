@@ -34,8 +34,9 @@ const DeleteCategory: React.FC<Props> = (props) => {
 
   const { notify } = useNotifier();
 
-  const [deleteProductCategory] = useMutation(M_DELETE_PRODUCT_CATEGORY, {
+  const [deleteProductCategory, { loading: deleting }] = useMutation(M_DELETE_PRODUCT_CATEGORY, {
     onCompleted: (data) => {
+      closeDrawer();
       if (data && data.deleteCategory)
         notify(
           <SuccessNotification
@@ -53,13 +54,12 @@ const DeleteCategory: React.FC<Props> = (props) => {
     },
   });
 
-  function handleDelete(e, category) {
-    e.preventDefault();
+  function handleDelete() {
     deleteProductCategory({
       variables: {
         categoryDeleteInput: {
-          storeId: storeId,
-          categoryId: `${category.id}`,
+          storeId,
+          categoryId: category._id,
         },
       },
       refetchQueries: [
@@ -71,7 +71,6 @@ const DeleteCategory: React.FC<Props> = (props) => {
         },
       ],
     });
-    closeDrawer();
   }
 
   return (
@@ -82,11 +81,12 @@ const DeleteCategory: React.FC<Props> = (props) => {
       <p>
         Do you want to delete{' '}
         <strong>
-          {category.nameEn}/{category.nameAr}
+          {category.name.en}/{category.name.ar}
         </strong>
       </p>
       <ButtonGroup>
         <Button
+          type='button'
           kind={KIND.minimal}
           onClick={closeDrawer}
           overrides={{
@@ -107,7 +107,8 @@ const DeleteCategory: React.FC<Props> = (props) => {
         </Button>
         <Button
           type='button'
-          onClick={(e) => handleDelete(e, category)}
+          disabled={deleting}
+          onClick={handleDelete}
           overrides={{
             BaseButton: {
               style: ({ $theme }) => ({
@@ -120,7 +121,7 @@ const DeleteCategory: React.FC<Props> = (props) => {
             },
           }}
         >
-          Delete
+          {deleting ? "..." : "Delete"}
         </Button>
       </ButtonGroup>
     </>

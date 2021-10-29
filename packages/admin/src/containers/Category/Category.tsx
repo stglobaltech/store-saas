@@ -1,7 +1,7 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback } from 'react';
 import { withStyle } from 'baseui';
 import { Grid, Row as Rows, Col as Cols } from 'components/FlexBox/FlexBox';
-import { useDrawerDispatch, useDrawerState } from 'context/DrawerContext';
+import { useDrawerDispatch } from 'context/DrawerContext';
 import Button from 'components/Button/Button';
 import { useQuery } from '@apollo/client';
 import { Wrapper, Header, Heading } from 'components/Wrapper.style';
@@ -41,7 +41,6 @@ export default function Category() {
     data: { storeId },
   } = useQuery(Q_GET_STORE_ID);
 
-  const [category, setCategory] = useState({ id: '', nameEn: '', nameAr: '' });
   const dispatch = useDrawerDispatch();
   
   const openDrawer = useCallback(
@@ -66,33 +65,8 @@ export default function Category() {
         drawerComponent: 'DELETE_CATEGORY_FORM',
         data: cat,
       }),
-    [dispatch, category]
+    [dispatch]
   );
-
-  const handleSetCategory = (selectedCat) => {
-    setCategory((prevCategory) => ({ ...prevCategory, ...selectedCat }));
-  };
-  function deleteCategory(item) {
-    const selectedCat = {
-      id: item._id,
-      nameEn: item.name.en,
-      nameAr: item.name.ar,
-    };
-    OpenDeleteConfirmDrawer(selectedCat);
-    handleSetCategory(selectedCat);
-  }
-
-  function editCategory(item) {
-    const selectedCategoryEdit = {
-      id: item._id,
-      nameEn: item.name.en,
-      nameAr: item.name.ar,
-    };
-
-    handleSetCategory(selectedCategoryEdit);
-
-    OpenEditDrawer(selectedCategoryEdit);
-  }
 
   const { data: categoryData, error } = useQuery(GET_PRODUCT_CATEGORIES, {
     variables: {
@@ -163,11 +137,11 @@ export default function Category() {
                           <StyledCell>
                             <PencilIcon
                               className='icon-lg pointer'
-                              onClick={() => editCategory(item)}
+                              onClick={() => OpenEditDrawer(item)}
                             />
                             <CloseIcon
                               className='icon-lg icon-danger pointer'
-                              onClick={() => deleteCategory(item)}
+                              onClick={() => OpenDeleteConfirmDrawer(item)}
                             />
                           </StyledCell>
                         </React.Fragment>
