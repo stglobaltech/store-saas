@@ -10,3 +10,20 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+.icon-lg {
+  width: 15px;
+  height: 15px;
+  margin-right: 25px;
+}
+.icon-sm {
+  width: 10px;
+  height: 10px;
+}
+
+.icon-danger {
+  color: rgb(168, 0, 0);
+}
+
+.pointer {
+  cursor: pointer;
+}

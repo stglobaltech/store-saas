@@ -1,16 +1,23 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 import { styled, withStyle } from 'baseui';
 import Button from 'components/Button/Button';
 import { Grid, Row as Rows, Col as Column } from 'components/FlexBox/FlexBox';
 import Input from 'components/Input/Input';
 import Select from 'components/Select/Select';
-import { useQuery, gql } from '@apollo/client';
+import { useQuery, useLazyQuery } from '@apollo/client';
 import { Header, Heading } from 'components/Wrapper.style';
 import Fade from 'react-reveal/Fade';
 import ProductCard from 'components/ProductCard/ProductCard';
 import NoResult from 'components/NoResult/NoResult';
 import { CURRENCY } from 'settings/constants';
 import Placeholder from 'components/Placeholder/Placeholder';
+import { useDrawerDispatch } from 'context/DrawerContext';
+import {
+  Q_GET_STORE_ID,
+  Q_GET_CATEGORIES,
+  Q_GET_PRODUCTS_BASED_ON_STORE,
+  Q_GET_PRODUCTS_BASED_ON_CATEGORY
+} from 'services/GQL';
 
 export const ProductsRow = styled('div', ({ $theme }) => ({
   display: 'flex',
@@ -60,104 +67,125 @@ export const LoaderItem = styled('div', () => ({
   marginBottom: '30px',
 }));
 
-const GET_PRODUCTS = gql`
-  query getProducts(
-    $type: String
-    $sortByPrice: String
-    $searchText: String
-    $offset: Int
-  ) {
-    products(
-      type: $type
-      sortByPrice: $sortByPrice
-      searchText: $searchText
-      offset: $offset
-    ) {
-      items {
-        id
-        name
-        description
-        image
-        type
-        price
-        unit
-        salePrice
-        discountInPercent
-      }
-      totalCount
-      hasMore
-    }
-  }
-`;
-
-const typeSelectOptions = [
-  { value: 'grocery', label: 'Grocery' },
-  { value: 'women-cloths', label: 'Women Cloths' },
-  { value: 'bags', label: 'Bags' },
-  { value: 'makeup', label: 'Makeup' },
-];
-const priceSelectOptions = [
-  { value: 'highestToLowest', label: 'Highest To Lowest' },
-  { value: 'lowestToHighest', label: 'Lowest To Highest' },
-];
-
 export default function Products() {
-  const { data, error, refetch, fetchMore } = useQuery(GET_PRODUCTS);
-  const [loadingMore, toggleLoading] = useState(false);
-  const [type, setType] = useState([]);
-  const [priceOrder, setPriceOrder] = useState([]);
-  const [search, setSearch] = useState([]);
+  const dispatch = useDrawerDispatch();
+  const openCreateDrawer = useCallback(
+    (data) => dispatch({ type: 'OPEN_DRAWER', drawerComponent: 'PRODUCT_FORM', data: data }),
+    [dispatch]
+  );
 
-  if (error) {
-    return <div>Error! {error.message}</div>;
-  }
-  function loadMore() {
-    toggleLoading(true);
-    fetchMore({
-      variables: {
-        offset: data.products.items.length,
-      },
-      updateQuery: (prev, { fetchMoreResult }) => {
-        toggleLoading(false);
-        if (!fetchMoreResult) return prev;
-        return Object.assign({}, prev, {
-          products: {
-            __typename: prev.products.__typename,
-            items: [...prev.products.items, ...fetchMoreResult.products.items],
-            hasMore: fetchMoreResult.products.hasMore,
-          },
+  const { data: { storeId } } = useQuery(Q_GET_STORE_ID);
+
+  const [categories, setCategories] = useState([]);
+  const [category, setCategory] = useState([]);
+  const [search, setSearch] = useState("");
+  const [products, setProducts] = useState({
+    products: [],
+    pagination: {
+      hasPrevPage: false,
+      hasNextPage: false,
+      prevPage: null,
+      nextPage: null,
+      page: 1,
+    }
+  });
+
+  const [storeProductFindInputDto, setStoreProductFindInputDto] = useState({
+    storeId,
+    paginate: {
+      page: 1,
+      perPage: 12
+    }
+  });
+
+  const { error: getCategoriesError } = useQuery(Q_GET_CATEGORIES, {
+    variables: { storeId },
+    onCompleted: ({ getCategories }) => {
+      const { productCategories } = getCategories;
+      if(productCategories.length) {
+        const categoryOptions = productCategories.map((option) => {
+          return { label: option.name.en, value: option._id };
         });
-      },
-    });
-  }
-  function handlePriceSort({ value }) {
-    setPriceOrder(value);
-    if (value.length) {
-      refetch({
-        sortByPrice: value[0].value,
-      });
+
+        setCategories(categoryOptions);
+      }
+    }
+  });
+
+  const { data: storeBasedData, loading: storeBasedLoading, error: storeBasedError, refetch: storeBasedRefetch } = useQuery(Q_GET_PRODUCTS_BASED_ON_STORE, {
+    variables: { storeProductFindInputDto }
+  });
+
+  const [getCategoryBasedProducts, {
+    data: categoryBasedData, loading: categoryBasedLoading, error: categoryBasedError, refetch: categoryBasedRefetch
+  }] = useLazyQuery(Q_GET_PRODUCTS_BASED_ON_CATEGORY);
+
+  useEffect(() => {
+    if(category.length && categoryBasedData) {
+      const { getProductsBasedOnCategory } = categoryBasedData;
+      setProducts(getProductsBasedOnCategory);
+    } else if(storeBasedData) {
+      const { getProductsBasedOnStore } = storeBasedData;
+      setProducts(getProductsBasedOnStore);
+    }
+    // eslint-disable-next-line
+  }, [storeBasedData, categoryBasedData]);
+
+  const goToPage = (page) => {
+    if(category.length) {
+      getCategoryBasedProducts({
+        variables: {
+          productFindInput: {
+            categoryId: category[0].value,
+            storeId,
+            paginate: {
+              page: page,
+              perPage: 12
+            }
+          }
+        }
+      })
     } else {
-      refetch({
-        sortByPrice: null,
+      setStoreProductFindInputDto({
+        ...storeProductFindInputDto,
+        paginate: {
+          page: page,
+          perPage: 12
+        }
       });
     }
-  }
-  function handleCategoryType({ value }) {
-    setType(value);
-    if (value.length) {
-      refetch({
-        type: value[0].value,
-      });
-    } else {
-      refetch({
-        type: null,
-      });
-    }
-  }
-  function handleSearch(event) {
-    const value = event.currentTarget.value;
+  };
+
+  const handleCategory = ({ value }) => {
+    setCategory(value);
+    getCategoryBasedProducts({
+      variables: {
+        productFindInput: {
+          categoryId: value[0].value,
+          storeId,
+          paginate: {
+            page: 1,
+            perPage: 12
+          }
+        }
+      }
+    })
+  };
+
+  const handleSearch = (e) => {
+    const value = e.currentTarget.value;
     setSearch(value);
-    refetch({ searchText: value });
+  };
+
+  if (getCategoriesError || storeBasedError || categoryBasedError) {
+    return (
+      <div>
+        Error! {
+          getCategoriesError.message ? getCategoriesError.message : (
+          storeBasedError.message ? storeBasedError.message : categoryBasedError.message
+        )}
+      </div>
+    )
   }
 
   return (
@@ -173,25 +201,13 @@ export default function Products() {
               <Row>
                 <Col md={3} xs={12}>
                   <Select
-                    options={typeSelectOptions}
+                    options={categories}
                     labelKey="label"
                     valueKey="value"
-                    placeholder="Category Type"
-                    value={type}
+                    placeholder="Category"
+                    value={category}
                     searchable={false}
-                    onChange={handleCategoryType}
-                  />
-                </Col>
-
-                <Col md={3} xs={12}>
-                  <Select
-                    options={priceSelectOptions}
-                    labelKey="label"
-                    valueKey="value"
-                    value={priceOrder}
-                    placeholder="Price"
-                    searchable={false}
-                    onChange={handlePriceSort}
+                    onChange={handleCategory}
                   />
                 </Col>
 
@@ -203,14 +219,33 @@ export default function Products() {
                     clearable
                   />
                 </Col>
+
+                <Col md={3} xs={12}>
+                  <Button
+                    onClick={() => openCreateDrawer({queryToRefetch: category.length ? categoryBasedRefetch : storeBasedRefetch})}
+                    overrides={{
+                      BaseButton: {
+                        style: () => ({
+                          width: '100%',
+                          borderTopLeftRadius: '3px',
+                          borderTopRightRadius: '3px',
+                          borderBottomLeftRadius: '3px',
+                          borderBottomRightRadius: '3px',
+                        }),
+                      },
+                    }}
+                  >
+                    Add Product
+                  </Button>
+                </Col>
               </Row>
             </Col>
           </Header>
 
           <Row>
-            {data ? (
-              data.products && data.products.items.length !== 0 ? (
-                data.products.items.map((item: any, index: number) => (
+            {products.products.length ? (
+              products.products.length !== 0 ? (
+                products.products.map((item: any, index: number) => (
                   <Col
                     md={4}
                     lg={3}
@@ -221,14 +256,13 @@ export default function Products() {
                   >
                     <Fade bottom duration={800} delay={index * 10}>
                       <ProductCard
-                        title={item.name}
-                        weight={item.unit}
-                        image={item.image}
+                        title={item.productName.en}
+                        image={item.picture}
                         currency={CURRENCY}
-                        price={item.price}
-                        salePrice={item.salePrice}
-                        discountInPercent={item.discountInPercent}
-                        data={item}
+                        price={item.price.price}
+                        data={{...item,
+                          queryToRefetch: category.length ? categoryBasedRefetch : storeBasedRefetch
+                        }}
                       />
                     </Fade>
                   </Col>
@@ -253,14 +287,61 @@ export default function Products() {
               </LoaderWrapper>
             )}
           </Row>
-          {data && data.products && data.products.hasMore && (
+          {products.products.length && (
             <Row>
               <Col
                 md={12}
                 style={{ display: 'flex', justifyContent: 'center' }}
               >
-                <Button onClick={loadMore} isLoading={loadingMore}>
-                  Load More
+                <Button
+                  disabled={storeBasedLoading || categoryBasedLoading || !products.pagination.hasPrevPage}
+                  onClick={() => goToPage(products.pagination.prevPage)}
+                  overrides={{
+                    BaseButton: {
+                      style: () => ({
+                        marginRight: '5px',
+                        borderTopLeftRadius: '3px',
+                        borderTopRightRadius: '3px',
+                        borderBottomLeftRadius: '3px',
+                        borderBottomRightRadius: '3px',
+                      }),
+                    },
+                  }}
+                >
+                  Prev
+                </Button>
+
+                <Button
+                  overrides={{
+                    BaseButton: {
+                      style: () => ({
+                        marginRight: '5px',
+                        borderTopLeftRadius: '3px',
+                        borderTopRightRadius: '3px',
+                        borderBottomLeftRadius: '3px',
+                        borderBottomRightRadius: '3px',
+                      }),
+                    },
+                  }}
+                >
+                  {products.pagination.page}
+                </Button>
+
+                <Button
+                  disabled={storeBasedLoading || categoryBasedLoading || !products.pagination.hasNextPage}
+                  onClick={() => goToPage(products.pagination.nextPage)}
+                  overrides={{
+                    BaseButton: {
+                      style: () => ({
+                        borderTopLeftRadius: '3px',
+                        borderTopRightRadius: '3px',
+                        borderBottomLeftRadius: '3px',
+                        borderBottomRightRadius: '3px',
+                      }),
+                    },
+                  }}
+                >
+                  Next
                 </Button>
               </Col>
             </Row>

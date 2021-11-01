@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Button from 'components/Button/Button';
 import Popover, { PLACEMENT } from 'components/Popover/Popover';
@@ -26,7 +26,6 @@ import {
 } from './Topbar.style';
 import Logoimage from 'assets/image/PickBazar.png';
 import UserImage from 'assets/image/user.jpg';
-import { useDrawerDispatch } from 'context/DrawerContext';
 import Drawer, { ANCHOR } from 'components/Drawer/Drawer';
 import Sidebar from '../Sidebar/Sidebar';
 
@@ -38,12 +37,7 @@ const data = [
   },
 ];
 const Topbar = ({ refs, onLogout }: any) => {
-  const dispatch = useDrawerDispatch();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const openDrawer = useCallback(
-    () => dispatch({ type: 'OPEN_DRAWER', drawerComponent: 'PRODUCT_FORM' }),
-    [dispatch]
-  );
 
   return (
     <TopbarWrapper ref={refs}>
@@ -98,7 +92,7 @@ const Topbar = ({ refs, onLogout }: any) => {
       </DrawerWrapper>
 
       <TopbarRightSide>
-        <Button onClick={openDrawer}>Add Products</Button>
+        <Button>Visit Store</Button>
 
         <Popover
           content={({ close }) => <Notification data={data} onClear={close} />}
