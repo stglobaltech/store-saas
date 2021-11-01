@@ -12,6 +12,7 @@ import CategoryForm from '../CategoryForm/CategoryForm';
 import StaffMemberForm from '../StaffMemberForm/StaffMemberForm';
 import QrCodeForm from '../QrCodeForm/QrCodeForm';
 import Sidebar from '../Layout/Sidebar/Sidebar';
+import OrderDetail from '../Orders/OrderDetailsDrawer';
 import DeleteCategoryForm from '../CategoryForm/CategoryDeleteDrawer';
 import CategoryEditForm from '../CategoryForm/CategoryEditForm';
 
@@ -23,6 +24,7 @@ const DRAWER_COMPONENTS = {
   CATEGORY_FORM: CategoryForm,
   STAFF_MEMBER_FORM: StaffMemberForm,
   QR_CODE_FORM: QrCodeForm,
+  ORDER_DETAIL_CARD: OrderDetail,
   DELETE_CATEGORY_FORM: DeleteCategoryForm,
   EDIT_CATEGORY_FORM: CategoryEditForm,
 
