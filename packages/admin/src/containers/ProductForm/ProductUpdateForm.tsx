@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { Scrollbars } from 'react-custom-scrollbars';
 import { useDrawerDispatch, useDrawerState } from 'context/DrawerContext';
@@ -8,9 +8,8 @@ import DrawerBox from 'components/DrawerBox/DrawerBox';
 import { Row, Col } from 'components/FlexBox/FlexBox';
 import Input from 'components/Input/Input';
 import { Textarea } from 'components/Textarea/Textarea';
-import Select from 'components/Select/Select';
 import { FormFields, FormLabel } from 'components/FormFields/FormFields';
-
+import { uploadFile } from 'services/REST/restaurant.service';
 import {
   Form,
   DrawerTitleWrapper,
@@ -18,82 +17,131 @@ import {
   FieldDetails,
   ButtonGroup,
 } from '../DrawerItems/DrawerItems.style';
+import { useQuery, useMutation } from '@apollo/client';
+import { Q_GET_STORE_ID, M_EDIT_PRODUCT } from 'services/GQL';
+import { useNotifier } from 'react-headless-notifier';
+import SuccessNotification from '../../components/Notification/SuccessNotification';
+import DangerNotification from '../../components/Notification/DangerNotification';
 
-const options = [
-  { value: 'Fruits & Vegetables', name: 'Fruits & Vegetables', id: '1' },
-  { value: 'Meat & Fish', name: 'Meat & Fish', id: '2' },
-  { value: 'Purse', name: 'Purse', id: '3' },
-  { value: 'Hand bags', name: 'Hand bags', id: '4' },
-  { value: 'Shoulder bags', name: 'Shoulder bags', id: '5' },
-  { value: 'Wallet', name: 'Wallet', id: '6' },
-  { value: 'Laptop bags', name: 'Laptop bags', id: '7' },
-  { value: 'Women Dress', name: 'Women Dress', id: '8' },
-  { value: 'Outer Wear', name: 'Outer Wear', id: '9' },
-  { value: 'Pants', name: 'Pants', id: '10' },
-];
-
-const typeOptions = [
-  { value: 'grocery', name: 'Grocery', id: '1' },
-  { value: 'women-cloths', name: 'Women Cloths', id: '2' },
-  { value: 'bags', name: 'Bags', id: '3' },
-  { value: 'makeup', name: 'Makeup', id: '4' },
-];
+interface imgUploadRes {[
+  urlText: string
+]: any}
 
 type Props = any;
 
 const AddProduct: React.FC<Props> = () => {
   const dispatch = useDrawerDispatch();
-  const data = useDrawerState('data');
   const closeDrawer = useCallback(() => dispatch({ type: 'CLOSE_DRAWER' }), [
     dispatch,
   ]);
-  const { register, handleSubmit, setValue } = useForm({
+
+  const { notify } = useNotifier();
+
+  const data = useDrawerState('data');
+  const { queryToRefetch } = data;
+
+  const { data: { storeId } } = useQuery(Q_GET_STORE_ID);
+
+  const { register, handleSubmit, setValue, formState: { errors } } = useForm({
     defaultValues: data,
   });
-  const [type, setType] = useState([{ value: data.type }]);
-  const [tag, setTag] = useState([]);
-  const [description, setDescription] = useState(data.description);
-  React.useEffect(() => {
-    register({ name: 'type' });
-    register({ name: 'categories' });
-    register({ name: 'image' });
+
+  useEffect(() => {
     register({ name: 'description' });
   }, [register]);
 
-  const handleMultiChange = ({ value }) => {
-    setValue('categories', value);
-    setTag(value);
+  const [productPicture, setProductPicture] = useState({
+    url: undefined,
+    uploading: false
+  });
+  const [description, setDescription] = useState(data.description.en);
+  const [priceSplit, setPriceSplit] = useState({
+    price: data.price.price,
+    priceWithoutVat: data.price.basePrice,
+    vatPrice: data.price.vatPrice
+  });
+
+  const [doUpdate, { loading: updating }] = useMutation(M_EDIT_PRODUCT, {
+    onCompleted: (data) => {
+      closeDrawer();
+      if (data.editProduct.success) {
+        notify(
+          <SuccessNotification
+            message={data.editProduct.message.en}
+            dismiss
+          />
+        );
+        
+        queryToRefetch();
+      }
+      else
+        notify(
+          <DangerNotification
+            message={data.editProduct.message.en}
+            dismiss
+          />
+        );
+    }
+  });
+
+  const uploadImage = (files) => {
+    setProductPicture({ ...productPicture, uploading: true });
+    const formData = new FormData();
+    formData.append("file", files[0], files[0].name);
+    uploadFile(formData)
+      .then((result: imgUploadRes) => {
+        setProductPicture({
+          ...productPicture,
+          url: result.urlText,
+          uploading: false,
+        });
+      })
+      .catch((err) => {
+        console.error(err, 'on image upload for store logo');
+        setProductPicture({ ...productPicture, uploading: false });
+      });
   };
+
   const handleDescriptionChange = (e) => {
     const value = e.target.value;
     setValue('description', value);
     setDescription(value);
   };
 
-  const handleTypeChange = ({ value }) => {
-    setValue('type', value);
-    setType(value);
-  };
-  const handleUploader = (files) => {
-    setValue('image', files[0].path);
-  };
-  const onSubmit = (data) => {
-    // const newProduct = {
-    //   id: uuidv4(),
-    //   name: data.name,
-    //   type: data.type[0].value,
-    //   description: data.description,
-    //   image: data.image,
-    //   price: Number(data.price),
-    //   unit: data.unit,
-    //   salePrice: Number(data.salePrice),
-    //   discountInPercent: Number(data.discountInPercent),
-    //   quantity: Number(data.quantity),
-    //   slug: data.name,
-    //   creation_date: new Date(),
-    // };
-    console.log(data, 'newProduct data');
-    closeDrawer();
+  const handlePriceChange = (e) => {
+    let price, priceWithoutVat, vatPrice;
+    price = Number(e.target.value);
+    if (price > 0) {
+      priceWithoutVat = (price - price * 0.05).toFixed(2);
+      vatPrice = (price - priceWithoutVat).toFixed(2);
+      setPriceSplit({ price, priceWithoutVat, vatPrice });
+    } else {
+      setPriceSplit({ price: "0", priceWithoutVat: "0", vatPrice: "0" });
+    }
+  }
+
+  const onSubmit = (values) => {
+    const productEditInput = {
+      _id: data._id,
+      storeId,
+      productName: {
+        en: values.productName.en,
+        ar: ""
+      },
+      price: {
+        price: parseFloat(priceSplit.price),
+        basePrice: parseFloat(priceSplit.priceWithoutVat),
+        vatPrice: parseFloat(priceSplit.vatPrice)
+      },
+      maxQuantity: parseFloat(values.maxQuantity),
+      description: {
+        en: description,
+        ar: ""
+      },
+      picture: productPicture.url
+    }
+    
+    doUpdate({ variables: { productEditInput } });
   };
 
   return (
@@ -105,7 +153,6 @@ const AddProduct: React.FC<Props> = () => {
       <Form
         onSubmit={handleSubmit(onSubmit)}
         style={{ height: '100%' }}
-        noValidate
       >
         <Scrollbars
           autoHide
@@ -126,7 +173,7 @@ const AddProduct: React.FC<Props> = () => {
             </Col>
             <Col lg={8}>
               <DrawerBox>
-                <Uploader onChange={handleUploader} imageURL={data.image} />
+                <Uploader onChange={uploadImage} imageURL={data.picture} />
               </DrawerBox>
             </Col>
           </Row>
@@ -141,11 +188,28 @@ const AddProduct: React.FC<Props> = () => {
             <Col lg={8}>
               <DrawerBox>
                 <FormFields>
-                  <FormLabel>Name</FormLabel>
+                  <FormLabel>Product Name</FormLabel>
                   <Input
-                    inputRef={register({ required: true, maxLength: 20 })}
-                    name="name"
+                    name="productName.en"
+                    inputRef={register({ required: true, minLength: 3, maxLength: 20 })}
                   />
+                  {errors.productName && (
+                    <div
+                      style={{
+                        margin: "5px 0 0 auto",
+                        fontFamily: "Lato, sans-serif",
+                        fontSize: "12px",
+                        fontWeight: "bold",
+                        color: "rgb(252, 92, 99)",
+                      }}
+                    >
+                      {errors.productName.en.type === "required"
+                        ? "Required"
+                        : (errors.productName.en.type === "minLength" ||
+                            errors.productName.en.type === "maxLength") &&
+                          "Product Name must be 3-20 characters"}
+                    </div>
+                  )}
                 </FormFields>
 
                 <FormFields>
@@ -157,134 +221,43 @@ const AddProduct: React.FC<Props> = () => {
                 </FormFields>
 
                 <FormFields>
-                  <FormLabel>Unit</FormLabel>
-                  <Input type="text" inputRef={register} name="unit" />
-                </FormFields>
-
-                <FormFields>
                   <FormLabel>Price</FormLabel>
                   <Input
                     type="number"
-                    inputRef={register({ required: true })}
-                    name="price"
+                    name="price.price"
+                    inputRef={register}
+                    onChange={handlePriceChange}
                   />
                 </FormFields>
 
                 <FormFields>
-                  <FormLabel>Sale Price</FormLabel>
-                  <Input type="number" inputRef={register} name="salePrice" />
-                </FormFields>
-
-                <FormFields>
-                  <FormLabel>Discount In Percent</FormLabel>
+                  <FormLabel>Max Quantity</FormLabel>
                   <Input
                     type="number"
-                    inputRef={register}
-                    name="discountInPercent"
+                    name="maxQuantity"
+                    inputRef={register({
+                      required: true,
+                      validate: (value) =>
+                        value > 0 ? true : "invalid maxQuantity"
+                    })}
                   />
-                </FormFields>
-
-                <FormFields>
-                  <FormLabel>Product Quantity</FormLabel>
-                  <Input type="number" inputRef={register} name="quantity" />
-                </FormFields>
-
-                <FormFields>
-                  <FormLabel>Type</FormLabel>
-                  <Select
-                    options={typeOptions}
-                    labelKey="name"
-                    valueKey="value"
-                    placeholder="Product Type"
-                    value={type}
-                    searchable={false}
-                    onChange={handleTypeChange}
-                    overrides={{
-                      Placeholder: {
-                        style: ({ $theme }) => {
-                          return {
-                            ...$theme.typography.fontBold14,
-                            color: $theme.colors.textNormal,
-                          };
-                        },
-                      },
-                      DropdownListItem: {
-                        style: ({ $theme }) => {
-                          return {
-                            ...$theme.typography.fontBold14,
-                            color: $theme.colors.textNormal,
-                          };
-                        },
-                      },
-                      OptionContent: {
-                        style: ({ $theme, $selected }) => {
-                          return {
-                            ...$theme.typography.fontBold14,
-                            color: $selected
-                              ? $theme.colors.textDark
-                              : $theme.colors.textNormal,
-                          };
-                        },
-                      },
-                      SingleValue: {
-                        style: ({ $theme }) => {
-                          return {
-                            ...$theme.typography.fontBold14,
-                            color: $theme.colors.textNormal,
-                          };
-                        },
-                      },
-                      Popover: {
-                        props: {
-                          overrides: {
-                            Body: {
-                              style: { zIndex: 5 },
-                            },
-                          },
-                        },
-                      },
-                    }}
-                  />
-                </FormFields>
-
-                <FormFields>
-                  <FormLabel>Categories</FormLabel>
-                  <Select
-                    options={options}
-                    labelKey="name"
-                    valueKey="value"
-                    placeholder="Product Tag"
-                    value={tag}
-                    onChange={handleMultiChange}
-                    overrides={{
-                      Placeholder: {
-                        style: ({ $theme }) => {
-                          return {
-                            ...$theme.typography.fontBold14,
-                            color: $theme.colors.textNormal,
-                          };
-                        },
-                      },
-                      DropdownListItem: {
-                        style: ({ $theme }) => {
-                          return {
-                            ...$theme.typography.fontBold14,
-                            color: $theme.colors.textNormal,
-                          };
-                        },
-                      },
-                      Popover: {
-                        props: {
-                          overrides: {
-                            Body: {
-                              style: { zIndex: 5 },
-                            },
-                          },
-                        },
-                      },
-                    }}
-                    multi
-                  />
+                  {errors.maxQuantity && (
+                    <div
+                      style={{
+                        margin: "5px 0 0 auto",
+                        fontFamily: "Lato, sans-serif",
+                        fontSize: "12px",
+                        fontWeight: "bold",
+                        color: "rgb(252, 92, 99)",
+                      }}
+                    >
+                      {errors.maxQuantity.type === "required"
+                        ? "Required"
+                        : (errors.maxQuantity.message === "invalid maxQuantity" &&
+                          "Max quantity must be greater than zero")
+                      }
+                    </div>
+                  )}
                 </FormFields>
               </DrawerBox>
             </Col>
@@ -293,6 +266,7 @@ const AddProduct: React.FC<Props> = () => {
 
         <ButtonGroup>
           <Button
+            type="button"
             kind={KIND.minimal}
             onClick={closeDrawer}
             overrides={{
@@ -314,6 +288,7 @@ const AddProduct: React.FC<Props> = () => {
 
           <Button
             type="submit"
+            disabled={updating || productPicture.uploading}
             overrides={{
               BaseButton: {
                 style: ({ $theme }) => ({
@@ -326,7 +301,7 @@ const AddProduct: React.FC<Props> = () => {
               },
             }}
           >
-            Update Product
+            {updating ? "Updating" : "Update Product"}
           </Button>
         </ButtonGroup>
       </Form>
