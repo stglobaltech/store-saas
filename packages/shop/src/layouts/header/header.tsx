@@ -10,7 +10,7 @@ import LogoImage from 'assets/images/orderznow_web-logo.png'
 import UserImage from 'assets/images/user.jpg';
 import { isCategoryPage } from '../is-home-page';
 import Search from 'features/search/search';
-import { removeLocalStateAccessToken } from 'utils/localStorage';
+import { removeToken } from 'utils/localStorage';
 import { useCart } from 'contexts/cart/use-cart';
 
 type Props = {
@@ -29,7 +29,7 @@ const Header: React.FC<Props> = ({ className }) => {
 
   const handleLogout = () => {
     if (typeof window !== 'undefined') {
-      removeLocalStateAccessToken();
+      removeToken();
       authDispatch({ type: 'SIGN_OUT' });
       clearCart();
       Router.push('/');

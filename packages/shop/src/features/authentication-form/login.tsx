@@ -22,9 +22,10 @@ import { Input } from "components/forms/input";
 import { SEND_OTP } from "graphql/query/sendotp.query";
 import { Select } from "components/forms/select";
 import { M_USER_LOGIN } from "graphql/mutation/me";
-import { setLocalStateAccessToken } from "utils/localStorage";
+import { setToken } from "utils/localStorage";
 import { initializeApollo } from "utils/apollo";
 import { Q_GET_USERID } from "graphql/query/loggedIn-user.query";
+import { useCart } from "contexts/cart/use-cart";
 
 const countryCodes = [
   { name: "+91", value: "IND" },
@@ -191,6 +192,7 @@ const forms = ["SEND_OTP", "VERIFY_OTP"];
 export default function SignInModal() {
   const intl = useIntl();
   const { authDispatch } = useContext<any>(AuthContext);
+  const { isOpen, toggleCart } = useCart();
   const [form, setForm] = React.useState({
     form: forms[0],
     mobile: "",
@@ -213,11 +215,12 @@ export default function SignInModal() {
     setForm({ form: forms[1], mobile, countryCode });
   }
 
-
   function handleLoginSuccess(token, userId, roles) {
-    setLocalStateAccessToken(token, userId, roles);
+    setToken(token, userId, roles);
     authDispatch({ type: "SIGNIN_SUCCESS" });
     closeModal();
+    if (isOpen) toggleCart();
+
   }
 
   return (

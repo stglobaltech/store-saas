@@ -1,15 +1,11 @@
 import axios from 'axios';
 import jwtDecode from 'jwt-decode';
 
-import {
-  getLocalStateAccessToken,
-  setLocalStateAccessToken,
-  removeLocalStateAccessToken,
-} from './localStorage';
+import { getToken, setToken, removeToken } from './localStorage';
 import { isTokenValidOrUndefined } from './tokenValidation';
 
 export default async function customFetch(uri, options) {
-  const tokens = getLocalStateAccessToken();
+  const tokens = getToken();
   if (!isTokenValidOrUndefined()) {
     let { accessToken = null, refreshToken } = JSON.parse(tokens);
     let accessTokenInputDto = { accessToken: accessToken };
@@ -36,9 +32,8 @@ export default async function customFetch(uri, options) {
         authorization: refreshToken ? `Bearer ${refreshToken}` : '',
       },
     };
-
     const res = await axios.post(
-      process.env.REACT_APP_GQL_AUTH_SERVER_URI,
+      process.env.NEXT_PUBLIC_GRAPHQL_AUTH_API_ENDPOINT,
       body,
       axiosoptions
     );
@@ -54,10 +49,10 @@ export default async function customFetch(uri, options) {
       const { exp } = jwtDecode(newAccessToken);
 
       let expiryDate = new Date(exp * 1000);
-
-      setToken({ accessToken: newAccessToken, expiryDate });
-    } else if (res && res.data && res.data.errors && res.data.errors.length) {
-      removeTokens();
+      const newToken = { accessToken: newAccessToken, expiryDate };
+      setToken(newToken);
+    } else {
+      removeToken();
       window.location.replace('/');
     }
   }

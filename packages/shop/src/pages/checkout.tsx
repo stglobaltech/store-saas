@@ -1,5 +1,6 @@
 import React,{useEffect} from "react";
-import { NextPage, GetStaticProps } from "next";
+import { NextPage } from "next";
+import {useRouter} from 'next/router';
 import { useQuery } from "@apollo/client";
 import { Modal } from "@redq/reuse-modal";
 import { SEO } from "components/seo";
@@ -9,6 +10,7 @@ import { Q_GET_ALL_ADDRESSES } from "graphql/query/customer.query";
 import { ProfileProvider } from "contexts/profile/profile.provider";
 import { initializeApollo } from "utils/apollo";
 import { Q_GET_USERID } from "graphql/query/loggedIn-user.query";
+import { getToken } from "utils/localStorage";
 
 type Props = {
   deviceType: {
@@ -18,7 +20,12 @@ type Props = {
   };
 };
 const CheckoutPage: NextPage<Props> = ({ deviceType }) => {
-  // const { data, error, loading } = useQuery(Q_GET_USERID);
+
+  const router=useRouter();
+
+  useEffect(()=>{
+    if(!getToken()) router.replace("/");
+  },[])
 
   const { data, loading } = useQuery(Q_GET_ALL_ADDRESSES);
 

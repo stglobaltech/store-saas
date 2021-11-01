@@ -8,7 +8,7 @@ import {
   concat,
 } from "@apollo/client";
 
-import { getLocalStateAccessToken } from "./localStorage";
+import { getToken } from "./localStorage";
 import customFetch from "./customFetch";
 
 let apolloClient: ApolloClient<NormalizedCacheObject> | undefined;
@@ -16,12 +16,12 @@ let apolloClient: ApolloClient<NormalizedCacheObject> | undefined;
 const apiLink = createHttpLink({
   uri: process.env.NEXT_PUBLIC_GRAPHQL_API_ENDPOINT,
   credentials: "same-origin", // Additional fetch() options like `credentials` or `headers`
-  fetch:customFetch
+  fetch: customFetch,
 });
 
 const authLink = createHttpLink({
   uri: process.env.NEXT_PUBLIC_GRAPHQL_AUTH_API_ENDPOINT,
-  fetch:customFetch
+  fetch: customFetch,
 });
 
 const link = ApolloLink.split(
@@ -37,8 +37,8 @@ const authMiddleware = new ApolloLink((operation, forward) => {
 
   // get the authentication token from local storage if it exists
   if (typeof window !== "undefined") {
-    token = getLocalStateAccessToken();
-    token=JSON.parse(token);
+    token = getToken();
+    token = JSON.parse(token);
   }
 
   operation.setContext(({ headers = {} }) => ({
