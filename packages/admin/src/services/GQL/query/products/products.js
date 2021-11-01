@@ -1,8 +1,12 @@
-import { gql } from "@apollo/client";
+import { gql } from '@apollo/client';
 
 export const Q_GET_PRODUCTS_BASED_ON_STORE = gql`
-  query getProductsBasedOnStore($storeProductFindInputDto: StoreProductFindInputDto!) {
-    getProductsBasedOnStore(storeProductFindInputDto: $storeProductFindInputDto) {
+  query getProductsBasedOnStore(
+    $storeProductFindInputDto: StoreProductFindInputDto!
+  ) {
+    getProductsBasedOnStore(
+      storeProductFindInputDto: $storeProductFindInputDto
+    ) {
       products {
         _id
         productName {
