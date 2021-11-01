@@ -1,8 +1,6 @@
 import React, { useCallback, useState } from 'react';
 import { styled, withStyle, createThemedUseStyletron } from 'baseui';
 import { Grid, Row as Rows, Col as Column } from 'components/FlexBox/FlexBox';
-import Select from 'components/Select/Select';
-import Input from 'components/Input/Input';
 import { useQuery } from '@apollo/client';
 import { Wrapper, Header, Heading } from 'components/Wrapper.style';
 import {
@@ -56,21 +54,6 @@ const Row = withStyle(Rows, () => ({
     alignItems: 'center',
   },
 }));
-
-const statusSelectOptions = [
-  { value: 'FIN', label: 'Finished' },
-  { value: 'PEN', label: 'Pending' },
-  { value: 'EXP', label: 'Expired' },
-  { value: 'CONF', label: 'Confirmed' },
-  { value: 'CAN', label: 'Cancelled' },
-  { value: 'EXP', label: 'Expired' },
-  { value: 'REJ', label: 'Rejected' },
-];
-const limitSelectOptions = [
-  { value: 7, label: 'Last 7 orders' },
-  { value: 15, label: 'Last 15 orders' },
-  { value: 30, label: 'Last 30 orders' },
-];
 
 export default function Orders() {
   
@@ -126,12 +109,6 @@ export default function Orders() {
       backgroundColor: theme.colors.blue400,
     },
   });
-  // eslint-disable-next-line
-  const [status, setStatus] = useState([]);
-  // eslint-disable-next-line
-  const [limit, setLimit] = useState([]);
-  // eslint-disable-next-line
-  const [search, setSearch] = useState([]);
 
   const { data, loading, error } = useQuery(Q_GET_ORDERS, {
     variables: {
@@ -142,26 +119,6 @@ export default function Orders() {
   if (error) {
     return <div>Error! {error.message}</div>;
   }
-
-  // function handleLimit({ value }) {
-  //   setLimit(value);
-  //   if (value.length) {
-  //     refetch({
-  //       status: status.length ? status[0].value : null,
-  //       limit: value[0].value,
-  //     });
-  //   } else {
-  //     refetch({
-  //       limit: null,
-  //     });
-  //   }
-  // }
-
-  // function handleSearch(event) {
-  //   const { value } = event.currentTarget;
-  //   setSearch(value);
-  //   refetch({ searchText: value });
-  // }
 
   const fetchNextPage = (page) => {
     setOrderState({
@@ -213,40 +170,6 @@ export default function Orders() {
             >
               <Col md={3} xs={12}>
                 <Heading>Orders</Heading>
-              </Col>
-              <Col md={9} xs={12}>
-                <Row>
-                  <Col md={3} xs={12}>
-                    <Select
-                      options={statusSelectOptions}
-                      labelKey='label'
-                      valueKey='value'
-                      placeholder='Status'
-                      value={status}
-                      searchable={false}
-                      // onChange={handleStatus}
-                    />
-                  </Col>
-                  <Col md={3} xs={12}>
-                    <Select
-                      options={limitSelectOptions}
-                      labelKey='label'
-                      valueKey='value'
-                      value={limit}
-                      placeholder='Order Limits'
-                      searchable={false}
-                      // onChange={handleLimit}
-                    />
-                  </Col>
-                  <Col md={6} xs={12}>
-                    <Input
-                      value={search}
-                      placeholder='Ex: Search By Address'
-                      // onChange={handleSearch}
-                      clearable
-                    />
-                  </Col>
-                </Row>
               </Col>
             </Header>
             <Wrapper style={{ boxShadow: '0 0 5px rgba(0, 0 , 0, 0.05)' }}>
