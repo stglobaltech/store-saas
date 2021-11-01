@@ -7,7 +7,7 @@ const nextConfig = {
     return [
       {
         source: '/',
-        destination: '/categories',
+        destination: '/store/all_products',
         permanent: false,
       },
     ];

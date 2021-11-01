@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import Link from 'next/link';
+import React, { useState } from "react";
+import {useRouter} from 'next/router';
+import { openModal } from "@redq/reuse-modal";
 import {
   CartPopupBody,
   PopupHeader,
@@ -15,18 +16,19 @@ import {
   ItemWrapper,
   CouponBoxWrapper,
   CouponCode,
-} from './cart.style';
-import { CloseIcon } from 'assets/icons/CloseIcon';
-import { ShoppingBagLarge } from 'assets/icons/ShoppingBagLarge';
-import { NoCartBag } from 'assets/icons/NoCartBag';
-import { CURRENCY } from 'utils/constant';
-import { FormattedMessage } from 'react-intl';
-import { useLocale } from 'contexts/language/language.provider';
-
-import { Scrollbar } from 'components/scrollbar/scrollbar';
-import { useCart } from 'contexts/cart/use-cart';
-import { CartItem } from 'components/cart-item/cart-item';
-import Coupon from 'features/coupon/coupon';
+} from "./cart.style";
+import { CloseIcon } from "assets/icons/CloseIcon";
+import { ShoppingBagLarge } from "assets/icons/ShoppingBagLarge";
+import { NoCartBag } from "assets/icons/NoCartBag";
+import { CURRENCY } from "utils/constant";
+import { FormattedMessage } from "react-intl";
+import { useLocale } from "contexts/language/language.provider";
+import { AuthContext } from "contexts/auth/auth.context";
+import AuthenticationForm from "features/authentication-form";
+import { Scrollbar } from "components/scrollbar/scrollbar";
+import { useCart } from "contexts/cart/use-cart";
+import { CartItem } from "components/cart-item/cart-item";
+import Coupon from "features/coupon/coupon";
 
 type CartPropsType = {
   style?: any;
@@ -50,21 +52,56 @@ const Cart: React.FC<CartPropsType> = ({
     cartItemsCount,
     calculatePrice,
   } = useCart();
+  const router=useRouter();
+  const {
+    authState: { isAuthenticated },
+    authDispatch,
+  } = React.useContext<any>(AuthContext);
+
   const [hasCoupon, setCoupon] = useState(false);
   const { isRtl } = useLocale();
+
+  function handleJoin() {
+    authDispatch({
+      type: "SIGNIN",
+    });
+
+    openModal({
+      show: true,
+      overlayClassName: "quick-view-overlay",
+      closeOnClickOutside: true,
+      component: AuthenticationForm,
+      closeComponent: "",
+      config: {
+        enableResizing: false,
+        disableDragging: true,
+        className: "quick-view-modal",
+        width: 458,
+        height: "auto",
+      },
+    });
+  }
+
+  function validateLoggedInBeforeCheckout(e) {
+    if (cartItemsCount && !isAuthenticated) {
+      handleJoin();
+    }else if(cartItemsCount && isAuthenticated){
+      router.push('/checkout');
+    }
+  }
 
   return (
     <CartPopupBody className={className} style={style}>
       <PopupHeader>
         <PopupItemCount>
-          <ShoppingBagLarge width='19px' height='24px' />
+          <ShoppingBagLarge width="19px" height="24px" />
           <span>
             {cartItemsCount}
             &nbsp;
             {cartItemsCount > 1 ? (
-              <FormattedMessage id='cartItems' defaultMessage='items' />
+              <FormattedMessage id="cartItems" defaultMessage="items" />
             ) : (
-              <FormattedMessage id='cartItem' defaultMessage='item' />
+              <FormattedMessage id="cartItem" defaultMessage="item" />
             )}
           </span>
         </PopupItemCount>
@@ -74,8 +111,8 @@ const Cart: React.FC<CartPropsType> = ({
         </CloseButton>
       </PopupHeader>
 
-      <Scrollbar className='cart-scrollbar'>
-        <ItemWrapper className='items-wrapper'>
+      <Scrollbar className="cart-scrollbar">
+        <ItemWrapper className="items-wrapper">
           {!!cartItemsCount ? (
             items.map((item) => (
               <CartItem
@@ -93,8 +130,8 @@ const Cart: React.FC<CartPropsType> = ({
               </NoProductImg>
               <NoProductMsg>
                 <FormattedMessage
-                  id='noProductFound'
-                  defaultMessage='No products found'
+                  id="noProductFound"
+                  defaultMessage="No products found"
                 />
               </NoProductMsg>
             </>
@@ -109,8 +146,8 @@ const Cart: React.FC<CartPropsType> = ({
               {!hasCoupon ? (
                 <button onClick={() => setCoupon((prev) => !prev)}>
                   <FormattedMessage
-                    id='specialCode'
-                    defaultMessage='Have a special code?'
+                    id="specialCode"
+                    defaultMessage="Have a special code?"
                   />
                 </button>
               ) : (
@@ -118,7 +155,7 @@ const Cart: React.FC<CartPropsType> = ({
                   <Coupon
                     disabled={!items.length}
                     style={{
-                      boxShadow: '0 3px 6px rgba(0, 0, 0, 0.06)',
+                      boxShadow: "0 3px 6px rgba(0, 0, 0, 0.06)",
                     }}
                   />
                 </CouponBoxWrapper>
@@ -127,8 +164,8 @@ const Cart: React.FC<CartPropsType> = ({
           ) : (
             <CouponCode>
               <FormattedMessage
-                id='couponApplied'
-                defaultMessage='Coupon Applied'
+                id="couponApplied"
+                defaultMessage="Coupon Applied"
               />
               <span>{coupon.code}</span>
             </CouponCode>
@@ -136,27 +173,24 @@ const Cart: React.FC<CartPropsType> = ({
         </PromoCode>
 
         {cartItemsCount !== 0 ? (
-          <Link href='/checkout'>
-            <CheckoutButton onClick={onCloseBtnClick}>
-              <>
-                <Title>
-                  <FormattedMessage
-                    id='nav.checkout'
-                    defaultMessage='Checkout'
-                  />
-                </Title>
-                <PriceBox>
-                  {CURRENCY}
-                  {calculatePrice()}
-                </PriceBox>
-              </>
-            </CheckoutButton>
-          </Link>
+          // <Link href="/checkout">
+          <CheckoutButton onClick={validateLoggedInBeforeCheckout}>
+            <>
+              <Title>
+                <FormattedMessage id="nav.checkout" defaultMessage="Checkout" />
+              </Title>
+              <PriceBox>
+                {CURRENCY}
+                {calculatePrice()}
+              </PriceBox>
+            </>
+          </CheckoutButton>
         ) : (
+          // </Link>
           <CheckoutButton>
             <>
               <Title>
-                <FormattedMessage id='nav.checkout' defaultMessage='Checkout' />
+                <FormattedMessage id="nav.checkout" defaultMessage="Checkout" />
               </Title>
               <PriceBox>
                 {CURRENCY}

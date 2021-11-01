@@ -56,10 +56,10 @@ export const Banner: React.FC<Props> = ({
           />
         </Description>
         <SearchWrapper>
-          {/* <Search
+          <Search
             className="banner-search"
             shadow="0 21px 36px rgba(0,0,0,0.05)"
-          /> */}
+          />
         </SearchWrapper>
         <Waypoint
           onEnter={removeSticky}

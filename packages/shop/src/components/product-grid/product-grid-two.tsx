@@ -16,6 +16,7 @@ import { LoaderItem, LoaderWrapper } from "./product-list/product-list.style";
 import Loader from "components/loader/loader";
 import { Paginate } from "components/pagination/pagination";
 import { Q_SEARCH_PRODUCT_BASED_ON_STORE } from "graphql/query/searchProductInStore.query";
+import { Q_SEARCH_PRODUCTS_BASED_ON_CATEGORY_FOR_USER } from "graphql/query/search-products-based-on-category-for-user.query";
 
 const Grid = styled.div(
   css({
@@ -54,36 +55,39 @@ interface Props {
   loadMore?: boolean;
   fetchLimit?: number;
   style?: any;
+  storeId?: string;
+  firstPageProducts?: any;
 }
 
 export const ProductGrid = ({
   style,
-  type,
-  fetchLimit = 20,
+  storeId,
+  fetchLimit = 30,
+  firstPageProducts,
   loadMore = true,
 }: Props) => {
   const router = useRouter();
   const [page, setPage] = useState(1);
   const {
-    query: { category,search },
+    query: { category, search },
   } = router;
-
 
   useEffect(() => {
     setPage(1);
-  }, [category]);
+  }, [category, search]);
 
   const { data, error, loading } = useQuery(GET_PRODUCTS, {
     variables: {
       userStoreProductsFindInputDto: {
-        storeId: type,
+        storeId,
+        isAvailable: true,
         paginate: {
           page: page,
           perPage: fetchLimit,
         },
       },
     },
-    skip: !!category,
+    skip: category !== "all_products" || page === 1 || !!search,
   });
 
   const {
@@ -93,7 +97,7 @@ export const ProductGrid = ({
   } = useQuery(GET_PRODUCTS_OF_A_CATEGORY, {
     variables: {
       productFindInput: {
-        storeId: type,
+        storeId,
         categoryId: category,
         paginate: {
           page: page,
@@ -101,30 +105,103 @@ export const ProductGrid = ({
         },
       },
     },
-    skip: !category,
+    skip: category === "all_products" || page === 1 || !!search,
   });
 
-  if (error || categoryProductsError) return <ErrorMessage message={error.message || categoryProductsError.message} />;
-  if (loading || categoryProductLoading) {
-    return <Loader />;
-  }
+  const {
+    data: searchedProductInCategory,
+    loading: searchedProductInCategoryLoading,
+    error: searchedProductInCategoryError,
+  } = useQuery(Q_SEARCH_PRODUCTS_BASED_ON_CATEGORY_FOR_USER, {
+    variables: {
+      productSearchInput: {
+        storeId,
+        categoryId: category,
+        productKey: search,
+        paginate: {
+          page,
+          perPage: 30,
+        },
+      },
+    },
+    skip: category === "all_products" || !search,
+  });
+
+  const {
+    data: searchedProduct,
+    loading: searchedProductLoading,
+    error: searchedProductError,
+  } = useQuery(Q_SEARCH_PRODUCTS_BASED_ON_CATEGORY_FOR_USER, {
+    variables: {
+      productSearchInput: {
+        storeId,
+        productKey: search,
+        paginate: {
+          page,
+          perPage: 30,
+        },
+      },
+    },
+    skip: category !== "all_products" || !search,
+  });
+
   if (
-    (!data ||
-      !data.getStoreProductsForUser ||
-      data.getStoreProductsForUser.products.length === 0) &&
-    !category
+    error ||
+    categoryProductsError ||
+    searchedProductInCategoryError ||
+    searchedProductError
+  )
+    return (
+      <ErrorMessage
+        message={
+          error.message ||
+          categoryProductsError.message ||
+          searchedProductInCategoryError.message ||
+          searchedProductError.message
+        }
+      />
+    );
+  if (
+    loading ||
+    categoryProductLoading ||
+    searchedProductInCategoryLoading ||
+    searchedProductLoading
   ) {
-    return <NoResultFound forPagination={true} prevPagePagination={()=>setPage(page=>page-1)}/>;
+    return <Loader />;
   }
 
   if (
-    (!categoryProductsData ||
-      !categoryProductsData.getProductsBasedOnCategoryForUser ||
-      !categoryProductsData.getProductsBasedOnCategoryForUser.products
-        .length) &&
-    !!category
+    !(
+      data &&
+      data.getStoreProductsForUser &&
+      data.getStoreProductsForUser.products.length
+    ) &&
+    category === "all_products" &&
+    page !== 1
   ) {
-    return <NoResultFound forPagination={true} prevPagePagination={()=>setPage(page=>page-1)}/>;
+    return (
+      <NoResultFound
+        forPagination={true}
+        prevPagePagination={() => setPage((page) => page - 1)}
+      />
+    );
+  }
+
+  if (
+    !(
+      categoryProductsData &&
+      !categoryProductsData.getProductsBasedOnCategoryForUser &&
+      categoryProductsData.getProductsBasedOnCategoryForUser.products.length
+    ) &&
+    category !== "all_products" &&
+    page !== 1
+  ) {
+    return (
+      <NoResultFound
+        forPagination={true}
+        prevPagePagination={() => setPage((page) => page - 1)}
+      />
+    );
   }
 
   const handleLoadMore = (newPage: number) => {
@@ -132,17 +209,50 @@ export const ProductGrid = ({
   };
 
   let fetchedProducts, fetchedProductsPagination;
-  if (data && data.getStoreProductsForUser) {
-    const { products, pagination } = data.getStoreProductsForUser;
-    fetchedProducts = products;
-    fetchedProductsPagination = pagination;
+
+  if (page !== 1) {
+    if (data && data.getStoreProductsForUser) {
+      const { products, pagination } = data.getStoreProductsForUser;
+      fetchedProducts = products;
+      fetchedProductsPagination = pagination;
+    } else {
+      const {
+        products: categoryProducts,
+        pagination: categoryProductsPagination,
+      } = categoryProductsData.getProductsBasedOnCategoryForUser;
+      fetchedProducts = categoryProducts;
+      fetchedProductsPagination = categoryProductsPagination;
+    }
   } else {
-    const {
-      products: categoryProducts,
-      pagination: categoryProductsPagination,
-    } = categoryProductsData.getProductsBasedOnCategoryForUser;
-    fetchedProducts = categoryProducts;
-    fetchedProductsPagination = categoryProductsPagination;
+    if (category === "all_products" && !search) {
+      const {
+        products,
+        pagination,
+      } = firstPageProducts.getStoreProductsForUser;
+      fetchedProducts = products;
+      fetchedProductsPagination = pagination;
+    } else if (category !== "all_products" && !search) {
+      const {
+        products: categoryProducts,
+        pagination: categoryProductsPagination,
+      } = firstPageProducts.getProductsBasedOnCategoryForUser;
+      fetchedProducts = categoryProducts;
+      fetchedProductsPagination = categoryProductsPagination;
+    } else if (category !== "all_products" && search) {
+      const {
+        products: searchedProductsInCategory,
+        pagination: searchedProductsPaginationInCategory,
+      } = searchedProductInCategory.searchProductForUser;
+      fetchedProducts = searchedProductsInCategory;
+      fetchedProductsPagination = searchedProductsPaginationInCategory;
+    } else {
+      const {
+        products: searchedProducts,
+        pagination: searchedProductsPagination,
+      } = searchedProduct.searchProductForUser;
+      fetchedProducts = searchedProducts;
+      fetchedProductsPagination = searchedProductsPagination;
+    }
   }
 
   return (

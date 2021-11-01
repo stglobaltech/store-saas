@@ -29,6 +29,7 @@ import {
   PROFILE_PAGE,
 } from 'site-settings/site-navigation';
 import { useAppState, useAppDispatch } from 'contexts/app/app.provider';
+import { removeLocalStateAccessToken } from 'utils/localStorage';
 
 const MobileDrawer: React.FunctionComponent = () => {
   const isDrawerOpen = useAppState('isDrawerOpen');
@@ -46,7 +47,7 @@ const MobileDrawer: React.FunctionComponent = () => {
 
   const handleLogout = () => {
     if (typeof window !== 'undefined') {
-      localStorage.removeItem('access_token');
+      removeLocalStateAccessToken();
       authDispatch({ type: 'SIGN_OUT' });
       Router.push('/');
     }

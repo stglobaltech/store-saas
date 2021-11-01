@@ -1,4 +1,4 @@
-import React from "react";
+import React,{useEffect} from "react";
 import { NextPage, GetStaticProps } from "next";
 import { useQuery } from "@apollo/client";
 import { Modal } from "@redq/reuse-modal";

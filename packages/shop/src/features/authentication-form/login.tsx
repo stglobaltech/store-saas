@@ -1,4 +1,5 @@
 import React, { useContext } from "react";
+import jwtDecode from "jwt-decode";
 import {
   LinkButton,
   Button,
@@ -94,7 +95,7 @@ function SendOtp({ handleVerifyOtp }) {
           <Button
             variant="primary"
             size="big"
-            style={{ width: "100%",marginTop:"20px" }}
+            style={{ width: "100%", marginTop: "20px" }}
             type="submit"
           >
             <FormattedMessage id="sendOtp" defaultMessage="Send Otp" />
@@ -116,7 +117,13 @@ function VerifyOtp({ mobile, countryCode, handleLoginSuccess }) {
     onCompleted: (data) => {
       if (data && data.userLogin && data.userLogin.success) {
         const { accessToken, userId, refreshToken } = data.userLogin;
-        handleLoginSuccess(accessToken, refreshToken, userId);
+        const { roles, exp } = jwtDecode(accessToken) as any;
+        const token = {
+          accessToken: accessToken,
+          refreshToken: refreshToken,
+          expiryDate: new Date(exp * 1000),
+        };
+        handleLoginSuccess(token, userId, roles);
         client.writeQuery({
           query: Q_GET_USERID,
           data: { userId },
@@ -206,8 +213,9 @@ export default function SignInModal() {
     setForm({ form: forms[1], mobile, countryCode });
   }
 
-  function handleLoginSuccess(accessToken, refreshToken, userId) {
-    setLocalStateAccessToken(accessToken, refreshToken, userId);
+
+  function handleLoginSuccess(token, userId, roles) {
+    setLocalStateAccessToken(token, userId, roles);
     authDispatch({ type: "SIGNIN_SUCCESS" });
     closeModal();
   }
