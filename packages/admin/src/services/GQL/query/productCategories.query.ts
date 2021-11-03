@@ -10,6 +10,7 @@ export const GET_PRODUCT_CATEGORIES = gql`
           ar
         }
         isEnable
+        imageUrl
       }
     }
   }

@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useMutation, useQuery } from '@apollo/client';
 import { useDrawerDispatch } from 'context/DrawerContext';
@@ -23,6 +23,12 @@ import {
 } from 'services/GQL';
 import SuccessNotification from 'components/Notification/SuccessNotification';
 import DangerNotification from 'components/Notification/DangerNotification';
+import Uploader from 'components/Uploader/Uploader';
+import { uploadFile } from 'services/REST/restaurant.service';
+
+interface imgUploadRes {
+  [urlText: string]: any;
+}
 
 type Props = any;
 
@@ -30,6 +36,11 @@ const AddCategory: React.FC<Props> = (props) => {
   const {
     data: { storeId },
   } = useQuery(Q_GET_STORE_ID);
+
+  const [categoryImage, setCategoryImage] = useState({
+    url: '',
+    uploading: false,
+  });
 
   const dispatch = useDrawerDispatch();
 
@@ -50,37 +61,58 @@ const AddCategory: React.FC<Props> = (props) => {
     register({ name: 'image' });
   }, [register]);
 
-  const [createCategory, { loading: saving }] = useMutation(M_CREATE_PRODUCT_CATEGORY, {
-    onCompleted: (data) => {
-      closeDrawer();
-      if (data && data.createCategory)
-        notify(
-          <SuccessNotification
-            message={data.createCategory.message.en}
-            dismiss
-          />
-        );
-      else
-        notify(
-          <DangerNotification
-            message={data.createCategory.message.en}
-            dismiss
-          />
-        );
-    },
-    refetchQueries: [
-      {
-        query: GET_PRODUCT_CATEGORIES,
-        variables: { storeId: storeId },
+  const [createCategory, { loading: saving }] = useMutation(
+    M_CREATE_PRODUCT_CATEGORY,
+    {
+      onCompleted: (data) => {
+        closeDrawer();
+        if (data && data.createCategory)
+          notify(
+            <SuccessNotification
+              message={data.createCategory.message.en}
+              dismiss
+            />
+          );
+        else
+          notify(
+            <DangerNotification
+              message={data.createCategory.message.en}
+              dismiss
+            />
+          );
       },
-    ],
-  });
+      refetchQueries: [
+        {
+          query: GET_PRODUCT_CATEGORIES,
+          variables: { storeId: storeId },
+        },
+      ],
+    }
+  );
+
+  const uploadImage = (files) => {
+    setCategoryImage({ ...categoryImage, uploading: true });
+    const formData = new FormData();
+    formData.append('file', files[0], files[0].name);
+    uploadFile(formData)
+      .then((result: imgUploadRes) => {
+        setCategoryImage({
+          ...categoryImage,
+          url: result.urlText,
+          uploading: false,
+        });
+      })
+      .catch((err) => {
+        setCategoryImage({ ...categoryImage, uploading: false });
+      });
+  };
 
   const onSubmit = (values) => {
     const newCategory = {
       name: { en: values.categoryName, ar: values.categoryNameRl },
       isEnable: true,
       storeCode: storeId,
+      imageUrl: categoryImage.url,
     };
     createCategory({ variables: { categoryCreateInput: newCategory } });
   };
@@ -105,6 +137,31 @@ const AddCategory: React.FC<Props> = (props) => {
             />
           )}
         >
+          <Row>
+            <Col lg={4}>
+              <FieldDetails>Upload your Category image here</FieldDetails>
+            </Col>
+            <Col lg={8}>
+              <DrawerBox
+                overrides={{
+                  Block: {
+                    style: {
+                      width: '100%',
+                      height: 'auto',
+                      padding: '30px',
+                      borderRadius: '3px',
+                      backgroundColor: '#ffffff',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    },
+                  },
+                }}
+              >
+                <Uploader onChange={uploadImage} />
+              </DrawerBox>
+            </Col>
+          </Row>
           <Row>
             <Col lg={4}>
               <FieldDetails>
@@ -177,7 +234,7 @@ const AddCategory: React.FC<Props> = (props) => {
         </Scrollbars>
         <ButtonGroup>
           <Button
-            type="button"
+            type='button'
             kind={KIND.minimal}
             onClick={closeDrawer}
             overrides={{
@@ -199,7 +256,7 @@ const AddCategory: React.FC<Props> = (props) => {
 
           <Button
             type='submit'
-            disabled={saving}
+            disabled={saving || categoryImage.uploading}
             overrides={{
               BaseButton: {
                 style: ({ $theme }) => ({
@@ -212,7 +269,11 @@ const AddCategory: React.FC<Props> = (props) => {
               },
             }}
           >
-            {saving ? "Saving" : "Create Category"}
+            {categoryImage.uploading
+              ? 'loading'
+              : saving
+              ? 'Saving'
+              : 'Create Category'}
           </Button>
         </ButtonGroup>
       </Form>
