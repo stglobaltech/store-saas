@@ -15,6 +15,7 @@
     "@stripe/react-stripe-js": "^1.4.0",
     "@stripe/stripe-js": "^1.13.2",
     "@styled-system/theme-get": "^5.1.2",
+    "axios": "^0.24.0",
     "cookie": "^0.4.1",
     "currency.js": "^2.0.3",
     "formik": "^2.2.6",
