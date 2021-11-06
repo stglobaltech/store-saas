@@ -56,7 +56,6 @@ const Row = withStyle(Rows, () => ({
 }));
 
 export default function Orders() {
-
   const dispatch = useDrawerDispatch();
 
   const {
@@ -120,19 +119,13 @@ export default function Orders() {
     variables: {
       input: {
         storeId: storeId,
-        type: 'single',
+        type: 'ALL',
       },
     },
     onSubscriptionData: () => {
-      console.log('bismillah');
+      refetch();
     },
   });
-
-  if (subData) {
-    const { message, payload, title } = data.chefOrderSubscribe;
-    console.log(payload.eventType, title.en, message.en, 'sub called');
-    refetch();
-  }
 
   const fetchNextPage = (page) => {
     setOrderState({
