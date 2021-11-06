@@ -9,7 +9,7 @@ import { Row, Col } from 'components/FlexBox/FlexBox';
 import Input from 'components/Input/Input';
 import { Textarea } from 'components/Textarea/Textarea';
 import { FormFields, FormLabel } from 'components/FormFields/FormFields';
-import { uploadFile } from 'services/REST/restaurant.service';
+import { uploadProductImge } from 'services/REST/product.service';
 import {
   Form,
   DrawerTitleWrapper,
@@ -88,7 +88,7 @@ const AddProduct: React.FC<Props> = () => {
     setProductPicture({ ...productPicture, uploading: true });
     const formData = new FormData();
     formData.append("file", files[0], files[0].name);
-    uploadFile(formData)
+    uploadProductImge(formData)
       .then((result: imgUploadRes) => {
         setProductPicture({
           ...productPicture,

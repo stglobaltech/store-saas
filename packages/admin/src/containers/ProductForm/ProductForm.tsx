@@ -10,7 +10,7 @@ import Input from 'components/Input/Input';
 import { Textarea } from 'components/Textarea/Textarea';
 import Select from 'components/Select/Select';
 import { FormFields, FormLabel } from 'components/FormFields/FormFields';
-import { uploadFile } from 'services/REST/restaurant.service';
+import { uploadProductImge } from 'services/REST/product.service';
 import { useQuery, useMutation } from '@apollo/client';
 import {
   Form,
@@ -111,7 +111,7 @@ const AddProduct: React.FC<Props> = (props) => {
     setProductPicture({ ...productPicture, uploading: true });
     const formData = new FormData();
     formData.append("file", files[0], files[0].name);
-    uploadFile(formData)
+    uploadProductImge(formData)
       .then((result: imgUploadRes) => {
         setProductPicture({
           ...productPicture,
