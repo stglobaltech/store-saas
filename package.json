@@ -42,5 +42,9 @@
     "*.{js,md,css}": [
       "prettier --trailing-comma es5 --single-quote --write"
     ]
+  },
+  "dependencies": {
+    "apollo-link-ws": "^1.0.20",
+    "subscriptions-transport-ws": "^0.11.0"
   }
 }
