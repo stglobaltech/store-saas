@@ -119,7 +119,7 @@ export default function Orders() {
     variables: {
       input: {
         storeId: storeId,
-        type: 'ALL',
+        type: 'SINGLE',
       },
     },
     onSubscriptionData: () => {
