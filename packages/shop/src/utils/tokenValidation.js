@@ -8,7 +8,6 @@ const isTokenValidOrUndefined = () => {
   if (!accessToken) return true;
   try {
     const now = new Date();
-    console.log('test2', now >= new Date(expiryDate));
     if (now >= new Date(expiryDate)) {
       return false;
     } else {
