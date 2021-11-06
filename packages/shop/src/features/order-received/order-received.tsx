@@ -53,7 +53,7 @@ const OrderReceived: React.FunctionComponent<OrderReceivedProps> = (props) => {
               <Text>1444</Text>
             </InfoBlock>
 
-            <InfoBlock>
+            {/* <InfoBlock>
               <Text bold className="title">
                 <FormattedMessage id="orderDateText" defaultMessage="Date" />
               </Text>
@@ -80,11 +80,11 @@ const OrderReceived: React.FunctionComponent<OrderReceivedProps> = (props) => {
                   defaultMessage="Cash on delivery"
                 />
               </Text>
-            </InfoBlock>
+            </InfoBlock> */}
           </InfoBlockWrapper>
         </OrderInfo>
 
-        <OrderDetails>
+        {/* <OrderDetails>
           <BlockTitle>
             <FormattedMessage
               id="orderDetailsText"
@@ -149,9 +149,9 @@ const OrderReceived: React.FunctionComponent<OrderReceivedProps> = (props) => {
               </Text>
             </ListDes>
           </ListItem>
-        </OrderDetails>
+        </OrderDetails> */}
 
-        <TotalAmount>
+        {/* <TotalAmount>
           <BlockTitle>
             <FormattedMessage
               id="totalAmountText"
@@ -208,7 +208,7 @@ const OrderReceived: React.FunctionComponent<OrderReceivedProps> = (props) => {
               <Text>$10,874.00</Text>
             </ListDes>
           </ListItem>
-        </TotalAmount>
+        </TotalAmount> */}
       </OrderReceivedContainer>
     </OrderReceivedWrapper>
   );

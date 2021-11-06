@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import {useRouter} from 'next/router';
-import { openModal } from "@redq/reuse-modal";
+import { useRouter } from "next/router";
+import Link from "next/link";
 import {
   CartPopupBody,
   PopupHeader,
@@ -24,7 +24,6 @@ import { CURRENCY } from "utils/constant";
 import { FormattedMessage } from "react-intl";
 import { useLocale } from "contexts/language/language.provider";
 import { AuthContext } from "contexts/auth/auth.context";
-import AuthenticationForm from "features/authentication-form";
 import { Scrollbar } from "components/scrollbar/scrollbar";
 import { useCart } from "contexts/cart/use-cart";
 import { CartItem } from "components/cart-item/cart-item";
@@ -52,7 +51,7 @@ const Cart: React.FC<CartPropsType> = ({
     cartItemsCount,
     calculatePrice,
   } = useCart();
-  const router=useRouter();
+  const router = useRouter();
   const {
     authState: { isAuthenticated },
     authDispatch,
@@ -60,35 +59,6 @@ const Cart: React.FC<CartPropsType> = ({
 
   const [hasCoupon, setCoupon] = useState(false);
   const { isRtl } = useLocale();
-
-  function handleJoin() {
-    authDispatch({
-      type: "SIGNIN",
-    });
-
-    openModal({
-      show: true,
-      overlayClassName: "quick-view-overlay",
-      closeOnClickOutside: true,
-      component: AuthenticationForm,
-      closeComponent: "",
-      config: {
-        enableResizing: false,
-        disableDragging: true,
-        className: "quick-view-modal",
-        width: 458,
-        height: "auto",
-      },
-    });
-  }
-
-  function validateLoggedInBeforeCheckout(e) {
-    if (cartItemsCount && !isAuthenticated) {
-      handleJoin();
-    }else if(cartItemsCount && isAuthenticated){
-      router.push('/checkout');
-    }
-  }
 
   return (
     <CartPopupBody className={className} style={style}>
@@ -140,7 +110,7 @@ const Cart: React.FC<CartPropsType> = ({
       </Scrollbar>
 
       <CheckoutButtonWrapper>
-        <PromoCode>
+        {/* <PromoCode>
           {!coupon?.discountInPercent ? (
             <>
               {!hasCoupon ? (
@@ -170,23 +140,26 @@ const Cart: React.FC<CartPropsType> = ({
               <span>{coupon.code}</span>
             </CouponCode>
           )}
-        </PromoCode>
+        </PromoCode> */}
 
         {cartItemsCount !== 0 ? (
-          // <Link href="/checkout">
-          <CheckoutButton onClick={validateLoggedInBeforeCheckout}>
-            <>
-              <Title>
-                <FormattedMessage id="nav.checkout" defaultMessage="Checkout" />
-              </Title>
-              <PriceBox>
-                {CURRENCY}
-                {calculatePrice()}
-              </PriceBox>
-            </>
-          </CheckoutButton>
+          <Link href="/checkout">
+            <CheckoutButton onClick={onCloseBtnClick}>
+              <>
+                <Title>
+                  <FormattedMessage
+                    id="nav.checkout"
+                    defaultMessage="Checkout"
+                  />
+                </Title>
+                <PriceBox>
+                  {CURRENCY}
+                  {calculatePrice()}
+                </PriceBox>
+              </>
+            </CheckoutButton>
+          </Link>
         ) : (
-          // </Link>
           <CheckoutButton>
             <>
               <Title>

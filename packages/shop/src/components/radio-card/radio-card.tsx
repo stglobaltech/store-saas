@@ -28,7 +28,8 @@ const CardWrapper = styled.label`
 
   &.active {
     border: 1px solid ${themeGet('colors.primary.regular', '#009E7F')};
-    background-color: ${themeGet('colors.white', '#ffffff')};
+    background-color: ${themeGet('colors.primary.regular', '#ffffff')};
+    color:#fff !important;
   }
 
   &.disabled {
@@ -77,6 +78,7 @@ const CardContent = styled.span`
   font-size: ${themeGet('fontSizes.base', '15')}px;
   font-weight: ${themeGet('fontWeights.regular', '400')};
   color: ${themeGet('colors.text.medium', '#424561')};
+  word-break:break-all;
 `;
 
 const CardButtons = styled.span`
@@ -125,6 +127,7 @@ type RadioCardProps = {
   name: string;
   title: string;
   content: string;
+  buildingNo:string,
   editIcon?: any;
   deleteIcon?: any;
   withActionButtons?: boolean;
@@ -141,6 +144,7 @@ const RadioCard: React.FC<RadioCardProps> = ({
   name,
   title,
   content,
+  buildingNo,
   editIcon,
   deleteIcon,
   withActionButtons,
@@ -168,19 +172,19 @@ const RadioCard: React.FC<RadioCardProps> = ({
         onChange={onChange}
       />
       {title && <CardTitle>{title}</CardTitle>}
-      {content && <CardContent>{content}</CardContent>}
+      {content && <CardContent>{buildingNo},{content}</CardContent>}
       {withActionButtons && (
         <CardButtons className='button-wrapper'>
-          {hasEdit && (
+          {/* {hasEdit && (
             <ActionButton onClick={onEdit} className='edit-btn'>
               {editIcon}
             </ActionButton>
-          )}
-          {hasDelete && (
+          )} */}
+          {/* {hasDelete && (
             <ActionButton onClick={onDelete} className='delete-btn'>
               {deleteIcon}
             </ActionButton>
-          )}
+          )} */}
         </CardButtons>
       )}
     </CardWrapper>

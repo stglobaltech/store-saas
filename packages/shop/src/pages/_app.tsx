@@ -1,4 +1,7 @@
+import React from "react";
+import { NotifierContextProvider } from "react-headless-notifier";
 import dynamic from "next/dynamic";
+import { useRouter } from "next/router";
 import { ApolloProvider } from "@apollo/client";
 import { ThemeProvider } from "styled-components";
 import { defaultTheme } from "site-settings/site-theme/default";
@@ -8,6 +11,8 @@ import { LanguageProvider } from "contexts/language/language.provider";
 import { CartProvider } from "contexts/cart/use-cart";
 import { useApollo } from "utils/apollo";
 import { useMedia } from "utils/use-media";
+import { useCart } from "contexts/cart/use-cart";
+import { isTokenValidOrUndefined } from "utils/tokenValidation";
 
 // External CSS import here
 import "rc-drawer/assets/index.css";
@@ -26,11 +31,33 @@ import { GlobalStyle } from "assets/styles/global.style";
 import { messages } from "site-settings/site-translation/messages";
 import "typeface-lato";
 import "typeface-poppins";
+import { useEffect } from "react";
 // need to provide types
 const DemoSwitcher = dynamic(
   () => import("components/demo-switcher/switcher-btn")
 );
 const AppLayout = dynamic(() => import("layouts/app-layout"));
+
+const RouteGuard = ({ children }) => {
+  const router = useRouter();
+
+  useEffect(() => {
+    isAuthenticated(router.asPath);
+  }, []);
+
+  const { cartItemsCount } = useCart();
+  function isAuthenticated(url) {
+    const privatePaths = ["/checkout"];
+    const path = url.split("?")[0];
+    if (
+      (!isTokenValidOrUndefined() || !cartItemsCount) &&
+      privatePaths.includes(path)
+    ) {
+      router.push("/");
+    }
+  }
+  return children;
+};
 
 export default function ExtendedApp({ Component, pageProps }) {
   const mobile = useMedia("(max-width: 580px)");
@@ -47,10 +74,14 @@ export default function ExtendedApp({ Component, pageProps }) {
             <AppProvider>
               <AuthProvider>
                 <AppLayout>
-                  <Component
-                    {...pageProps}
-                    deviceType={{ mobile, tablet, desktop }}
-                  />
+                  <RouteGuard>
+                    <NotifierContextProvider>
+                      <Component
+                        {...pageProps}
+                        deviceType={{ mobile, tablet, desktop }}
+                      />
+                    </NotifierContextProvider>
+                  </RouteGuard>
                 </AppLayout>
               </AuthProvider>
             </AppProvider>

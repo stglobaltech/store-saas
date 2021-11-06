@@ -105,10 +105,10 @@ const MobileDrawer: React.FunctionComponent = () => {
                   <UserAvatar>
                     <img src={UserImage} alt='user_avatar' />
                   </UserAvatar>
-                  <UserDetails>
+                  {/* <UserDetails>
                     <h3>David Kinderson</h3>
                     <span>+990 374 987</span>
-                  </UserDetails>
+                  </UserDetails> */}
                 </LoginView>
               ) : (
                 <LogoutView>

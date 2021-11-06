@@ -67,6 +67,8 @@ export const reducer = (state, action) => {
       return { ...state, coupon: null };
     case 'TOGGLE_RESTAURANT':
       return { ...state, isRestaurant: !state.isRestaurant };
+    case 'SET_CART_ID':
+      return {...state,cartId:action.payload}
     default:
       throw new Error(`Unknown action: ${action.type}`);
   }

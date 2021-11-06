@@ -35,6 +35,7 @@ export const Q_GET_ALL_ADDRESSES = gql`
       id
       name
       address
+      buildingNo
     }
   }
 `;

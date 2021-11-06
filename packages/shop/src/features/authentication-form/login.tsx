@@ -1,5 +1,6 @@
 import React, { useContext } from "react";
 import jwtDecode from "jwt-decode";
+import { useNotifier } from "react-headless-notifier";
 import {
   LinkButton,
   Button,
@@ -26,6 +27,8 @@ import { setToken } from "utils/localStorage";
 import { initializeApollo } from "utils/apollo";
 import { Q_GET_USERID } from "graphql/query/loggedIn-user.query";
 import { useCart } from "contexts/cart/use-cart";
+import SuccessNotification from "../../components/Notification/SuccessNotification";
+import DangerNotification from "../../components/Notification/DangerNotification";
 
 const countryCodes = [
   { name: "+91", value: "IND" },
@@ -39,6 +42,7 @@ const countryCodes = [
 // form component to send otp to user as a stepper UI
 function SendOtp({ handleVerifyOtp }) {
   const intl = useIntl();
+  const { notify } = useNotifier();
   const [mobile, setMobile] = React.useState("");
   const [countryCode, setCountryCode] = React.useState("");
 
@@ -47,6 +51,13 @@ function SendOtp({ handleVerifyOtp }) {
     onCompleted: (data) => {
       if (data && data.sendOtp && data.sendOtp.success) {
         handleVerifyOtp(mobile, countryCode);
+      } else {
+        notify(
+          <DangerNotification
+            message="Something went wrong! OTP could not be sent..."
+            dismiss
+          />
+        );
       }
     },
   });
@@ -111,12 +122,19 @@ function SendOtp({ handleVerifyOtp }) {
 function VerifyOtp({ mobile, countryCode, handleLoginSuccess }) {
   const client = initializeApollo();
   const intl = useIntl();
+  const { notify } = useNotifier();
   const [otp, setOtp] = React.useState("");
 
   const [verifyOtpAndLogin] = useMutation(M_USER_LOGIN, {
     context: { linkName: "auth" },
     onCompleted: (data) => {
       if (data && data.userLogin && data.userLogin.success) {
+        notify(
+          <SuccessNotification
+            message="Login successful! Shop now..."
+            dismiss
+          />
+        );
         const { accessToken, userId, refreshToken } = data.userLogin;
         const { roles, exp } = jwtDecode(accessToken) as any;
         const token = {
@@ -129,6 +147,13 @@ function VerifyOtp({ mobile, countryCode, handleLoginSuccess }) {
           query: Q_GET_USERID,
           data: { userId },
         });
+      } else {
+        notify(
+          <DangerNotification
+            message={`${data.userLogin.message.en}`}
+            dismiss
+          />
+        );
       }
     },
   });
@@ -220,7 +245,6 @@ export default function SignInModal() {
     authDispatch({ type: "SIGNIN_SUCCESS" });
     closeModal();
     if (isOpen) toggleCart();
-
   }
 
   return (
@@ -247,7 +271,7 @@ export default function SignInModal() {
         </Offer>
       </Container>
 
-      <OfferSection>
+      {/* <OfferSection>
         <Offer>
           <FormattedMessage
             id="forgotPasswordText"
@@ -257,7 +281,7 @@ export default function SignInModal() {
             <FormattedMessage id="resetText" defaultMessage="Reset It" />
           </LinkButton>
         </Offer>
-      </OfferSection>
+      </OfferSection> */}
     </Wrapper>
   );
 }

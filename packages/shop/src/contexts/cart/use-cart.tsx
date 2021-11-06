@@ -63,6 +63,11 @@ const useCartActions = (initialCart = INITIAL_STATE) => {
     (acc, item) => acc + item.quantity,
     0
   );
+  const getParticularItemCount = (itemId) => {
+    const item = state.items.filter((item) => item._id === itemId)[0];
+    return item ? item.quantity : 0;
+  };
+
   return {
     state,
     getItemsCount,
@@ -80,6 +85,7 @@ const useCartActions = (initialCart = INITIAL_STATE) => {
     removeCouponHandler,
     getDiscount,
     toggleRestaurant,
+    getParticularItemCount,
   };
 };
 
@@ -101,6 +107,7 @@ export const CartProvider = ({ children }) => {
     getCartItemsPrice,
     getDiscount,
     toggleRestaurant,
+    getParticularItemCount,
   } = useCartActions();
   const { rehydrated, error } = useStorage(state, rehydrateLocalState);
 
@@ -126,6 +133,7 @@ export const CartProvider = ({ children }) => {
         removeCoupon: removeCouponHandler,
         calculateDiscount: getDiscount,
         toggleRestaurant,
+        getParticularItemCount,
       }}
     >
       {children}

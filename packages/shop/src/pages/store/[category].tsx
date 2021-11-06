@@ -17,6 +17,14 @@ import CartPopUp from "features/carts/cart-popup";
 import { GET_PRODUCTS_OF_A_CATEGORY } from "graphql/query/productsofacategory.query";
 import { GET_PRODUCTS } from "graphql/query/products.query";
 
+
+import { AuthContext } from "contexts/auth/auth.context";
+import React from "react";
+import { isTokenValidOrUndefined } from "utils/tokenValidation";
+import { useCart } from "contexts/cart/use-cart";
+import { useRouter } from "next/router";
+import { removeToken } from "utils/localStorage";
+
 const PAGE_TYPE = "categories";
 
 export const Main = styled.div<any>(
@@ -33,6 +41,19 @@ export default function Categories({
   deviceType,
 }) {
   const page = sitePages[PAGE_TYPE];
+  const router = useRouter();
+
+  const { authDispatch } = React.useContext<any>(AuthContext);
+
+  const { clearCart } = useCart();
+
+  if (!isTokenValidOrUndefined()) {
+    removeToken();
+    clearCart();
+    authDispatch({ type: "SIGN_OUT" });
+    router.replace("/")
+  }
+  
   return (
     <Modal>
       <MobileBanner intlTitleId={page.banner_title_id} type={PAGE_TYPE} />
