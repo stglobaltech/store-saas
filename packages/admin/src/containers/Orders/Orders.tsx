@@ -115,7 +115,7 @@ export default function Orders() {
     },
   });
 
-  const { data: subData } = useSubscription(S_CHEF_ORDER_PUSH, {
+  useSubscription(S_CHEF_ORDER_PUSH, {
     variables: {
       input: {
         storeId: storeId,
