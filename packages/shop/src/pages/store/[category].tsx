@@ -1,7 +1,4 @@
-import {
-  GetStaticProps,
-  GetStaticPaths,
-} from "next";
+import { GetStaticProps, GetStaticPaths } from "next";
 import styled from "styled-components";
 import css from "@styled-system/css";
 import { Modal } from "@redq/reuse-modal";
@@ -16,7 +13,6 @@ import { ProductGrid } from "components/product-grid/product-grid-two";
 import CartPopUp from "features/carts/cart-popup";
 import { GET_PRODUCTS_OF_A_CATEGORY } from "graphql/query/productsofacategory.query";
 import { GET_PRODUCTS } from "graphql/query/products.query";
-
 
 import { AuthContext } from "contexts/auth/auth.context";
 import React from "react";
@@ -51,9 +47,9 @@ export default function Categories({
     removeToken();
     clearCart();
     authDispatch({ type: "SIGN_OUT" });
-    router.replace("/")
+    router.replace("/");
   }
-  
+
   return (
     <Modal>
       <MobileBanner intlTitleId={page.banner_title_id} type={PAGE_TYPE} />
@@ -132,9 +128,9 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
       productCategories,
       products: data,
     },
+    revalidate: 60,
   };
 };
-
 
 export const getStaticPaths: GetStaticPaths = async () => {
   const apolloClient = initializeApollo();
@@ -157,6 +153,6 @@ export const getStaticPaths: GetStaticPaths = async () => {
   paths.push({ params: { category: "all_products" } });
   return {
     paths,
-    fallback: false,
+    fallback: true,
   };
 };
