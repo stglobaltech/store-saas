@@ -1,5 +1,5 @@
-import React from 'react';
-import { Img } from 'react-image';
+import React, { Suspense } from 'react';
+import { useImage } from 'react-image';
 import placeholder from './product-placeholder.png';
 const Placeholder = () => <img src={placeholder} alt="placeholder" />;
 export default function Image({
@@ -19,16 +19,21 @@ export default function Image({
   className?: string;
   style?: any;
 }) {
+
+  const { src } = useImage({
+    srcList: url
+  });
+
   return (
-    <Img
-      draggable={false}
-      style={style}
-      src={url}
-      alt={alt}
-      loader={<Placeholder />}
-      unloader={<Placeholder />}
-      key={key}
-      className={className}
-    />
+    <Suspense fallback={<Placeholder />}>
+      <img
+        key={key}
+        src={src}
+        alt={alt}
+        className={className}
+        style={style}
+        draggable={false}
+      />
+    </Suspense>
   );
 }
