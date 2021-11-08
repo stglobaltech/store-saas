@@ -45,7 +45,7 @@ export default function Settings() {
   );
 
   const openCouponForm = useCallback(
-    () => dispatch({ type: 'OPEN_DRAWER', drawerComponent: 'CAMPAING_FORM' }),
+    () => dispatch({ type: 'OPEN_DRAWER', drawerComponent: 'COUPON_FORM' }),
     [dispatch]
   );
 

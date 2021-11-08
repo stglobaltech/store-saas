@@ -85,7 +85,7 @@ const AddCoupon: React.FC<Props> = (props) => {
           />
         );
 
-        refetch();
+        refetch && refetch();
       }
       else
         notify(
