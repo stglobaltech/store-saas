@@ -15,6 +15,9 @@ import Sidebar from '../Layout/Sidebar/Sidebar';
 import OrderDetail from '../Orders/OrderDetailsDrawer';
 import DeleteCategoryForm from '../CategoryForm/CategoryDeleteDrawer';
 import CategoryEditForm from '../CategoryForm/CategoryEditForm';
+import CouponForm from '../CouponForm/CouponForm';
+import EditCouponForm from '../CouponForm/EditCouponForm';
+import DeleteCouponForm from '../CouponForm/DeleteCouponForm';
 
 /** Components Name Constants */
 const DRAWER_COMPONENTS = {
@@ -27,6 +30,9 @@ const DRAWER_COMPONENTS = {
   ORDER_DETAIL_CARD: OrderDetail,
   DELETE_CATEGORY_FORM: DeleteCategoryForm,
   EDIT_CATEGORY_FORM: CategoryEditForm,
+  COUPON_FORM: CouponForm,
+  EDIT_COUPON_FORM: EditCouponForm,
+  DELETE_COUPON_FORM: DeleteCouponForm,
 
   SIDEBAR: Sidebar,
 };
