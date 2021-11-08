@@ -9,3 +9,14 @@ export const UPDATE_ME = gql`
     }
   }
 `;
+
+export const M_USER_LOGIN=gql`
+mutation userLogin($userLoginInputDto:UserLoginInputDto!){
+  userLogin(userLoginInputDto:$userLoginInputDto){
+    accessToken
+    refreshToken
+    success
+    userId
+  }
+}
+`;

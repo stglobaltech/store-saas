@@ -1,20 +1,20 @@
-import React from 'react';
-import { NextPage } from 'next';
-import dynamic from 'next/dynamic';
-import { SEO } from 'components/seo';
-import { Modal } from '@redq/reuse-modal';
+import React from "react";
+import { NextPage } from "next";
+import dynamic from "next/dynamic";
+import { SEO } from "components/seo";
+import { Modal } from "@redq/reuse-modal";
 import ProductSingleWrapper, {
   ProductSingleContainer,
-} from 'assets/styles/product-single.style';
-import { GET_PRODUCT_DETAILS } from 'graphql/query/product.query';
-import { initializeApollo } from 'utils/apollo';
+} from "assets/styles/product-single.style";
+import { GET_PRODUCT_DETAILS } from "graphql/query/product.query";
+import { initializeApollo } from "utils/apollo";
 
 const ProductDetails = dynamic(
   () =>
-    import('components/product-details/product-details-one/product-details-one')
+    import("components/product-details/product-details-one/product-details-one")
 );
 
-const CartPopUp = dynamic(() => import('features/carts/cart-popup'), {
+const CartPopUp = dynamic(() => import("features/carts/cart-popup"), {
   ssr: false,
 });
 
@@ -29,16 +29,15 @@ type Props = {
 };
 
 const ProductPage: NextPage<Props> = ({ data, deviceType }) => {
-  console.log('pages -> product -> slug -> ProductPage:', { data, deviceType });
   const content = (
-    <ProductDetails product={data.product} deviceType={deviceType} />
+    <ProductDetails product={data.getProductForUser} deviceType={deviceType} />
   );
 
   return (
     <>
       <SEO
-        title={`${data.product.title} - PickBazar`}
-        description={`${data.product.title} Details`}
+        title={`${data.getProductForUser.productName.en}`}
+        description={`${data.getProductForUser.productName.en} Details`}
       />
 
       <Modal>
@@ -54,13 +53,14 @@ const ProductPage: NextPage<Props> = ({ data, deviceType }) => {
 };
 
 export async function getServerSideProps({ params }) {
-  console.log('pages -> product -> slug:', { params });
   const apolloClient = initializeApollo();
-
-  const { data } = await apolloClient.query({
+  const {
+    data,
+    error,
+  } = await apolloClient.query({
     query: GET_PRODUCT_DETAILS,
     variables: {
-      slug: params.slug,
+      productId: params.slug,
     },
   });
   return {

@@ -1,4 +1,5 @@
-import { gql } from '@apollo/client';
+import { gql } from "@apollo/client";
+
 
 export const GET_LOGGED_IN_CUSTOMER = gql`
   query getUser($id: String = "1") {
@@ -24,6 +25,17 @@ export const GET_LOGGED_IN_CUSTOMER = gql`
         name
         lastFourDigit
       }
+    }
+  }
+`;
+
+export const Q_GET_ALL_ADDRESSES = gql`
+  query getAllAddress {
+    getAllAddress {
+      id
+      name
+      address
+      buildingNo
     }
   }
 `;

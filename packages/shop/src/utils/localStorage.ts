@@ -20,25 +20,36 @@ export const setLocalState = (key, value) => {
   }
 };
 
-export const getLocalStateAccessToken = () => {
+export const getToken = () => {
   try {
-    return localStorage.getItem('access_token');
+    return localStorage.getItem("token");
   } catch (err) {
     return undefined;
   }
 };
 
-export const setLocalStateAccessToken = (value) => {
+export const setToken = (token, userId, roles) => {
   try {
-    localStorage.setItem('access_token', value);
+    //token:{accessToken,refreshToken,expiryDate}
+    const newToken = localStorage.getItem("token") || {};
+    Object.keys(token).map((tokenKey) => {
+      newToken[tokenKey] = token[tokenKey];
+    });
+    localStorage.setItem("token", JSON.stringify(newToken));
+    if (userId && roles) {
+      localStorage.setItem("userId", userId);
+      localStorage.setItem("roles", roles);
+    }
   } catch {
     // ignore write errors
   }
 };
 
-export const removeLocalStateAccessToken = () => {
+export const removeToken = () => {
   try {
-    localStorage.removeItem('access_token');
+    localStorage.removeItem("token");
+    localStorage.removeItem("roles");
+    localStorage.removeItem("userId");
   } catch {
     // ignore write errors
   }
