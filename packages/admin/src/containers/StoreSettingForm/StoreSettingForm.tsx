@@ -15,6 +15,7 @@ import { uploadFile } from '../../services/REST/restaurant.service';
 import { useNotifier } from 'react-headless-notifier';
 import SuccessNotification from '../../components/Notification/SuccessNotification';
 import DangerNotification from '../../components/Notification/DangerNotification';
+import { useHistory } from 'react-router-dom';
 
 interface imgUploadRes {[
   urlText: string
@@ -29,6 +30,7 @@ const StoreSettingsForm: React.FC<Props> = () => {
     [dispatch]
   );
 
+  const history = useHistory();
   const { notify } = useNotifier();
 
   const { register, handleSubmit, setValue, formState: { errors } } = useForm();
@@ -115,6 +117,29 @@ const StoreSettingsForm: React.FC<Props> = () => {
 
   return (
     <Grid fluid={true}>
+      <Row>
+        <Col md={12}>
+          <Button
+            type="button"
+            kind={KIND.secondary}
+            onClick={history.goBack}
+            overrides={{
+              BaseButton: {
+                style: ({ $theme }) => ({
+                  borderTopLeftRadius: '3px',
+                  borderTopRightRadius: '3px',
+                  borderBottomRightRadius: '3px',
+                  borderBottomLeftRadius: '3px',
+                  color: $theme.colors.red400
+                }),
+              },
+            }}
+          >
+            Back
+          </Button>
+        </Col>
+      </Row>
+
       <Form onSubmit={handleSubmit(onSubmit)} style={{ paddingBottom: 0 }}>
         <Row>
           <Col md={4}>
