@@ -136,7 +136,7 @@ export default function Category() {
                               src={item.imageUrl ? item.imageUrl : no_image}
                               width='100'
                               height='60'
-                              alt='category image'
+                              alt='category'
                             ></img>
                           </StyledCell>
                           <StyledCell>
