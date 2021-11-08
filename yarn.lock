@@ -5870,6 +5870,33 @@ base@^0.11.1:
     mixin-deep "^1.2.0"
     pascalcase "^0.1.1"
 
+baseui@^10.5.0:
+  version "10.5.0"
+  resolved "https://registry.yarnpkg.com/baseui/-/baseui-10.5.0.tgz#2bd5a9c6fb1072106630d75849759dd73bb75c76"
+  integrity sha512-5ZD3/xDB9E61iLEWK1pi86I6PXeG53m2zgWQEXb6JJ1GXCOnJeSSgREdxQ1KtJ1KZEBkYOjICDo1MAC1dua+3Q==
+  dependencies:
+    "@date-io/date-fns" "^2.6.2"
+    card-validator "^6.2.0"
+    date-fns "^2.6.0"
+    glob "^7.1.6"
+    just-extend "^4.0.2"
+    memoize-one "^5.1.1"
+    polished "^3.2.0"
+    popper.js "^1.16.0"
+    react-dropzone "^9.0.0"
+    react-focus-lock "^2.2.1"
+    react-input-mask "^2.0.4"
+    react-is "^16.8.6"
+    react-movable "^2.5.4"
+    react-multi-ref "^1.0.0"
+    react-range "^1.8.0"
+    react-uid "^2.3.0"
+    react-virtualized "^9.21.1"
+    react-virtualized-auto-sizer "^1.0.2"
+    react-window "^1.8.5"
+    resize-observer-polyfill "^1.5.1"
+    timezone-support "^2.0.2"
+
 baseui@^9.112.0:
   version "9.112.0"
   resolved "https://registry.yarnpkg.com/baseui/-/baseui-9.112.0.tgz#cb8f0efeb0175187d4e5583bb2a39b5474d71b50"
@@ -15903,6 +15930,11 @@ react-movable@^2.4.0:
   resolved "https://registry.yarnpkg.com/react-movable/-/react-movable-2.5.3.tgz#9510139c4762d783117d34fd2d816d3d63180113"
   integrity sha512-CazVL7eN4QTAEPwBlcp9101SAytzakpePa3b/lLpsTZyJn3z1uRbqiWA/NTQDjPvPj8h9ws8j8uUr8TBJTiJiw==
 
+react-movable@^2.5.4:
+  version "2.5.4"
+  resolved "https://registry.yarnpkg.com/react-movable/-/react-movable-2.5.4.tgz#1c28e8291476ab19b8625d06b60f97a89dd85a45"
+  integrity sha512-F+Ml4Il9S7uyY2Nr/UzwnXxWewwsHdQkmwgzAjk+Dsz73sy2yCJk7GkQkdqmh8W6XXTlviepz1VA0eHUWh9MZQ==
+
 react-multi-carousel@^2.6.2:
   version "2.6.2"
   resolved "https://registry.yarnpkg.com/react-multi-carousel/-/react-multi-carousel-2.6.2.tgz#c78d38fbfab704394a72f26ffa161b8963138a1f"
@@ -17992,10 +18024,26 @@ styletron-engine-atomic@^1.4.7:
     inline-style-prefixer "^5.1.0"
     styletron-standard "^3.0.5"
 
+styletron-engine-atomic@^1.4.8:
+  version "1.4.8"
+  resolved "https://registry.yarnpkg.com/styletron-engine-atomic/-/styletron-engine-atomic-1.4.8.tgz#3cab053e6d8e930fc2cd3f36dfbda1e9da8576ae"
+  integrity sha512-KLyDkigcIrIMzUlX0usBfO/BBwnh1yC/48+DqP4LSZn8UgGP00oStxoezAH8pYhal1amvBJ7tLVs7tNZDUTAdg==
+  dependencies:
+    inline-style-prefixer "^5.1.0"
+    styletron-standard "^3.0.5"
+
 styletron-react@^6.0.1:
   version "6.0.1"
   resolved "https://registry.yarnpkg.com/styletron-react/-/styletron-react-6.0.1.tgz#bf4f51ce872e925bcf8ebdcc8ee69027578b93d0"
   integrity sha512-GHgWrzR1fUyMr2JnHZOUP/XAKZ/dtDb3qxqq779xQkVC3Tjl1zWWrNLe+qnRwunygcEMiVVtinNdhvwHTIsiIQ==
+  dependencies:
+    prop-types "^15.6.0"
+    styletron-standard "^3.0.5"
+
+styletron-react@^6.0.2:
+  version "6.0.2"
+  resolved "https://registry.yarnpkg.com/styletron-react/-/styletron-react-6.0.2.tgz#c45cb7c1860176b0adcea61c1f081256e522e811"
+  integrity sha512-xMRnM8CUMbo8q/7BQlh7DfmNB0SDFixIHpzGqdfia9QF+haU/z+podgcJvnA4BWG6Gt2ZmrxZ6Qhrfvaalcyyg==
   dependencies:
     prop-types "^15.6.0"
     styletron-standard "^3.0.5"
