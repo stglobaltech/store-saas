@@ -28,14 +28,14 @@ export const RightMenu: React.FC<Props> = ({
         label={OFFER_MENU_ITEM.defaultMessage}
         intlId={OFFER_MENU_ITEM.id}
       /> */}
-      <NavLink
+      {/* <NavLink
         className="menu-item"
         href={HELP_MENU_ITEM.href}
         label={HELP_MENU_ITEM.defaultMessage}
         intlId={HELP_MENU_ITEM.id}
         iconClass="menu-icon"
         icon={<HelpIcon />}
-      />
+      /> */}
       <LanguageSwitcher />
 
       <AuthMenu

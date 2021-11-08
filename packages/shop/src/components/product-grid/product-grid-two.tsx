@@ -233,14 +233,12 @@ export const ProductGrid = ({
       fetchedProducts = products;
       fetchedProductsPagination = pagination;
     } else if (category !== "all_products" && !search) {
-      const categoryProducts = [];
-      const categoryProductsPagination = {};
       if (
         firstPageProducts &&
         firstPageProducts.getProductsBasedOnCategoryForUser
       ) {
-        fetchedProducts = categoryProducts;
-        fetchedProductsPagination = categoryProductsPagination;
+        fetchedProducts = firstPageProducts.getProductsBasedOnCategoryForUser.products;
+        fetchedProductsPagination = firstPageProducts.getProductsBasedOnCategoryForUser.pagination;
       }
     } else if (category !== "all_products" && search) {
       const {

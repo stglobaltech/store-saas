@@ -55,12 +55,12 @@ export const Banner: React.FC<Props> = ({
             defaultMessage="Set Your Description Through Language File"
           />
         </Description>
-        <SearchWrapper>
+        {/* <SearchWrapper>
           <Search
             className="banner-search"
             shadow="0 21px 36px rgba(0,0,0,0.05)"
           />
-        </SearchWrapper>
+        </SearchWrapper> */}
         <Waypoint
           onEnter={removeSticky}
           onLeave={setSticky}
