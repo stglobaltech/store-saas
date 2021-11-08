@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from 'react';
 import { styled, withStyle, createThemedUseStyletron } from 'baseui';
 import { Grid, Row as Rows, Col as Column } from 'components/FlexBox/FlexBox';
-import { useQuery } from '@apollo/client';
+import { useQuery, useSubscription } from '@apollo/client';
 import { Wrapper, Header, Heading } from 'components/Wrapper.style';
 import {
   TableWrapper,
@@ -10,7 +10,7 @@ import {
   StyledCell,
 } from './Orders.style';
 import NoResult from 'components/NoResult/NoResult';
-import { Q_GET_ORDERS, Q_GET_STORE_ID } from 'services/GQL';
+import { Q_GET_ORDERS, Q_GET_STORE_ID, S_CHEF_ORDER_PUSH } from 'services/GQL';
 import Pagination from 'components/Pagination/Pagination';
 import { useDrawerDispatch } from 'context/DrawerContext';
 
@@ -56,7 +56,6 @@ const Row = withStyle(Rows, () => ({
 }));
 
 export default function Orders() {
-  
   const dispatch = useDrawerDispatch();
 
   const {
@@ -110,15 +109,23 @@ export default function Orders() {
     },
   });
 
-  const { data, loading, error } = useQuery(Q_GET_ORDERS, {
+  const { data, loading, error, refetch } = useQuery(Q_GET_ORDERS, {
     variables: {
       ordersFindInputDto: orderState.ordersFindInputDto,
     },
   });
 
-  if (error) {
-    return <div>Error! {error.message}</div>;
-  }
+  useSubscription(S_CHEF_ORDER_PUSH, {
+    variables: {
+      input: {
+        storeId: storeId,
+        type: 'SINGLE',
+      },
+    },
+    onSubscriptionData: () => {
+      refetch();
+    },
+  });
 
   const fetchNextPage = (page) => {
     setOrderState({
