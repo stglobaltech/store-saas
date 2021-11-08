@@ -71,10 +71,17 @@ export const GET_PRODUCT_DETAILS = gql`
       _id
       productName {
         en
+        ar
       }
-      description
-      price
+      description{
+        en
+        ar
+      }
       picture
+      price{
+        basePrice
+        price
+      }
       maxQuantity
     }
   }
