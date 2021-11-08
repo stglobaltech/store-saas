@@ -22,8 +22,8 @@ interface Props {
   icon?: boolean;
   buttonProps?: any;
   flexStart?: boolean;
-  cartId: string;
-  storeId: string;
+  cartId?: string;
+  storeId?: string;
 }
 
 const Address = ({

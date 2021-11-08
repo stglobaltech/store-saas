@@ -208,7 +208,8 @@ export const ProductGrid = ({
     setPage(newPage);
   };
 
-  let fetchedProducts, fetchedProductsPagination;
+  let fetchedProducts: any = [],
+    fetchedProductsPagination: any = {};
 
   if (page !== 1) {
     if (data && data.getStoreProductsForUser) {
@@ -219,7 +220,7 @@ export const ProductGrid = ({
       const {
         products: categoryProducts,
         pagination: categoryProductsPagination,
-      } = categoryProductsData.getProductsBasedOnCategoryForUser;
+      } = categoryProductsData?.getProductsBasedOnCategoryForUser;
       fetchedProducts = categoryProducts;
       fetchedProductsPagination = categoryProductsPagination;
     }
@@ -232,12 +233,15 @@ export const ProductGrid = ({
       fetchedProducts = products;
       fetchedProductsPagination = pagination;
     } else if (category !== "all_products" && !search) {
-      const {
-        products: categoryProducts,
-        pagination: categoryProductsPagination,
-      } = firstPageProducts.getProductsBasedOnCategoryForUser;
-      fetchedProducts = categoryProducts;
-      fetchedProductsPagination = categoryProductsPagination;
+      const categoryProducts = [];
+      const categoryProductsPagination = {};
+      if (
+        firstPageProducts &&
+        firstPageProducts.getProductsBasedOnCategoryForUser
+      ) {
+        fetchedProducts = categoryProducts;
+        fetchedProductsPagination = categoryProductsPagination;
+      }
     } else if (category !== "all_products" && search) {
       const {
         products: searchedProductsInCategory,

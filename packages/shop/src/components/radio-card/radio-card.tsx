@@ -126,8 +126,8 @@ type RadioCardProps = {
   id: string;
   name: string;
   title: string;
-  content: string;
-  buildingNo:string,
+  content?: string;
+  buildingNo?:string,
   editIcon?: any;
   deleteIcon?: any;
   withActionButtons?: boolean;
