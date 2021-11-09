@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useForm } from "react-hook-form";
 import Input from "components/Input/Input";
-import Button from "components/Button/Button";
+import Button, { KIND } from "components/Button/Button";
 import { Grid, Row, Col } from "components/FlexBox/FlexBox";
 import { Form } from "../DrawerItems/DrawerItems.style";
 import { FormFields, FormLabel } from "components/FormFields/FormFields";
@@ -14,10 +14,17 @@ import {
 import { InLineLoader } from "../../components/InlineLoader/InlineLoader";
 import Select from "components/Select/Select";
 import UpdateAddressMap from "components/Map/UpdateAddressMap";
+import { useNotifier } from 'react-headless-notifier';
+import SuccessNotification from '../../components/Notification/SuccessNotification';
+import DangerNotification from '../../components/Notification/DangerNotification';
+import { useHistory } from 'react-router-dom';
 
 type Props = {};
 
 const ContactDetails: React.FC<Props> = () => {
+  const history = useHistory();
+  const { notify } = useNotifier();
+
   const { data: { userId } } = useQuery(Q_GET_USER_ID);
   const { register, handleSubmit, setValue, formState: { errors } } = useForm();
   const [storeId, setStoreId] = useState("");
@@ -26,10 +33,6 @@ const ContactDetails: React.FC<Props> = () => {
     address: "",
     coordinates: [],
     type: "Point",
-  });
-  const [updateStatus, setUpdateStatus] = useState({
-    success: false,
-    message: "",
   });
 
   useEffect(() => {
@@ -59,15 +62,19 @@ const ContactDetails: React.FC<Props> = () => {
           data.editStoreContactAddress &&
           data.editStoreContactAddress.success
         )
-          setUpdateStatus({
-            success: true,
-            message: "Store address updated successfully",
-          });
+          notify(
+            <SuccessNotification
+              message={data.editStoreContactAddress.message.en}
+              dismiss
+            />
+          );
         else
-          setUpdateStatus({
-            success: false,
-            message: "Store could not be updated",
-          });
+          notify(
+            <DangerNotification
+              message={data.editStoreContactAddress.message.en}
+              dismiss
+            />
+          );
       },
     }
   );
@@ -127,42 +134,34 @@ const ContactDetails: React.FC<Props> = () => {
 
   return (
     <Grid fluid={true}>
+      <Row>
+        <Col md={12}>
+          <Button
+            type="button"
+            kind={KIND.secondary}
+            onClick={history.goBack}
+            overrides={{
+              BaseButton: {
+                style: ({ $theme }) => ({
+                  borderTopLeftRadius: '3px',
+                  borderTopRightRadius: '3px',
+                  borderBottomRightRadius: '3px',
+                  borderBottomLeftRadius: '3px',
+                  color: $theme.colors.red400
+                }),
+              },
+            }}
+          >
+            Back
+          </Button>
+        </Col>
+      </Row>
+
       <Form
         onKeyDown={checkKeyDownForOnSubmit}
         onSubmit={handleSubmit(onSubmit)}
         style={{ paddingBottom: 0 }}
       >
-        {updateStatus.message &&
-          (updateStatus.success ? (
-            <div
-              style={{
-                padding: "0.75rem 1.25rem",
-                marginBottom: "1rem",
-                border: "1px solid transparent",
-                borderRadius: "0.25rem",
-                color: "#155724",
-                backgroundColor: "#d4edda",
-                borderColor: "#c3e6cb",
-              }}
-            >
-              {updateStatus.message}
-            </div>
-          ) : (
-            <div
-              style={{
-                padding: "0.75rem 1.25rem",
-                marginBottom: "1rem",
-                border: "1px solid transparent",
-                borderRadius: "0.25rem",
-                color: "#721c24",
-                backgroundColor: "#f8d7da",
-                borderColor: "#f5c6cb",
-              }}
-            >
-              {updateStatus.message}
-            </div>
-          ))}
-
         <Row>
           <Col md={6}>
             <FormFields>
