@@ -13,26 +13,24 @@ import {
 } from './Category.style';
 import { Plus } from 'assets/icons/Plus';
 import NoResult from 'components/NoResult/NoResult';
-import {
-  GET_PRODUCT_CATEGORIES,
-  Q_GET_STORE_ID,
-} from 'services/GQL';
+import { GET_PRODUCT_CATEGORIES, Q_GET_STORE_ID } from 'services/GQL';
 import { PencilIcon } from 'assets/icons/PencilIcon';
 import { CloseIcon } from 'assets/icons/CloseIcon';
+import no_image from 'assets/image/no_image.jpg';
 
 const Col = withStyle(Cols, () => ({
   '@media only screen and (max-width: 767px)': {
     marginBottom: '20px',
 
-    ":last-child": {
+    ':last-child': {
       marginBottom: 0,
     },
   },
 }));
 
 const Row = withStyle(Rows, () => ({
-  "@media only screen and (min-width: 768px)": {
-    alignItems: "center",
+  '@media only screen and (min-width: 768px)': {
+    alignItems: 'center',
   },
 }));
 
@@ -42,9 +40,9 @@ export default function Category() {
   } = useQuery(Q_GET_STORE_ID);
 
   const dispatch = useDrawerDispatch();
-  
+
   const openDrawer = useCallback(
-    () => dispatch({ type: "OPEN_DRAWER", drawerComponent: "CATEGORY_FORM" }),
+    () => dispatch({ type: 'OPEN_DRAWER', drawerComponent: 'CATEGORY_FORM' }),
     [dispatch]
   );
 
@@ -84,7 +82,7 @@ export default function Category() {
           <Header
             style={{
               marginBottom: 30,
-              boxShadow: "0 0 5px rgba(0, 0 ,0, 0.05)",
+              boxShadow: '0 0 5px rgba(0, 0 ,0, 0.05)',
             }}
           >
             <Col md={2}>
@@ -101,11 +99,12 @@ export default function Category() {
                     overrides={{
                       BaseButton: {
                         style: () => ({
-                          width: "100%",
-                          borderTopLeftRadius: "3px",
-                          borderTopRightRadius: "3px",
-                          borderBottomLeftRadius: "3px",
-                          borderBottomRightRadius: "3px",
+                          float: 'right',
+                          width: '75%',
+                          borderTopLeftRadius: '3px',
+                          borderTopRightRadius: '3px',
+                          borderBottomLeftRadius: '3px',
+                          borderBottomRightRadius: '3px',
                         }),
                       },
                     }}
@@ -117,11 +116,11 @@ export default function Category() {
             </Col>
           </Header>
 
-          <Wrapper style={{ boxShadow: "0 0 5px rgba(0, 0 , 0, 0.05)" }}>
+          <Wrapper style={{ boxShadow: '0 0 5px rgba(0, 0 , 0, 0.05)' }}>
             <TableWrapper>
-              <StyledTable $gridTemplateColumns='minmax(40px, 400px) minmax(70px, auto) minmax(40px, auto) '>
-                <StyledHeadCell>Id</StyledHeadCell>
+              <StyledTable $gridTemplateColumns='minmax(30px, auto) minmax(30px, auto) minmax(30px, auto) '>
                 <StyledHeadCell>Name</StyledHeadCell>
+                <StyledHeadCell>Image</StyledHeadCell>
                 <StyledHeadCell>Actions</StyledHeadCell>
 
                 {categoryData ? (
@@ -130,9 +129,16 @@ export default function Category() {
                     categoryData.getCategories.productCategories.map(
                       (item, index) => (
                         <React.Fragment key={index}>
-                          <StyledCell>{item._id}</StyledCell>
                           <StyledCell>
                             {item.name.en}/{item.name.ar}
+                          </StyledCell>
+                          <StyledCell>
+                            <img
+                              src={item.imageUrl ? item.imageUrl : no_image}
+                              width='100'
+                              height='60'
+                              alt='category'
+                            ></img>
                           </StyledCell>
                           <StyledCell>
                             <PencilIcon
@@ -151,8 +157,8 @@ export default function Category() {
                     <NoResult
                       hideButton={false}
                       style={{
-                        gridColumnStart: "1",
-                        gridColumnEnd: "one",
+                        gridColumnStart: '1',
+                        gridColumnEnd: 'one',
                       }}
                     />
                   )

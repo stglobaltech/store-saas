@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useMutation, useQuery } from '@apollo/client';
 import { Scrollbars } from 'react-custom-scrollbars';
@@ -23,6 +23,12 @@ import {
 } from 'services/GQL';
 import DangerNotification from 'components/Notification/DangerNotification';
 import SuccessNotification from 'components/Notification/SuccessNotification';
+import Uploader from 'components/Uploader/Uploader';
+import { uploadFile } from 'services/REST/restaurant.service';
+
+interface imgUploadRes {
+  [urlText: string]: any;
+}
 
 type Props = any;
 
@@ -32,6 +38,11 @@ const EditCategory: React.FC<Props> = () => {
   } = useQuery(Q_GET_STORE_ID);
 
   const category = useDrawerState('data');
+
+  const [categoryImage, setCategoryImage] = useState({
+    url: category.imageUrl,
+    uploading: false,
+  });
 
   const dispatch = useDrawerDispatch();
 
@@ -46,37 +57,40 @@ const EditCategory: React.FC<Props> = () => {
     handleSubmit,
     formState: { errors },
   } = useForm({
-    mode: 'onChange',
     defaultValues: {
       categoryName: category.name.en,
       categoryNameRl: category.name.ar,
     },
   });
 
-  React.useEffect(() => {
-    register({ name: 'parent' });
-    register({ name: 'image' });
-  }, [register]);
-
-  const [editCategory, { loading: updating }] = useMutation(M_EDIT_PRODUCT_CATEGORY, {
-    onCompleted: (data) => {
-      closeDrawer();
-      if (data && data.editCategory)
-        notify(
-          <SuccessNotification message={data.editCategory.message.en} dismiss />
-        );
-      else
-        notify(
-          <DangerNotification message={data.editCategory.message.en} dismiss />
-        );
-    },
-    refetchQueries: [
-      {
-        query: GET_PRODUCT_CATEGORIES,
-        variables: { storeId: storeId },
+  const [editCategory, { loading: updating }] = useMutation(
+    M_EDIT_PRODUCT_CATEGORY,
+    {
+      onCompleted: (data) => {
+        closeDrawer();
+        if (data && data.editCategory.success)
+          notify(
+            <SuccessNotification
+              message={data.editCategory.message.en}
+              dismiss
+            />
+          );
+        else
+          notify(
+            <DangerNotification
+              message={data.editCategory.message.en}
+              dismiss
+            />
+          );
       },
-    ],
-  });
+      refetchQueries: [
+        {
+          query: GET_PRODUCT_CATEGORIES,
+          variables: { storeId: storeId },
+        },
+      ],
+    }
+  );
 
   const onSubmit = (values) => {
     editCategory({
@@ -88,11 +102,28 @@ const EditCategory: React.FC<Props> = () => {
             en: values.categoryName,
             ar: values.categoryNameRl,
           },
+          imageUrl: categoryImage.url,
         },
       },
     });
   };
 
+  const uploadImage = (files) => {
+    setCategoryImage({ ...categoryImage, uploading: true });
+    const formData = new FormData();
+    formData.append('file', files[0], files[0].name);
+    uploadFile(formData)
+      .then((result: imgUploadRes) => {
+        setCategoryImage({
+          ...categoryImage,
+          url: result.urlText,
+          uploading: false,
+        });
+      })
+      .catch((err) => {
+        setCategoryImage({ ...categoryImage, uploading: false });
+      });
+  };
   return (
     <>
       <DrawerTitleWrapper>
@@ -113,6 +144,31 @@ const EditCategory: React.FC<Props> = () => {
             />
           )}
         >
+          <Row>
+            <Col lg={4}>
+              <FieldDetails>Upload your Category image here</FieldDetails>
+            </Col>
+            <Col lg={8}>
+              <DrawerBox
+                overrides={{
+                  Block: {
+                    style: {
+                      width: '100%',
+                      height: 'auto',
+                      padding: '30px',
+                      borderRadius: '3px',
+                      backgroundColor: '#ffffff',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    },
+                  },
+                }}
+              >
+                <Uploader onChange={uploadImage} imageURL={category.imageUrl} />
+              </DrawerBox>
+            </Col>
+          </Row>
           <Row>
             <Col lg={4}>
               <FieldDetails>
@@ -209,7 +265,7 @@ const EditCategory: React.FC<Props> = () => {
 
           <Button
             type='submit'
-            disabled={updating}
+            disabled={updating || categoryImage.uploading}
             overrides={{
               BaseButton: {
                 style: ({ $theme }) => ({
