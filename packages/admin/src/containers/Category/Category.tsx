@@ -99,7 +99,8 @@ export default function Category() {
                     overrides={{
                       BaseButton: {
                         style: () => ({
-                          width: '100%',
+                          float: 'right',
+                          width: '75%',
                           borderTopLeftRadius: '3px',
                           borderTopRightRadius: '3px',
                           borderBottomLeftRadius: '3px',
