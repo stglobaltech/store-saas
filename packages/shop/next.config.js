@@ -7,7 +7,7 @@ const nextConfig = {
     return [
       {
         source: '/',
-        destination: '/61151871d331ed1928e369f9',
+        destination: '/store/all_products',
         permanent: false,
       },
     ];

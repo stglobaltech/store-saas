@@ -10,7 +10,7 @@ export const StyledForm = styled.form<any>(
       overflow: 'hidden',
       width: props.minimal ? '100%' : 700,
       color: 'text.regular',
-      backgroundColor: props.minimal ? 'gray.200' : 'white',
+      backgroundColor: props.minimal ? 'gray.200' : '#ececec',
       borderWidth: props.minimal ? '1px' : '0',
       borderStyle: 'solid',
       borderColor: props.minimal ? `gray.500` : 'white',

@@ -50,13 +50,13 @@ export const MobileBanner: React.FC<Props> = ({ type, intlTitleId }) => {
             />
           </Description>
 
-          <Button
+          {/* <Button
             variant="text"
             onClick={() => setOpen(true)}
             style={{ textTransform: 'capitalize' }}
           >
             {type}
-          </Button>
+          </Button> */}
         </ContentRow>
 
         <SearchWrapper>
@@ -67,9 +67,9 @@ export const MobileBanner: React.FC<Props> = ({ type, intlTitleId }) => {
           onLeave={setSticky}
           onPositionChange={onWaypointPositionChange}
         />
-        <SpringModal isOpen={isOpen} onRequestClose={() => setOpen(false)}>
+        {/* <SpringModal isOpen={isOpen} onRequestClose={() => setOpen(false)}>
           <CategoryIconNav />
-        </SpringModal>
+        </SpringModal> */}
       </Content>
     </Box>
   );

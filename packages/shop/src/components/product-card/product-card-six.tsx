@@ -118,25 +118,25 @@ interface Props {
 }
 
 export const ProductCard = ({ data }: Props) => {
-  const { title, image, price, salePrice, slug, discountInPercent } = data;
+  const { picture,price:{price},productName,description,_id } = data;
   return (
-    <Link href='/products/[slug]' as={`/products/${slug}`}>
+    <Link href='/product/[slug]' as={`/product/${_id}`}>
       <Card>
         <Box position='relative'>
           <CounterWrapper>
             <AddItemToCart data={data} />
           </CounterWrapper>
           <ImageWrapper>
-            <img src={image} alt={title} />
+            <img src={picture} alt={productName.en} />
           </ImageWrapper>
-          {discountInPercent ? <Discount>{discountInPercent}%</Discount> : null}
+          {/* {discountInPercent ? <Discount>{discountInPercent}%</Discount> : null} */}
         </Box>
         <Box padding={20}>
           <PriceWrapper>
-            <Price>${salePrice ? salePrice : price}</Price>
-            {discountInPercent ? <SalePrice>${price}</SalePrice> : null}
+            <Price>{price}</Price>
+            {/* {discountInPercent ? <SalePrice>${price}</SalePrice> : null} */}
           </PriceWrapper>
-          <Title>{title}</Title>
+          <Title>{productName.en}</Title>
         </Box>
       </Card>
     </Link>
