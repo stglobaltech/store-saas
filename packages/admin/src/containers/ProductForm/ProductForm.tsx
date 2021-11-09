@@ -44,8 +44,7 @@ const AddProduct: React.FC<Props> = (props) => {
 
   const { notify } = useNotifier();
 
-  const data = useDrawerState('data');
-  const { queryToRefetch } = data;
+  const refetch = useDrawerState('data');
 
   const { data: { storeId } } = useQuery(Q_GET_STORE_ID);
   const { data: { userId } } = useQuery(Q_GET_USER_ID);
@@ -90,7 +89,7 @@ const AddProduct: React.FC<Props> = (props) => {
           />
         );
 
-        queryToRefetch();
+        refetch && refetch();
       }
       else
         notify(

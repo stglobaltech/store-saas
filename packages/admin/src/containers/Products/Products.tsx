@@ -222,7 +222,7 @@ export default function Products() {
 
                 <Col md={3} xs={12}>
                   <Button
-                    onClick={() => openCreateDrawer({queryToRefetch: category.length ? categoryBasedRefetch : storeBasedRefetch})}
+                    onClick={() => openCreateDrawer(category.length ? categoryBasedRefetch : storeBasedRefetch)}
                     overrides={{
                       BaseButton: {
                         style: () => ({
