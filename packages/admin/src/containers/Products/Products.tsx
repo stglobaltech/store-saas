@@ -128,8 +128,8 @@ export default function Products() {
       const { getProductsBasedOnStore } = storeBasedData;
       setProducts(getProductsBasedOnStore);
     }
-    // eslint-disable-next-line
-  }, [storeBasedData, categoryBasedData]);
+    
+  }, [storeBasedData, categoryBasedData, category]);
 
   const goToPage = (page) => {
     if(category.length) {
@@ -158,18 +158,29 @@ export default function Products() {
 
   const handleCategory = ({ value }) => {
     setCategory(value);
-    getCategoryBasedProducts({
-      variables: {
-        productFindInput: {
-          categoryId: value[0].value,
-          storeId,
-          paginate: {
-            page: 1,
-            perPage: 12
+    if(value.length) {
+      getCategoryBasedProducts({
+        variables: {
+          productFindInput: {
+            categoryId: value[0].value,
+            storeId,
+            paginate: {
+              page: 1,
+              perPage: 12
+            }
           }
         }
-      }
-    })
+      });
+    }
+    else {
+      setStoreProductFindInputDto({
+        ...storeProductFindInputDto,
+        paginate: {
+          page: 1,
+          perPage: 12
+        }
+      });
+    }
   };
 
   const handleSearch = (e) => {
