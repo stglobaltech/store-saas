@@ -242,6 +242,8 @@ export default function Products() {
                           borderTopRightRadius: '3px',
                           borderBottomLeftRadius: '3px',
                           borderBottomRightRadius: '3px',
+                          paddingTop: "12px",
+                          paddingBottom: "12px"
                         }),
                       },
                     }}
