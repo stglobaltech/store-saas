@@ -23,12 +23,17 @@ function TopupWallet() {
   });
 
   function handleSubmit() {
+    const successUrl =
+      window.location.protocol +
+      "//" +
+      window.location.host +
+      "/order-received";
     topup({
       variables: {
         input: {
           amount: Number(amount),
           storeId,
-          successUrl: "http://localhost:3000/checkout",
+          successUrl,
         },
       },
     });

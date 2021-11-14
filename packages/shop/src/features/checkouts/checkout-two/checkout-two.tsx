@@ -131,11 +131,11 @@ const CheckoutWithSidebar: React.FC<MyFormProps> = ({
         data.placeOrder.stripeCheckoutUrl.length
       ) {
         router.push(data.placeOrder.stripeCheckoutUrl);
-        clearCart();
+        // clearCart();
       } else if (data && data.placeOrder && data.placeOrder.success) {
         setOrderDetails(data.placeOrder);
         router.replace("/order-received");
-        clearCart();
+        // clearCart();
       } else if (
         data &&
         data.placeOrder &&
@@ -178,11 +178,14 @@ const CheckoutWithSidebar: React.FC<MyFormProps> = ({
 
   function placeOrderHandler() {
     localStorage.setItem("cartId", cartId);
+    const successUrl =
+      window.location.protocol +"//"+ window.location.host + "/order-received";
+    console.log("successurl", successUrl);
     placeOrder({
       variables: {
         createOrderInput: {
           cartId,
-          successUrl: "http://localhost:3000/order-received",
+          successUrl,
         },
       },
     });
