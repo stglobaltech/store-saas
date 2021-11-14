@@ -8,7 +8,6 @@ import UpdateAddress from "components/address-card/address-card";
 import { handleModal } from "features/checkouts/checkout-modal";
 import { ProfileContext } from "contexts/profile/profile.context";
 import { useMutation } from "@apollo/client";
-import { DELETE_ADDRESS } from "graphql/mutation/address";
 import { CardHeader } from "components/card-header/card-header";
 import { ButtonGroup } from "components/button-group/button-group";
 import { Box } from "components/box";
@@ -16,6 +15,8 @@ import { Plus } from "assets/icons/PlusMinus";
 import { M_UPDATE_CART_ADDRESS } from "graphql/mutation/update-cart-address.mutation";
 import SuccessNotification from "../../components/Notification/SuccessNotification";
 import DangerNotification from "../../components/Notification/DangerNotification";
+import { M_DELETE_USER_ADDRESS } from "graphql/mutation/delete-user-address.mutations";
+import { ADDRESS_DELETED } from "utils/constant";
 
 interface Props {
   increment?: boolean;
@@ -41,32 +42,69 @@ const Address = ({
 }: Props) => {
   const { notify } = useNotifier();
 
-  const [deleteAddressMutation] = useMutation(DELETE_ADDRESS);
-
-  const [updateCartAddress] = useMutation(M_UPDATE_CART_ADDRESS, {
-    onCompleted: (data) => {
-      if(data && data.updateCartAddress && data.updateCartAddress.addressId){
-        dispatch({
-          type: 'SET_PRIMARY_ADDRESS',
-          payload: data.updateCartAddress.addressId.toString(),
-        })
-        notify(<SuccessNotification message={`${data.updateCartAddress.name} set as delivery address!`} dismiss/>)
-      }else{
-        notify(<DangerNotification message="delivery address could not be set" dismiss/>)
-      }
-    },
-  });
-
   const {
     state: { address },
     dispatch,
   } = useContext(ProfileContext);
 
+  const [deleteAddressMutation] = useMutation(M_DELETE_USER_ADDRESS, {
+    onCompleted: (data) => {
+      if (
+        data &&
+        data.deleteAddress &&
+        data.deleteAddress.status === ADDRESS_DELETED
+      ) {
+        notify(<SuccessNotification message="address deleted!" dismiss />);
+      } else {
+        notify(
+          <DangerNotification
+            message="address could not be deleted :("
+            dismiss
+          />
+        );
+      }
+    },
+  });
+
+  const [updateCartAddress] = useMutation(M_UPDATE_CART_ADDRESS, {
+    onCompleted: (data) => {
+      if (data && data.updateCartAddress && data.updateCartAddress.addressId) {
+        dispatch({
+          type: "SET_PRIMARY_ADDRESS",
+          payload: data.updateCartAddress.addressId.toString(),
+        });
+        notify(
+          <SuccessNotification
+            message={`${data.updateCartAddress.name} set as delivery address!`}
+            dismiss
+          />
+        );
+      } else {
+        notify(
+          <DangerNotification
+            message="delivery address could not be set"
+            dismiss
+          />
+        );
+      }
+    },
+  });
+
   const handleOnDelete = async (item) => {
-    dispatch({ type: "DELETE_ADDRESS", payload: item.id });
-    return await deleteAddressMutation({
-      variables: { addressId: JSON.stringify(item.id) },
-    });
+    try {
+      const { data } = await deleteAddressMutation({
+        variables: { addressDeleteInput: { addressId: item.id } },
+      });
+      if (
+        data &&
+        data.deleteAddress &&
+        data.deleteAddress.status === ADDRESS_DELETED
+      ) {
+        dispatch({ type: "DELETE_ADDRESS", payload: item.id });
+      }
+    } catch (error) {
+      notify(<DangerNotification message="address not deleted :(" dismiss />);
+    }
   };
 
   function handleUpdateCartAddress(item) {

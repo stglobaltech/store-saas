@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useRouter } from "next/router";
+import { useQuery } from "@apollo/client";
 import Link from "next/link";
 import {
   CartPopupBody,
@@ -28,6 +29,7 @@ import { Scrollbar } from "components/scrollbar/scrollbar";
 import { useCart } from "contexts/cart/use-cart";
 import { CartItem } from "components/cart-item/cart-item";
 import Coupon from "features/coupon/coupon";
+import { refactorProductbeforeAddingToCart } from "utils/refactor-product-before-adding-to-cart";
 
 type CartPropsType = {
   style?: any;
@@ -56,6 +58,9 @@ const Cart: React.FC<CartPropsType> = ({
     authState: { isAuthenticated },
     authDispatch,
   } = React.useContext<any>(AuthContext);
+
+  const storeId = process.env.NEXT_PUBLIC_STG_CLIENT_ID;
+  const entityId = storeId;
 
   const [hasCoupon, setCoupon] = useState(false);
   const { isRtl } = useLocale();
@@ -87,7 +92,7 @@ const Cart: React.FC<CartPropsType> = ({
             items.map((item) => (
               <CartItem
                 key={`cartItem-${item._id}`}
-                onIncrement={() => addItem(item)}
+                onIncrement={() => addItem(refactorProductbeforeAddingToCart(item))}
                 onDecrement={() => removeItem(item)}
                 onRemove={() => removeItemFromCart(item)}
                 data={item}

@@ -1,12 +1,17 @@
 export default [
   {
     id: "1",
-    title: "CASH",
-    content: "Pay By Cash Once You Receive Your Order",
+    title: "cash",
+    content: "Pay by cash once you receive your order",
   },
   {
     id: "2",
-    title: "CARD",
-    content: "Pay Now Using Your Card And Wait For Your Order",
+    title: "card",
+    content: "Pay now using your card and wait for your order",
+  },
+  {
+    id: "3",
+    title: "wallet",
+    content: "Use your wallet amount to pay",
   },
 ];

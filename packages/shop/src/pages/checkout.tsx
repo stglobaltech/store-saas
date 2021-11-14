@@ -1,6 +1,6 @@
 import React from "react";
 import { NextPage } from "next";
-import { useQuery } from "@apollo/client";
+import { useQuery, useSubscription } from "@apollo/client";
 import { Modal } from "@redq/reuse-modal";
 import { SEO } from "components/seo";
 import Checkout from "features/checkouts/checkout-two/checkout-two";
@@ -14,7 +14,9 @@ import { useRouter } from "next/router";
 import { Q_GET_CART } from "graphql/query/get-cart.query";
 import Loader from "components/loader/loader";
 import ErrorMessage from "../components/error-message/error-message";
+import { Q_WORK_FLOW_POLICY } from "graphql/query/work-flow-policy-query";
 import paymentoptions from "features/checkouts/data";
+import { Q_GET_USER_PROFILE } from "graphql/query/get-user-profile.query";
 
 type Props = {
   deviceType: {
@@ -23,6 +25,7 @@ type Props = {
     desktop: boolean;
   };
 };
+
 const CheckoutPage: NextPage<Props> = ({ deviceType }) => {
   const storeId = process.env.NEXT_PUBLIC_STG_CLIENT_ID;
   const entityId = storeId;
@@ -30,7 +33,7 @@ const CheckoutPage: NextPage<Props> = ({ deviceType }) => {
   const { cartItemsCount, clearCart } = useCart();
   const router = useRouter();
 
-  const { data, loading } = useQuery(Q_GET_ALL_ADDRESSES);
+  const { data, loading, error } = useQuery(Q_GET_ALL_ADDRESSES);
 
   const { authDispatch } = React.useContext<any>(AuthContext);
 
@@ -44,6 +47,18 @@ const CheckoutPage: NextPage<Props> = ({ deviceType }) => {
     }
   );
 
+  const {
+    data: userProfileData,
+    loading: userProfileLoading,
+    error: userProfileError,
+  } = useQuery(Q_GET_USER_PROFILE);
+
+  const {
+    data: workFlowPolicyData,
+    loading: workFlowPolicyLoading,
+    error: workFlowPolicyError,
+  } = useQuery(Q_WORK_FLOW_POLICY);
+
   if (!isTokenValidOrUndefined()) {
     removeToken();
     clearCart();
@@ -51,15 +66,10 @@ const CheckoutPage: NextPage<Props> = ({ deviceType }) => {
     router.replace("/");
   }
 
-  if (cartLoading) return <Loader />;
-  if (cartError)
-    return (
-      <ErrorMessage message="Could not fetch your cart! Please try again..." />
-    );
-
-  if (loading) {
-    return <div>loading...</div>;
-  }
+  if (cartLoading || workFlowPolicyLoading || userProfileLoading || loading)
+    return <Loader />;
+  if (cartError || workFlowPolicyError || userProfileError || error)
+    return <ErrorMessage message="Something went wrong.Please try again :(" />;
 
   function formatAddress() {
     const addresses = data.getAllAddress.map((address) => ({
@@ -76,11 +86,35 @@ const CheckoutPage: NextPage<Props> = ({ deviceType }) => {
     userAddresses = formatAddress();
   }
 
+  let policies = {};
+  if (workFlowPolicyData) {
+    const filteredStore = workFlowPolicyData.workFlowPolicyApi.plan.filter(
+      (plan) => plan.storeId === storeId
+    );
+    if (!filteredStore.length)
+      return <ErrorMessage message="Error fetching the store's policies!" />;
+    policies["gateWayName"] = filteredStore[0].gateWayName;
+    policies["paymentType"] = filteredStore[0].paymentType.map(
+      (type, index) => {
+        return {
+          type,
+          id: index,
+          description: paymentoptions.filter(
+            (option) => option.title === type
+          )[0].content,
+        };
+      }
+    );
+  }
+
   return (
     <>
       <SEO title="Checkout - Orderznow" description="Checkout Details" />
       <ProfileProvider
-        initData={{ address: userAddresses, paymentoptions: paymentoptions }}
+        initData={{
+          address: userAddresses,
+          storePolicies: policies,
+        }}
       >
         <Modal>
           <Checkout
@@ -88,6 +122,7 @@ const CheckoutPage: NextPage<Props> = ({ deviceType }) => {
             cartId={cartData?.getCart?._id}
             storeId={storeId}
             deliveryCost={cartData?.getCart?.deliveryCost}
+            wallet={userProfileData?.getUserProfile?.wallet}
           />
         </Modal>
       </ProfileProvider>

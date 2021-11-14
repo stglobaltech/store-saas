@@ -54,7 +54,7 @@ export const HorizontalCategoryCardMenu = ({
               active={selectedQueries === category.slug}
             >
               <ImageWrapper>
-                <Image url={category.icon} alt={category.title} />
+                <Image url={category.imageUrl} alt={category.title} />
               </ImageWrapper>
               <Title>{category.name.en}</Title>
             </ItemCard>

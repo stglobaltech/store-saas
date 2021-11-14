@@ -1,4 +1,4 @@
-import { gql } from '@apollo/client';
+import { gql } from "@apollo/client";
 
 // export const GET_CATEGORIES = gql`
 //   query getStoreCategories {
@@ -31,6 +31,7 @@ export const GET_CATEGORIES = gql`
           en
         }
         isEnable
+        imageUrl
       }
     }
   }

@@ -1,9 +1,12 @@
 import React, { useContext, useState, useEffect } from "react";
-import Router from "next/router";
+import { useRouter } from "next/router";
 import Link from "next/link";
+import { useNotifier } from "react-headless-notifier";
+import { useSubscription } from "@apollo/client";
 import { Button } from "components/button/button";
-import { CURRENCY } from "utils/constant";
+import { CURRENCY, CHEF_NOT_AVAILABLE } from "utils/constant";
 import { Scrollbar } from "components/scrollbar/scrollbar";
+import { S_STRIPE_PAYMENT_LISTEN_EVENTS } from "graphql/subscriptions/stripe-payment.subscription";
 import CheckoutWrapper, {
   CheckoutContainer,
   CheckoutInformation,
@@ -34,8 +37,8 @@ import CheckoutWrapper, {
   NoProductMsg,
   NoProductImg,
 } from "./checkout-two.style";
-
 import { NoCartBag } from "assets/icons/NoCartBag";
+import { openModal } from "@redq/reuse-modal";
 
 import Sticky from "react-stickynode";
 import { ProfileContext } from "contexts/profile/profile.context";
@@ -50,6 +53,9 @@ import Contact from "features/contact/contact";
 import Payment from "features/payment/payment";
 import { useMutation } from "@apollo/client";
 import { M_PLACE_ORDER } from "graphql/mutation/place-order.mutation";
+import SuccessNotification from "../../../components/Notification/SuccessNotification";
+import DangerNotification from "../../../components/Notification/DangerNotification";
+import TopupWallet from "features/topup-wallet/topup-wallet";
 
 // The type of props Checkout Form receives
 interface MyFormProps {
@@ -57,6 +63,7 @@ interface MyFormProps {
   storeId: string;
   deviceType: any;
   deliveryCost: number;
+  wallet: any;
 }
 
 type CartItemProps = {
@@ -86,10 +93,12 @@ const CheckoutWithSidebar: React.FC<MyFormProps> = ({
   storeId,
   deliveryCost,
   deviceType,
+  wallet,
 }) => {
   const [hasCoupon, setHasCoupon] = useState(false);
   const { state, profileGetOperations } = useContext(ProfileContext);
   const { isRtl } = useLocale();
+
   const {
     items,
     removeCoupon,
@@ -101,30 +110,86 @@ const CheckoutWithSidebar: React.FC<MyFormProps> = ({
     calculateSubTotalPrice,
     isRestaurant,
     toggleRestaurant,
+    setOrderDetails,
   } = useCart();
-  const [loading, setLoading] = useState(false);
-  const [isValid, setIsValid] = useState(false);
-
-  const [placeOrder] = useMutation(M_PLACE_ORDER, {
-    onCompleted: (data) => {
-      setLoading(true);
-      if (isValid) {
-        Router.push('/order-received');
-      }
-      setLoading(false);
-    },
-  });
 
   const size = useWindowSize();
 
-  const handleSubmit = async () => {
+  const [loading, setLoading] = useState(false);
+  const [isValid, setIsValid] = useState(false);
+
+  const router = useRouter();
+  const { notify } = useNotifier();
+  const { balance } = wallet;
+
+  const [placeOrder] = useMutation(M_PLACE_ORDER, {
+    onCompleted: (data) => {
+      if (
+        data &&
+        data.placeOrder &&
+        data.placeOrder.stripeCheckoutUrl &&
+        data.placeOrder.stripeCheckoutUrl.length
+      ) {
+        router.push(data.placeOrder.stripeCheckoutUrl);
+        clearCart();
+      } else if (data && data.placeOrder && data.placeOrder.success) {
+        setOrderDetails(data.placeOrder);
+        router.replace("/order-received");
+        clearCart();
+      } else if (
+        data &&
+        data.placeOrder &&
+        data.placeOrder.message &&
+        data.placeOrder.message.en
+      ) {
+        notify(
+          <DangerNotification
+            message={`${data.placeOrder.message.en}`}
+            dismiss
+          />
+        );
+      }
+    },
+  });
+
+  function checkWalletTopup() {
+    return (
+      calculatePrice() > balance &&
+      profileGetOperations?.getPrimaryPaymentOption()?.type === "wallet"
+    );
+  }
+
+  function walletTopupModalHandler() {
+    openModal({
+      show: true,
+      overlayClassName: "quick-view-overlay",
+      closeOnClickOutside: true,
+      component: TopupWallet,
+      closeComponent: "",
+      config: {
+        enableResizing: false,
+        disableDragging: true,
+        className: "quick-view-modal",
+        width: 458,
+        height: "auto",
+      },
+    });
+  }
+
+  function placeOrderHandler() {
+    localStorage.setItem("cartId", cartId);
     placeOrder({
       variables: {
         createOrderInput: {
           cartId,
+          successUrl: "http://localhost:3000/order-received",
         },
       },
     });
+  }
+
+  const handleSubmit = async () => {
+    !checkWalletTopup() ? placeOrderHandler() : walletTopupModalHandler();
   };
 
   useEffect(() => {
@@ -194,7 +259,13 @@ const CheckoutWithSidebar: React.FC<MyFormProps> = ({
               className="paymentBox"
               style={{ paddingBottom: 30 }}
             >
-              <Payment increment={true} deviceType={deviceType} />
+              <Payment
+                increment={true}
+                deviceType={deviceType}
+                cartId={cartId}
+                storeId={storeId}
+                walletBalance={balance}
+              />
 
               {/* Coupon start */}
               {/* {coupon ? (
@@ -260,8 +331,10 @@ const CheckoutWithSidebar: React.FC<MyFormProps> = ({
                   style={{ width: "100%" }}
                 >
                   <FormattedMessage
-                    id="processCheckout"
-                    defaultMessage="Proceed to Checkout"
+                    id={
+                      checkWalletTopup() ? "rechargeWallet" : "processCheckout"
+                    }
+                    defaultMessage="Place Order"
                   />
                 </Button>
               </CheckoutSubmit>

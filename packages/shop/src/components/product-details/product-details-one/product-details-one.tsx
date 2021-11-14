@@ -30,8 +30,21 @@ import Products from "components/product-grid/product-list/product-list";
 import { CURRENCY } from "utils/constant";
 import { FormattedMessage } from "react-intl";
 import { useLocale } from "contexts/language/language.provider";
-import { useCart } from "contexts/cart/use-cart";
 import { Counter } from "components/counter/counter";
+
+import AuthenticationForm from "features/authentication-form";
+import { openModal } from "@redq/reuse-modal";
+import { useNotifier } from "react-headless-notifier";
+import { useMutation } from "@apollo/client";
+import { useCart } from "contexts/cart/use-cart";
+import { AuthContext } from "contexts/auth/auth.context";
+import { M_ADD_PRODUCT_TO_CART } from "graphql/mutation/add-product-to-cart.mutation";
+import { M_UPDATE_PRODUCT_QUANTITY } from "graphql/mutation/update-product-quantity.mutation";
+import SuccessNotification from "../../../components/Notification/SuccessNotification";
+import DangerNotification from "../../../components/Notification/DangerNotification";
+import Loader from "../../../components/loader/loader";
+import { ERROR_CART_DELETED } from "../../../utils/constant";
+
 
 type ProductDetailsProps = {
   product: any;
@@ -46,18 +59,181 @@ const ProductDetails: React.FunctionComponent<ProductDetailsProps> = ({
   product,
   deviceType,
 }) => {
+  const storeId = process.env.NEXT_PUBLIC_STG_CLIENT_ID;
+  const entityId = storeId;
+
+  
   const { isRtl } = useLocale();
-  const { addItem, removeItem, isInCart, getItem } = useCart();
   const data = product;
+
+
+  const {
+    addItem,
+    removeItem,
+    getItem,
+    isInCart,
+    cartItemsCount,
+    getParticularItemCount,
+  } = useCart();
+
+  const { notify } = useNotifier();
+
+  const [addProductToCart, { loading: addProductLoading }] = useMutation(
+    M_ADD_PRODUCT_TO_CART,
+    {
+      onCompleted: (resData) => {
+        if (
+          resData &&
+          resData.addProductToCart &&
+          resData.addProductToCart.productId
+        ) {
+          addItem({
+            ...data,
+            inCartProductId: resData.addProductToCart.productId,
+          });
+        } else {
+          //todo: handle failure case (might be session expiry or server error)
+          notify(
+            <DangerNotification
+              message="Something went wrong!Product could not be added to cart!"
+              dismiss
+            />
+          );
+        }
+      },
+    }
+  );
+
+  const [
+    updateProductQuantity,
+    { loading: updateProductQuantityLoading },
+  ] = useMutation(M_UPDATE_PRODUCT_QUANTITY);
+
+  const {
+    authState: { isAuthenticated },
+    authDispatch,
+  } = React.useContext<any>(AuthContext);
+
+  function handleJoin() {
+    authDispatch({
+      type: "SIGNIN",
+    });
+
+    openModal({
+      show: true,
+      overlayClassName: "quick-view-overlay",
+      closeOnClickOutside: true,
+      component: AuthenticationForm,
+      closeComponent: "",
+      config: {
+        enableResizing: false,
+        disableDragging: true,
+        className: "quick-view-modal",
+        width: 458,
+        height: "auto",
+      },
+    });
+  }
+
+  async function addItemHandler() {
+    const {
+      _id,
+      productName: { en, ar },
+      price,
+      quantity,
+      maxQuantity,
+    } = data;
+    const addProductInput = {
+      entityId,
+      storeCode: storeId,
+      product: {
+        productId: _id,
+        name: { en, ar },
+        quantity: 1,
+        maxQuantity: maxQuantity,
+        price: price.price,
+        quotedPrice: price.price,
+      },
+    };
+    const itemCountInCart = getParticularItemCount(data._id);
+    if (itemCountInCart === 0) {
+      addProductToCart({ variables: { addProductInput } });
+    } else {
+      const currentItem = getItem(data._id);
+      try {
+        if (currentItem.maxQuantity < itemCountInCart + 1)
+          throw new Error(
+            `maximum of ${data.maxQuantity} ${data.productName.en} can be added to the cart!`
+          );
+        const res = (await updateProductQuantity({
+          variables: {
+            quantityUpdateInput: {
+              productId: currentItem.inCartProductId,
+              quantity: itemCountInCart + 1,
+              entityId: storeId,
+            },
+          },
+        })) as any;
+        if (
+          res &&
+          res.data.updateCartProductQuantity &&
+          res.data.updateCartProductQuantity.totalPrice
+        ) {
+          addItem(data);
+        } else {
+          throw new Error(`could not add ${data.productName.en} to the cart!`);
+        }
+      } catch (error) {
+        notify(<DangerNotification message={`${error.message}`} dismiss />);
+      }
+    }
+  }
+
+  async function removeItemHandler() {
+    const { _id, maxQuantity } = data;
+    const itemCountInCart = getParticularItemCount(_id);
+    const currentItem = getItem(data._id);
+    try {
+      const res = await updateProductQuantity({
+        variables: {
+          quantityUpdateInput: {
+            productId: currentItem.inCartProductId,
+            quantity: itemCountInCart - 1,
+            entityId: storeId,
+          },
+        },
+      });
+      if (
+        res &&
+        res.data.updateCartProductQuantity &&
+        res.data.updateCartProductQuantity.totalPrice
+      ) {
+        removeItem(data);
+      }
+    } catch (error) {
+      if (error.message === ERROR_CART_DELETED) {
+        removeItem(data);
+        notify(
+          <SuccessNotification message={`Your cart is empty now!`} dismiss />
+        );
+      }
+    }
+  }
 
   const handleAddClick = (e) => {
     e.stopPropagation();
-    addItem(data);
+    if (!isAuthenticated) {
+      handleJoin();
+    } else {
+      addItemHandler();
+    }
+    // if (!isInCart(data.id)) {
+    //   cartAnimation(e);
+    // }
   };
-
   const handleRemoveClick = (e) => {
     e.stopPropagation();
-    removeItem(data);
+    removeItemHandler();
   };
 
   useEffect(() => {

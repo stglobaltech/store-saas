@@ -87,6 +87,10 @@ function SendOtp({ handleVerifyOtp }) {
           />
         </SubHeading>
         <form onSubmit={loginCallback}>
+          <Select
+            options={countryCodes}
+            handleChange={(value) => setCountryCode(value)}
+          />
           <Input
             type="text"
             placeholder={intl.formatMessage({
@@ -98,11 +102,7 @@ function SendOtp({ handleVerifyOtp }) {
             required
             height="48px"
             backgroundColor="#F7F7F7"
-            mb="10px"
-          />
-          <Select
-            options={countryCodes}
-            handleChange={(value) => setCountryCode(value)}
+            mt="10px"
           />
           <Button
             variant="primary"
@@ -147,10 +147,10 @@ function VerifyOtp({ mobile, countryCode, handleLoginSuccess }) {
           query: Q_GET_USERID,
           data: { userId },
         });
-      } else {
+      } else if(data && data.userLogin && data.userLogin.accessToken===null && data.userLogin.refreshToken===null) {
         notify(
           <DangerNotification
-            message={`${data.userLogin.message.en}`}
+            message={`${mobile} is not registered with us! Please signup and continue!!`}
             dismiss
           />
         );

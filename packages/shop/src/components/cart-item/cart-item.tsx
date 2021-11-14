@@ -20,6 +20,8 @@ import {
 } from "./cart-item.style";
 import { ERROR_CART_DELETED } from "../../utils/constant";
 import Loader from "components/loader/loader";
+import { M_REMOVE_PRODUCT_FROM_CART } from "graphql/mutation/remove-product-from-cart.mutation";
+
 interface Props {
   data: any;
   onDecrement: () => void;
@@ -35,6 +37,7 @@ export const CartItem: React.FC<Props> = ({
 }) => {
   const storeId = process.env.NEXT_PUBLIC_STG_CLIENT_ID;
   const entityId = storeId;
+
   const { productName, picture, price, salePrice, unit, quantity } = data;
   const displayPrice = salePrice ? salePrice : price.price;
   const {
@@ -51,6 +54,11 @@ export const CartItem: React.FC<Props> = ({
     updateProductQuantity,
     { loading: updateProductQuantityLoading },
   ] = useMutation(M_UPDATE_PRODUCT_QUANTITY);
+
+  const [
+    removeProductFromCart,
+    { loading: removeProductFromCartLoading },
+  ] = useMutation(M_REMOVE_PRODUCT_FROM_CART);
 
   async function addItemHandler() {
     const itemCountInCart = getParticularItemCount(data._id);
@@ -83,7 +91,7 @@ export const CartItem: React.FC<Props> = ({
     }
   }
 
-  async function removeItemHandler() {
+  async function removeItemHandler(removeAllFromCart: boolean) {
     const { _id, maxQuantity } = data;
     const itemCountInCart = getParticularItemCount(_id);
     const currentItem = getItem(data._id);
@@ -92,7 +100,7 @@ export const CartItem: React.FC<Props> = ({
         variables: {
           quantityUpdateInput: {
             productId: currentItem.inCartProductId,
-            quantity: itemCountInCart - 1,
+            quantity: !removeAllFromCart ? itemCountInCart - 1 : 0,
             entityId: storeId,
           },
         },
@@ -106,7 +114,7 @@ export const CartItem: React.FC<Props> = ({
       }
     } catch (error) {
       if (error.message === ERROR_CART_DELETED) {
-        removeItem(data);
+        onRemove();
         notify(
           <SuccessNotification message={`Your cart is empty now!`} dismiss />
         );
@@ -119,7 +127,7 @@ export const CartItem: React.FC<Props> = ({
       {!updateProductQuantityLoading ? (
         <Counter
           value={quantity}
-          onDecrement={removeItemHandler}
+          onDecrement={() => removeItemHandler(false)}
           onIncrement={addItemHandler}
           variant="lightVertical"
         />
@@ -141,9 +149,13 @@ export const CartItem: React.FC<Props> = ({
         {CURRENCY}
         {(quantity * displayPrice).toFixed(2)}
       </Total>
-      <RemoveButton onClick={onRemove}>
-        <CloseIcon />
-      </RemoveButton>
+      {!removeProductFromCartLoading ? (
+        <RemoveButton onClick={() => removeItemHandler(true)}>
+          <CloseIcon />
+        </RemoveButton>
+      ) : (
+        <Loader />
+      )}
     </ItemBox>
   );
 };

@@ -13,13 +13,15 @@ import { ProductGrid } from "components/product-grid/product-grid-two";
 import CartPopUp from "features/carts/cart-popup";
 import { GET_PRODUCTS_OF_A_CATEGORY } from "graphql/query/productsofacategory.query";
 import { GET_PRODUCTS } from "graphql/query/products.query";
-
+import { Q_GET_CART } from "graphql/query/get-cart.query";
 import { AuthContext } from "contexts/auth/auth.context";
 import React from "react";
 import { isTokenValidOrUndefined } from "utils/tokenValidation";
 import { useCart } from "contexts/cart/use-cart";
 import { useRouter } from "next/router";
 import { removeToken } from "utils/localStorage";
+import { useQuery } from "@apollo/client";
+import data from "features/checkouts/data";
 
 const PAGE_TYPE = "categories";
 
@@ -29,6 +31,12 @@ export const Main = styled.div<any>(
     position: "relative",
   })
 );
+
+const CustomSpacing=styled.div<any>(
+  css({
+    marginTop:"75px"
+  })
+)
 
 export default function Categories({
   productCategories,
@@ -40,8 +48,19 @@ export default function Categories({
   const router = useRouter();
 
   const { authDispatch } = React.useContext<any>(AuthContext);
+  const { clearCart,cartItemsCount } = useCart();
 
-  const { clearCart } = useCart();
+  // const {data:userCartData,loading:userCartLoading,error:userCartError}=useQuery(Q_GET_CART,{
+  //   variables:{
+  //     entityId:storeId
+  //   },
+  //   skip:cartItemsCount!==0
+  // });
+
+  // if(cartItemsCount && userCartData && userCartData.getCart.products && userCartData.getCart.products.length){
+  //   const {products}=userCartData.getCart;
+  //   const customizedProducts=products.forEach(product=>({}))
+  // }
 
   if (!isTokenValidOrUndefined()) {
     removeToken();
@@ -57,7 +76,7 @@ export default function Categories({
         intlTitleId={page?.banner_title_id}
         intlDescriptionId={page?.banner_description_id}
         imageUrl={page?.banner_image_url}
-        style={{ maxHeight: 560 }}
+        style={{ maxHeight: 100 }}
       />
       <Main>
         <HorizontalCategoryCardMenu
@@ -65,6 +84,7 @@ export default function Categories({
           storeId={storeId}
           productCategories={productCategories}
         />
+        <CustomSpacing/>
         <Box padding={["0 15px 100px ", "0 15px 30px ", "0 30px 30px"]}>
           <ProductGrid
             type={PAGE_TYPE}

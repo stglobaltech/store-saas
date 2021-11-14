@@ -74,14 +74,12 @@ export default function ExtendedApp({ Component, pageProps }) {
             <AppProvider>
               <AuthProvider>
                 <AppLayout>
-                  <RouteGuard>
-                    <NotifierContextProvider>
-                      <Component
-                        {...pageProps}
-                        deviceType={{ mobile, tablet, desktop }}
-                      />
-                    </NotifierContextProvider>
-                  </RouteGuard>
+                  <NotifierContextProvider>
+                    <Component
+                      {...pageProps}
+                      deviceType={{ mobile, tablet, desktop }}
+                    />
+                  </NotifierContextProvider>
                 </AppLayout>
               </AuthProvider>
             </AppProvider>

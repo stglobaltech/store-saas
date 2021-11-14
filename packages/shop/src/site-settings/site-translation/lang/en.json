@@ -75,7 +75,7 @@
   "addContactBtn": "Add Contact",
   "deliveryAddresTitle": "Delivery Address",
   "addAddressBtn": "Add Address",
-  "updateAddressBtn":"Update Address",
+  "updateAddressBtn": "Update Address",
   "addNew": "Add New",
   "paymentCardTitle": "Payments Card",
   "addCardBtn": "Add Card",
@@ -158,7 +158,7 @@
   "intlOrderCardTitleText": "Order",
   "intlOrderCardDateText": "Order Date",
   "intlOrderCardTotalText": "Total Price",
-  "joinButton": "Join",
+  "joinButton": "Login",
   "ar": "Arabic",
   "zh": "Chinese",
   "en": "English",
@@ -182,5 +182,7 @@
   "userSignupMobile": "Mobile",
   "userSignupOtp": "OTP",
   "userLoginOtpPlaceholder": "enter otp",
-  "userLoginPageModalTextForVerifyOTP": "Enter your one-time password"
+  "userLoginPageModalTextForVerifyOTP": "Enter your one-time password",
+  "processCheckout": "Place Order",
+  "rechargeWallet": "Topup Wallet"
 }

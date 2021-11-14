@@ -9,6 +9,7 @@ import ProductSingleWrapper, {
 import { GET_PRODUCT_DETAILS } from "graphql/query/product.query";
 import { initializeApollo } from "utils/apollo";
 
+
 const ProductDetails = dynamic(
   () =>
     import("components/product-details/product-details-one/product-details-one")
@@ -54,10 +55,7 @@ const ProductPage: NextPage<Props> = ({ data, deviceType }) => {
 
 export async function getServerSideProps({ params }) {
   const apolloClient = initializeApollo();
-  const {
-    data,
-    error,
-  } = await apolloClient.query({
+  const { data, error } = await apolloClient.query({
     query: GET_PRODUCT_DETAILS,
     variables: {
       productId: params.slug,

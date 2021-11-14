@@ -10,8 +10,12 @@ export const Q_GET_CART = gql`
         quantity
         price
         quotedPrice
+        message
       }
       deliveryCost
+      offer{
+        discountIn
+      }
     }
   }
 `;

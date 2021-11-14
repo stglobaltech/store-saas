@@ -15,7 +15,8 @@ import { M_UPDATE_PRODUCT_QUANTITY } from "graphql/mutation/update-product-quant
 import SuccessNotification from "../components/Notification/SuccessNotification";
 import DangerNotification from "../components/Notification/DangerNotification";
 import Loader from "./loader/loader";
-import {ERROR_CART_DELETED} from '../utils/constant';
+import { ERROR_CART_DELETED } from "../utils/constant";
+import { refactorProductbeforeAddingToCart } from "utils/refactor-product-before-adding-to-cart";
 
 const Icon = styled.span<any>(
   _variant({
@@ -85,6 +86,7 @@ export const AddItemToCart = ({ data, variant, buttonText }: Props) => {
     isInCart,
     cartItemsCount,
     getParticularItemCount,
+    items,
   } = useCart();
 
   const { notify } = useNotifier();
@@ -102,7 +104,7 @@ export const AddItemToCart = ({ data, variant, buttonText }: Props) => {
           resData.addProductToCart.productId
         ) {
           addItem({
-            ...data,
+            ...refactorProductbeforeAddingToCart(data),
             inCartProductId: resData.addProductToCart.productId,
           });
         } else {
@@ -193,7 +195,7 @@ export const AddItemToCart = ({ data, variant, buttonText }: Props) => {
           res.data.updateCartProductQuantity &&
           res.data.updateCartProductQuantity.totalPrice
         ) {
-          addItem(data);
+          addItem(refactorProductbeforeAddingToCart(data));
         } else {
           throw new Error(`could not add ${data.productName.en} to the cart!`);
         }

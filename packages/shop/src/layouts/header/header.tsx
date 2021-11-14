@@ -55,22 +55,20 @@ const Header: React.FC<Props> = ({ className }) => {
       },
     });
   };
-  // const showSearch =
-  //   isCategoryPage(query.type) ||
-  //   pathname === '/furniture-two' ||
-  //   pathname === '/grocery-two' ||
-  //   pathname === '/bakery';
+  const showSearch = pathname.includes("/store/");
   return (
     <HeaderWrapper className={className} id="layout-header">
       <LeftMenu logo={LogoImage} />
-      <SearchWrapper>
-        {" "}
-        <Search
-          minimal={false}
-          className="banner-search"
-          shadow="2px 2px 4px rgba(0,0,0,0.05)"
-        />
-      </SearchWrapper>
+      {showSearch ? (
+        <SearchWrapper>
+          {" "}
+          <Search
+            minimal={false}
+            className="banner-search"
+            shadow="2px 2px 4px rgba(0,0,0,0.05)"
+          />
+        </SearchWrapper>
+      ) : null}
       <RightMenu
         isAuthenticated={isAuthenticated}
         onJoin={handleJoin}

@@ -65,12 +65,12 @@ export const AUTHORIZED_MENU_ITEMS = [
   //   href: CHECKOUT_PAGE_TWO,
   //   defaultMessage: 'Checkout Alternative',
   // },
-  // ORDER_MENU_ITEM,
-  // {
-  //   id: 'nav.order_received',
-  //   href: ORDER_RECEIVED_PAGE,
-  //   defaultMessage: 'Order invoice',
-  // },
+  ORDER_MENU_ITEM,
+  {
+    id: 'nav.order_received',
+    href: ORDER_RECEIVED_PAGE,
+    defaultMessage: 'Order invoice',
+  },
   // {
   //   id: 'nav.terms_and_services',
   //   defaultMessage: 'Terms and Services',

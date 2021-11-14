@@ -29,7 +29,7 @@ const ImageWrapper = styled.div(
     justifyContent: 'center',
     overflow: 'hidden',
     height: ['190px', '210px'],
-
+    backgroundPosition:'cover',
     img: {
       display: 'block',
       maxHeight: '100%',
@@ -118,7 +118,7 @@ interface Props {
 }
 
 export const ProductCard = ({ data }: Props) => {
-  const { picture,price:{price},productName,description,_id } = data;
+  const { picture,price:{price,priceWithoutVat},productName,description,_id } = data;
   return (
     <Link href='/product/[slug]' as={`/product/${_id}`}>
       <Card>
@@ -134,7 +134,7 @@ export const ProductCard = ({ data }: Props) => {
         <Box padding={20}>
           <PriceWrapper>
             <Price>{price}</Price>
-            {/* {discountInPercent ? <SalePrice>${price}</SalePrice> : null} */}
+            <SalePrice>${price}</SalePrice>
           </PriceWrapper>
           <Title>{productName.en}</Title>
         </Box>
