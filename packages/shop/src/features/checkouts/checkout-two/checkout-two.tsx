@@ -109,7 +109,6 @@ const CheckoutWithSidebar: React.FC<MyFormProps> = ({
     calculateSubTotalPrice,
     isRestaurant,
     toggleRestaurant,
-    setOrderDetails,
   } = useCart();
 
   const size = useWindowSize();
@@ -132,7 +131,6 @@ const CheckoutWithSidebar: React.FC<MyFormProps> = ({
         router.push(data.placeOrder.stripeCheckoutUrl);
         // clearCart();
       } else if (data && data.placeOrder && data.placeOrder.success) {
-        setOrderDetails(data.placeOrder);
         router.replace("/order-received");
         // clearCart();
       } else if (

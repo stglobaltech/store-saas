@@ -45,7 +45,6 @@ import DangerNotification from "../../../components/Notification/DangerNotificat
 import Loader from "../../../components/loader/loader";
 import { ERROR_CART_DELETED } from "../../../utils/constant";
 
-
 type ProductDetailsProps = {
   product: any;
   deviceType: {
@@ -62,10 +61,8 @@ const ProductDetails: React.FunctionComponent<ProductDetailsProps> = ({
   const storeId = process.env.NEXT_PUBLIC_STG_CLIENT_ID;
   const entityId = storeId;
 
-  
   const { isRtl } = useLocale();
   const data = product;
-
 
   const {
     addItem,
@@ -264,7 +261,7 @@ const ProductDetails: React.FunctionComponent<ProductDetailsProps> = ({
             </BackButton>
 
             <CarouselWithCustomDots
-              items={[{url:product.picture}]}
+              items={[{ url: product.picture }]}
               deviceType={deviceType}
             />
           </ProductPreview>
@@ -283,9 +280,7 @@ const ProductDetails: React.FunctionComponent<ProductDetailsProps> = ({
 
               <ProductPrice>
                 {CURRENCY}
-                {product.price.basePrice
-                  ? product.price.basePrice
-                  : product.price.price}
+                {product.price.price}
               </ProductPrice>
             </ProductPriceWrapper>
           </ProductTitlePriceWrapper>

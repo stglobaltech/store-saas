@@ -37,6 +37,13 @@ const CheckoutPage: NextPage<Props> = ({ deviceType }) => {
 
   const { authDispatch } = React.useContext<any>(AuthContext);
 
+  if (!isTokenValidOrUndefined()) {
+    removeToken();
+    clearCart();
+    authDispatch({ type: "SIGN_OUT" });
+    router.replace("/");
+  }
+
   const { data: cartData, loading: cartLoading, error: cartError } = useQuery(
     Q_GET_CART,
     {
@@ -59,17 +66,16 @@ const CheckoutPage: NextPage<Props> = ({ deviceType }) => {
     error: workFlowPolicyError,
   } = useQuery(Q_WORK_FLOW_POLICY);
 
-  if (!isTokenValidOrUndefined()) {
-    removeToken();
-    clearCart();
-    authDispatch({ type: "SIGN_OUT" });
-    router.replace("/");
-  }
-
   if (cartLoading || workFlowPolicyLoading || userProfileLoading || loading)
     return <Loader />;
-  if (cartError || workFlowPolicyError || userProfileError || error)
+  if (workFlowPolicyError || userProfileError || error)
     return <ErrorMessage message="Something went wrong.Please try again :(" />;
+  if (cartError)
+    return (
+      <ErrorMessage
+        message={cartError.message || "Error fetching cart your cart :("}
+      />
+    );
 
   function formatAddress() {
     const addresses = data.getAllAddress.map((address) => ({

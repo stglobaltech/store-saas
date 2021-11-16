@@ -15,6 +15,7 @@ export const GET_PRODUCTS = gql`
         }
         price {
           price
+          basePrice
         }
         picture
         description {
