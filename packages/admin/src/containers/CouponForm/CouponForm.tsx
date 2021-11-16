@@ -54,7 +54,7 @@ const AddCoupon: React.FC<Props> = (props) => {
     { value: "COST", label: "COST" }
   ];
 
-  const { register, handleSubmit, getValues, formState: { errors } } = useForm({ mode: 'onChange' });
+  const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({ mode: 'onChange' });
   const [offer, setOffer] = useState({
     category: [promotionTypes[0]],
     discountIn: [discountInTypes[0]],
@@ -62,7 +62,7 @@ const AddCoupon: React.FC<Props> = (props) => {
     discountUnit: [units[0]],
     discountValue: 0,
     maximumValue: 0,
-    image: undefined,
+    image: "",
     imageLoader: false,
     imageError: ""
   });
@@ -109,14 +109,16 @@ const AddCoupon: React.FC<Props> = (props) => {
           imageLoader: false,
           imageError: ""
         });
+        setValue("bannerImage", result.urlText);
       })
       .catch(() => {
         setOffer({
           ...offer,
-          image: undefined,
+          image: "",
           imageLoader: false,
           imageError: "Something went wrong! Either continue without banner or try after sometime"
         });
+        setValue("bannerImage", "");
       });
   };
 
@@ -134,7 +136,11 @@ const AddCoupon: React.FC<Props> = (props) => {
       discountIn: offer.discountIn[0].value,
       discountFor: "store",
       discountType: offer.discountType[0].value,
-      discountToEntities: {},
+      discountToEntities: {
+        store: {
+          bannerURL: (offer.discountIn[0].value === "Store" && offer.category[0].value === "OFFER") ? offer.image : ""
+        }
+      },
       conditionals: {
         firstOrder: false,
         purchaseAbove: 0,
@@ -559,8 +565,7 @@ const AddCoupon: React.FC<Props> = (props) => {
             </Col>
           </Row>
 
-          {/* TODO: Change value offers to offer in ln 563 */}
-          {offer.category[0].value === "OFFERS" && (
+          {offer.category[0].value === "OFFER" && (
           <Row>
             <Col lg={4}>
               <FieldDetails>Upload your Banner image here</FieldDetails>
@@ -584,7 +589,12 @@ const AddCoupon: React.FC<Props> = (props) => {
               >
                 <Uploader onChange={uploadImage} />
               </DrawerBox>
-              {offer.imageError.length && (
+              <Input
+                type="hidden"
+                name="bannerImage"
+                inputRef={register({ required: true })}
+              />
+              {(offer.imageError.length || (errors.bannerImage && errors.bannerImage.type === "required")) && (
                 <div
                   style={{
                     margin: "5px 0 30px auto",
@@ -595,7 +605,7 @@ const AddCoupon: React.FC<Props> = (props) => {
                     textAlign: "right"
                   }}
                 >
-                  {offer.imageError}
+                  {offer.imageError || "Required"}
                 </div>
               )}
             </Col>

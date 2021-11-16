@@ -13,6 +13,11 @@ export const Q_GET_DISCOUNTS = gql`
         discountIn
         discountFor
         discountType
+        discountToEntities {
+          store {
+            bannerURL
+          }
+        }
         discountValue
         discountUnit
         maximumValue
