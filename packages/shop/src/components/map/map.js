@@ -2,7 +2,7 @@ import React, { useCallback, useState, useEffect, useRef } from "react";
 import { GoogleMap, StandaloneSearchBox, Marker } from "@react-google-maps/api";
 let openLocationCode = require("open-location-code").OpenLocationCode;
 openLocationCode = new openLocationCode();
-const _ = require("lodash");
+const {get} = require("lodash");
 
 function Map(props) {
   const { handleAddress, storeLoc, coordinates } = props;
@@ -111,7 +111,7 @@ function Map(props) {
         : place.formatted_address,
     };
 
-    const nextCenter = _.get(nextMarker, "position", mapLocation.center);
+    const nextCenter = get(nextMarker, "position", mapLocation.center);
 
     setMapLocation({
       center: nextCenter,

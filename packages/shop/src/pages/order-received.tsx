@@ -14,7 +14,7 @@ import { Q_GET_USER_ACTIVE_ORDERS } from "graphql/query/get-user-active-order.qu
 const OrderReceivedPage = () => {
   const { data, error, loading } = useQuery(Q_GET_USER_ACTIVE_ORDERS);
 
-  console.log('data',data);
+  
 
   if (loading) return <Loader />;
   if (error) return <ErrorMessage message="Something went wrong :(" />;

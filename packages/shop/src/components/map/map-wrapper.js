@@ -6,7 +6,7 @@ function CustomMapRender(props) {
   const { handleAddress, storeLoc, coordinates } = props;
 
   const { isLoaded } = useLoadScript({
-    googleMapsApiKey: "AIzaSyA8rAognY_er_ntnJTozxYdwv1T_p0EL8A",
+    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
     libraries: ["places"],
   });
 
