@@ -12,6 +12,7 @@ import OrderReceivedWrapper, {
   ListItem,
   ListTitle,
   ListDes,
+  Item
 } from "./order-received.style";
 import { FormattedMessage } from "react-intl";
 
@@ -99,12 +100,30 @@ const OrderReceived: React.FunctionComponent<OrderReceivedProps> = ({
               <Text bold>
                 <FormattedMessage
                   id="totalItemText"
-                  defaultMessage="Total Item"
+                  defaultMessage="Total Items types Ordered"
                 />
               </Text>
             </ListTitle>
             <ListDes>
               <Text>{orderDetails.orderCart.products.length}</Text>
+            </ListDes>
+          </ListItem>
+
+          <ListItem>
+            <ListTitle>
+              <Text bold>
+                <FormattedMessage
+                  id="itemUnitsOrdered"
+                  defaultMessage="Total Item Units Ordered"
+                />
+              </Text>
+            </ListTitle>
+            <ListDes>
+              <Text>
+                {orderDetails.orderCart.products.map((product, index) => {
+                  return <Item key={index}>{product.name.en} X {product.quantity}</Item>;
+                })}
+              </Text>
             </ListDes>
           </ListItem>
 

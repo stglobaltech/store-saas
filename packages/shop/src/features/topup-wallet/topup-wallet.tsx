@@ -24,10 +24,7 @@ function TopupWallet() {
 
   function handleSubmit() {
     const successUrl =
-      window.location.protocol +
-      "//" +
-      window.location.host +
-      "/order-received";
+      window.location.protocol + "//" + window.location.host + "/checkout";
     topup({
       variables: {
         input: {

@@ -29,8 +29,6 @@ const Payment = ({
   cartId,
   walletBalance,
 }: Props) => {
-
-
   const [deletePaymentCardMutation] = useMutation(DELETE_CARD);
   const [updateOrderPayType] = useMutation(M_UPDATE_CART_PAYMENT_TYPE);
   const { notify } = useNotifier();
@@ -52,7 +50,7 @@ const Payment = ({
       cartId,
       orderPayType: value,
     };
-    if (value === "card") {
+    if (value === "card" || value === "wallet") {
       input["paymentGateWay"] = state.storePolicies.gateWayName[0];
     }
     try {

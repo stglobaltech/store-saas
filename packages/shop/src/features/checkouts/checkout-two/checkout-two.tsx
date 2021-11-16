@@ -6,7 +6,6 @@ import { useSubscription } from "@apollo/client";
 import { Button } from "components/button/button";
 import { CURRENCY, CHEF_NOT_AVAILABLE } from "utils/constant";
 import { Scrollbar } from "components/scrollbar/scrollbar";
-import { S_STRIPE_PAYMENT_LISTEN_EVENTS } from "graphql/subscriptions/stripe-payment.subscription";
 import CheckoutWrapper, {
   CheckoutContainer,
   CheckoutInformation,

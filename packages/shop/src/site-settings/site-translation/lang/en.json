@@ -103,7 +103,7 @@
   "paymenMethodText": "Payment Method",
   "paymentMethodName": "Cash on delivery",
   "orderDetailsText": "Order Details",
-  "totalItemText": "Total Item",
+  "totalItemText": "Total Item Types Ordered",
   "orderTimeText": "Order Time",
   "deliveryTimeText": "Delivery Time",
   "deliveryLocationText": "Delivery Location",

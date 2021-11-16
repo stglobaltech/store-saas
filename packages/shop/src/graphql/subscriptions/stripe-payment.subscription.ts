@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client";
 
-export const S_STRIPE_PAYMENT_LISTEN_EVENTS = gql`
+export const S_ORDER_PAYMENT_SUBSCRIPTION = gql`
   subscription orderPaymentStatusSubscription(
     $input: UserOrderPaymentInputDto!
   ) {
