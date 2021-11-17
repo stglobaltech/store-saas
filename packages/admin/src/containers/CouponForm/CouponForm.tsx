@@ -54,7 +54,7 @@ const AddCoupon: React.FC<Props> = (props) => {
     { value: "COST", label: "COST" }
   ];
 
-  const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({ mode: 'onChange' });
+  const { register, handleSubmit, getValues, formState: { errors } } = useForm({ mode: 'onChange' });
   const [offer, setOffer] = useState({
     category: [promotionTypes[0]],
     discountIn: [discountInTypes[0]],
@@ -64,7 +64,8 @@ const AddCoupon: React.FC<Props> = (props) => {
     maximumValue: 0,
     image: "",
     imageLoader: false,
-    imageError: ""
+    imageError: "",
+    imageRequired: false
   });
 
   const { data: { userId } } = useQuery(Q_GET_USER_ID);
@@ -109,52 +110,54 @@ const AddCoupon: React.FC<Props> = (props) => {
           imageLoader: false,
           imageError: ""
         });
-        setValue("bannerImage", result.urlText);
       })
       .catch(() => {
         setOffer({
           ...offer,
           image: "",
           imageLoader: false,
-          imageError: "Something went wrong! Either continue without banner or try after sometime"
+          imageError: "Something went wrong! Try after sometime"
         });
-        setValue("bannerImage", "");
       });
   };
 
   const onSubmit = (values) => {
-    const discountCreateInput = {
-      name: values.name,
-      arName: values.arName,
-      startsOn: values.startsOn,
-      endsOn: values.endsOn,
-      category: offer.category[0].value,
-      isConditional: false,
-      discountValue: Number(offer.discountValue),
-      discountUnit: offer.discountUnit[0].value,
-      maximumValue: Number(offer.maximumValue),
-      discountIn: offer.discountIn[0].value,
-      discountFor: "store",
-      discountType: offer.discountType[0].value,
-      discountToEntities: {
-        store: {
-          bannerURL: (offer.discountIn[0].value === "Store" && offer.category[0].value === "OFFER") ? offer.image : ""
+    if(offer.discountIn[0].value === "Store" && offer.category[0].value === "OFFER" && !offer.image)
+      setOffer({...offer, imageRequired: true});
+    else {
+      const discountCreateInput = {
+        name: values.name,
+        arName: values.arName,
+        startsOn: values.startsOn,
+        endsOn: values.endsOn,
+        category: offer.category[0].value,
+        isConditional: false,
+        discountValue: Number(offer.discountValue),
+        discountUnit: offer.discountUnit[0].value,
+        maximumValue: Number(offer.maximumValue),
+        discountIn: offer.discountIn[0].value,
+        discountFor: "store",
+        discountType: offer.discountType[0].value,
+        discountToEntities: {
+          store: {
+            bannerURL: (offer.discountIn[0].value === "Store" && offer.category[0].value === "OFFER") ? offer.image : ""
+          }
+        },
+        conditionals: {
+          firstOrder: false,
+          purchaseAbove: 0,
+          offerDays: [],
+          timings: "",
+          paymentType: []
+        },
+        restaurant: {
+          name: storeData.getStore.name.en,
+          _id: storeData.getStore._id
         }
-      },
-      conditionals: {
-        firstOrder: false,
-        purchaseAbove: 0,
-        offerDays: [],
-        timings: "",
-        paymentType: []
-      },
-      restaurant: {
-        name: storeData.getStore.name.en,
-        _id: storeData.getStore._id
-      }
-    };
+      };
 
-    doCreate({ variables: { discountCreateInput } });
+      doCreate({ variables: { discountCreateInput } });
+    }
   };
 
   if (error) {
@@ -589,12 +592,7 @@ const AddCoupon: React.FC<Props> = (props) => {
               >
                 <Uploader onChange={uploadImage} />
               </DrawerBox>
-              <Input
-                type="hidden"
-                name="bannerImage"
-                inputRef={register({ required: true })}
-              />
-              {(offer.imageError.length || (errors.bannerImage && errors.bannerImage.type === "required")) && (
+              {(offer.imageError.length || offer.imageRequired) && (
                 <div
                   style={{
                     margin: "5px 0 30px auto",

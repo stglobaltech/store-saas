@@ -54,14 +54,13 @@ const EditCoupon: React.FC<Props> = (props) => {
     { value: "COST", label: "COST" }
   ];
 
-  const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
+  const { register, handleSubmit, getValues, formState: { errors } } = useForm({
     mode: 'onChange',
     defaultValues: {
       name: item.name,
       arName: item.arName,
       startsOn: item.startsOn,
-      endsOn: item.endsOn,
-      bannerImage: item?.discountToEntities?.store?.bannerURL ?? ""
+      endsOn: item.endsOn
     }
   });
   const [offer, setOffer] = useState({
@@ -73,7 +72,8 @@ const EditCoupon: React.FC<Props> = (props) => {
     maximumValue: item.maximumValue,
     image: item?.discountToEntities?.store?.bannerURL ?? "",
     imageLoader: false,
-    imageError: ""
+    imageError: "",
+    imageRequired: false
   });
 
   const { data: { userId } } = useQuery(Q_GET_USER_ID);
@@ -118,53 +118,55 @@ const EditCoupon: React.FC<Props> = (props) => {
           imageLoader: false,
           imageError: ""
         });
-        setValue("bannerImage", result.urlText);
       })
       .catch(() => {
         setOffer({
           ...offer,
           image: "",
           imageLoader: false,
-          imageError: "Something went wrong! Either continue without banner or try after sometime"
+          imageError: "Something went wrong! Try after sometime"
         });
-        setValue("bannerImage", "");
       });
   };
 
   const onSubmit = (values) => {
-    const discountEditInput = {
-      _id: item._id,
-      name: values.name,
-      arName: values.arName,
-      startsOn: values.startsOn,
-      endsOn: values.endsOn,
-      category: offer.category[0].value,
-      isConditional: false,
-      discountValue: Number(offer.discountValue),
-      discountUnit: offer.discountUnit[0].value,
-      maximumValue: Number(offer.maximumValue),
-      discountIn: offer.discountIn[0].value,
-      discountFor: "store",
-      discountType: offer.discountType[0].value,
-      discountToEntities: {
-        store: {
-          bannerURL: (offer.discountIn[0].value === "Store" && offer.category[0].value === "OFFER") ? offer.image : ""
+    if(offer.discountIn[0].value === "Store" && offer.category[0].value === "OFFER" && !offer.image)
+      setOffer({...offer, imageRequired: true});
+    else {
+      const discountEditInput = {
+        _id: item._id,
+        name: values.name,
+        arName: values.arName,
+        startsOn: values.startsOn,
+        endsOn: values.endsOn,
+        category: offer.category[0].value,
+        isConditional: false,
+        discountValue: Number(offer.discountValue),
+        discountUnit: offer.discountUnit[0].value,
+        maximumValue: Number(offer.maximumValue),
+        discountIn: offer.discountIn[0].value,
+        discountFor: "store",
+        discountType: offer.discountType[0].value,
+        discountToEntities: {
+          store: {
+            bannerURL: (offer.discountIn[0].value === "Store" && offer.category[0].value === "OFFER") ? offer.image : ""
+          }
+        },
+        conditionals: {
+          firstOrder: false,
+          purchaseAbove: 0,
+          offerDays: [],
+          timings: "",
+          paymentType: []
+        },
+        restaurant: {
+          name: storeData.getStore.name.en,
+          _id: storeData.getStore._id
         }
-      },
-      conditionals: {
-        firstOrder: false,
-        purchaseAbove: 0,
-        offerDays: [],
-        timings: "",
-        paymentType: []
-      },
-      restaurant: {
-        name: storeData.getStore.name.en,
-        _id: storeData.getStore._id
-      }
-    };
+      };
 
-    doUpdate({ variables: { discountEditInput } });
+      doUpdate({ variables: { discountEditInput } });
+    }
   };
 
   if (error) {
@@ -599,12 +601,7 @@ const EditCoupon: React.FC<Props> = (props) => {
               >
                 <Uploader onChange={uploadImage} imageURL={offer.image} />
               </DrawerBox>
-              <Input
-                type="hidden"
-                name="bannerImage"
-                inputRef={register({ required: true })}
-              />
-              {(offer.imageError.length || (errors.bannerImage && errors.bannerImage.type === "required")) && (
+              {(offer.imageError.length || offer.imageRequired) && (
                 <div
                   style={{
                     margin: "5px 0 30px auto",
