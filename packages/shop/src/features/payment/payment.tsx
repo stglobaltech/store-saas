@@ -17,9 +17,9 @@ import DangerNotification from "../../components/Notification/DangerNotification
 interface Props {
   deviceType: any;
   increment?: boolean;
-  storeId: string;
-  cartId: string;
-  walletBalance: any;
+  storeId?: string;
+  cartId?: string;
+  walletBalance?: any;
 }
 
 const Payment = ({
