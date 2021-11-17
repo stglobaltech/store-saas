@@ -123,41 +123,40 @@ const AddCoupon: React.FC<Props> = (props) => {
 
   const onSubmit = (values) => {
     if(offer.discountIn[0].value === "Store" && offer.category[0].value === "OFFER" && !offer.image)
-      setOffer({...offer, imageRequired: true});
-    else {
-      const discountCreateInput = {
-        name: values.name,
-        arName: values.arName,
-        startsOn: values.startsOn,
-        endsOn: values.endsOn,
-        category: offer.category[0].value,
-        isConditional: false,
-        discountValue: Number(offer.discountValue),
-        discountUnit: offer.discountUnit[0].value,
-        maximumValue: Number(offer.maximumValue),
-        discountIn: offer.discountIn[0].value,
-        discountFor: "store",
-        discountType: offer.discountType[0].value,
-        discountToEntities: {
-          store: {
-            bannerURL: (offer.discountIn[0].value === "Store" && offer.category[0].value === "OFFER") ? offer.image : ""
-          }
-        },
-        conditionals: {
-          firstOrder: false,
-          purchaseAbove: 0,
-          offerDays: [],
-          timings: "",
-          paymentType: []
-        },
-        restaurant: {
-          name: storeData.getStore.name.en,
-          _id: storeData.getStore._id
-        }
-      };
+      return setOffer({...offer, imageRequired: true});
 
-      doCreate({ variables: { discountCreateInput } });
-    }
+    const discountCreateInput = {
+      name: values.name,
+      arName: values.arName,
+      startsOn: values.startsOn,
+      endsOn: values.endsOn,
+      category: offer.category[0].value,
+      isConditional: false,
+      discountValue: Number(offer.discountValue),
+      discountUnit: offer.discountUnit[0].value,
+      maximumValue: Number(offer.maximumValue),
+      discountIn: offer.discountIn[0].value,
+      discountFor: "store",
+      discountType: offer.discountType[0].value,
+      discountToEntities: {
+        store: {
+          bannerURL: (offer.discountIn[0].value === "Store" && offer.category[0].value === "OFFER") ? offer.image : ""
+        }
+      },
+      conditionals: {
+        firstOrder: false,
+        purchaseAbove: 0,
+        offerDays: [],
+        timings: "",
+        paymentType: []
+      },
+      restaurant: {
+        name: storeData.getStore.name.en,
+        _id: storeData.getStore._id
+      }
+    };
+
+    doCreate({ variables: { discountCreateInput } });
   };
 
   if (error) {
