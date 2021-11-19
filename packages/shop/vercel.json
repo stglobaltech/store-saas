@@ -4,6 +4,7 @@
       "NEXT_PUBLIC_STRIPE_PUBLIC_KEY": "pk_test_mlPLdXXoOwSp6eW5ROdsnFml",
       "NEXT_PUBLIC_GRAPHQL_API_ENDPOINT": "https://api-dev-nest.stglobaltech.in/graphql",
       "NEXT_PUBLIC_GRAPHQL_AUTH_API_ENDPOINT": "https://auth-dev-nest.stglobaltech.in/graphql",
+      "NEXT_PUBLIC_CONTENT_SERVER_WEBSOCKET_URI": "wss://api-dev-nest.stglobaltech.in/graphql",
       "NEXT_PUBLIC_STG_CLIENT_ID": "60c1efd9a619e45739acdd83",
       "NEXT_PUBLIC_GOOGLE_MAPS_API_KEY": "AIzaSyA8rAognY_er_ntnJTozxYdwv1T_p0EL8A"
     }
