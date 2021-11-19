@@ -29,7 +29,6 @@ const OrderReceivedPage = () => {
 
   const currentOrder = data?.userActiveOrders[0];
 
-  console.log('currentOrder',currentOrder);
 
   return (
     <>
