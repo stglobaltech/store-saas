@@ -19,9 +19,11 @@ import React from "react";
 import { isTokenValidOrUndefined } from "utils/tokenValidation";
 import { useCart } from "contexts/cart/use-cart";
 import { useRouter } from "next/router";
-import { removeToken } from "utils/localStorage";
 import { useQuery } from "@apollo/client";
-import data from "features/checkouts/data";
+import { removeToken } from "utils/localStorage";
+import { Q_WORK_FLOW_POLICY } from "graphql/query/work-flow-policy-query";
+import ErrorMessage from "components/error-message/error-message";
+import { GENERAL_ERROR_MSG } from "utils/constant";
 
 const PAGE_TYPE = "categories";
 
@@ -32,13 +34,14 @@ export const Main = styled.div<any>(
   })
 );
 
-const CustomSpacing=styled.div<any>(
+const CustomSpacing = styled.div<any>(
   css({
-    marginTop:"75px"
+    marginTop: "75px",
   })
-)
+);
 
 export default function Categories({
+  workFlowPolicyData,
   productCategories,
   products,
   storeId,
@@ -48,19 +51,17 @@ export default function Categories({
   const router = useRouter();
 
   const { authDispatch } = React.useContext<any>(AuthContext);
-  const { clearCart,cartItemsCount } = useCart();
+  const { clearCart, cartItemsCount } = useCart();
 
-  // const {data:userCartData,loading:userCartLoading,error:userCartError}=useQuery(Q_GET_CART,{
-  //   variables:{
-  //     entityId:storeId
-  //   },
-  //   skip:cartItemsCount!==0
-  // });
-
-  // if(cartItemsCount && userCartData && userCartData.getCart.products && userCartData.getCart.products.length){
-  //   const {products}=userCartData.getCart;
-  //   const customizedProducts=products.forEach(product=>({}))
-  // }
+  if (
+    !workFlowPolicyData ||
+    !workFlowPolicyData.getWorkFlowpolicyPlanOfStoreForUserWeb ||
+    !workFlowPolicyData.getWorkFlowpolicyPlanOfStoreForUserWeb.data ||
+    !workFlowPolicyData.getWorkFlowpolicyPlanOfStoreForUserWeb.data.plan ||
+    !workFlowPolicyData.getWorkFlowpolicyPlanOfStoreForUserWeb.data.plan.length
+  ) {
+    return <ErrorMessage message={GENERAL_ERROR_MSG} />;
+  }
 
   if (!isTokenValidOrUndefined()) {
     removeToken();
@@ -84,12 +85,13 @@ export default function Categories({
           storeId={storeId}
           productCategories={productCategories}
         />
-        <CustomSpacing/>
+        <CustomSpacing />
         <Box padding={["0 15px 100px ", "0 15px 30px ", "0 30px 30px"]}>
           <ProductGrid
             type={PAGE_TYPE}
             storeId={storeId}
             firstPageProducts={products}
+            workFlowPolicyData={workFlowPolicyData}
           />
         </Box>
         <CartPopUp deviceType={deviceType} />
@@ -101,6 +103,7 @@ export default function Categories({
 export const getStaticProps: GetStaticProps = async ({ params }) => {
   const storeId = process.env.NEXT_PUBLIC_STG_CLIENT_ID;
   const apolloClient = initializeApollo();
+
   const {
     data: {
       getCategoriesForUser: { productCategories },
@@ -112,6 +115,14 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
       storeId,
     },
   });
+
+  const { data: workFlowPolicyData } = await apolloClient.query({
+    query: Q_WORK_FLOW_POLICY,
+    variables: {
+      storeId,
+    },
+  });
+
   let query, variables;
   if (params.category === "all_products") {
     query = GET_PRODUCTS;
@@ -142,11 +153,13 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
     query,
     variables,
   });
+
   return {
     props: {
       storeId,
       productCategories,
       products: data,
+      workFlowPolicyData: workFlowPolicyData,
     },
     revalidate: 60,
   };

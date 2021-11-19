@@ -7,6 +7,7 @@ const INITIAL_STATE = {
   items: [],
   isRestaurant: false,
   coupon: null,
+  workFlowPolicyData: {},
 };
 
 const useCartActions = (initialCart = INITIAL_STATE) => {
@@ -41,6 +42,12 @@ const useCartActions = (initialCart = INITIAL_STATE) => {
   };
   const toggleRestaurant = () => {
     dispatch({ type: "TOGGLE_RESTAURANT" });
+  };
+  const setWorkFlowPolicyOfStore = (payload) => {
+    dispatch({ type: "SET_WORK_FLOW_POLICY", payload });
+  };
+  const getWorkFlowPolicyOfStore = () => {
+    return state.workFlowPolicyData;
   };
   const isInCartHandler = (id) => {
     return state.items?.some((item) => item._id === id);
@@ -86,6 +93,8 @@ const useCartActions = (initialCart = INITIAL_STATE) => {
     getDiscount,
     toggleRestaurant,
     getParticularItemCount,
+    setWorkFlowPolicyOfStore,
+    getWorkFlowPolicyOfStore,
   };
 };
 
@@ -108,6 +117,8 @@ export const CartProvider = ({ children }) => {
     getDiscount,
     toggleRestaurant,
     getParticularItemCount,
+    setWorkFlowPolicyOfStore,
+    getWorkFlowPolicyOfStore,
   } = useCartActions();
   const { rehydrated, error } = useStorage(state, rehydrateLocalState);
 
@@ -134,6 +145,8 @@ export const CartProvider = ({ children }) => {
         calculateDiscount: getDiscount,
         toggleRestaurant,
         getParticularItemCount,
+        setWorkFlowPolicyOfStore,
+        getWorkFlowPolicyOfStore,
       }}
     >
       {children}

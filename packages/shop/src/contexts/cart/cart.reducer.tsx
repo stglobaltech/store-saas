@@ -67,6 +67,8 @@ export const reducer = (state, action) => {
       return { ...state, coupon: null };
     case "TOGGLE_RESTAURANT":
       return { ...state, isRestaurant: !state.isRestaurant };
+    case "SET_WORK_FLOW_POLICY":
+      return { ...state, workFlowPolicyData: action.payload };
     default:
       throw new Error(`Unknown action: ${action.type}`);
   }

@@ -1,5 +1,4 @@
 import React, { useEffect } from "react";
-import Link from "next/link";
 import Router from "next/router";
 import { Button } from "components/button/button";
 import {
@@ -27,7 +26,6 @@ import { CartIcon } from "assets/icons/CartIcon";
 import ReadMore from "components/truncate/truncate";
 import CarouselWithCustomDots from "components/multi-carousel/multi-carousel";
 import Products from "components/product-grid/product-list/product-list";
-import { CURRENCY } from "utils/constant";
 import { FormattedMessage } from "react-intl";
 import { useLocale } from "contexts/language/language.provider";
 import { Counter } from "components/counter/counter";
@@ -42,8 +40,10 @@ import { M_ADD_PRODUCT_TO_CART } from "graphql/mutation/add-product-to-cart.muta
 import { M_UPDATE_PRODUCT_QUANTITY } from "graphql/mutation/update-product-quantity.mutation";
 import SuccessNotification from "../../../components/Notification/SuccessNotification";
 import DangerNotification from "../../../components/Notification/DangerNotification";
-import Loader from "../../../components/loader/loader";
-import { ERROR_CART_DELETED } from "../../../utils/constant";
+import {
+  ADD_PRODUCT_TO_CART_FAILED,
+  ERROR_CART_DELETED,
+} from "../../../utils/constant";
 
 type ProductDetailsProps = {
   product: any;
@@ -71,6 +71,7 @@ const ProductDetails: React.FunctionComponent<ProductDetailsProps> = ({
     isInCart,
     cartItemsCount,
     getParticularItemCount,
+    getWorkFlowPolicyOfStore,
   } = useCart();
 
   const { notify } = useNotifier();
@@ -91,10 +92,7 @@ const ProductDetails: React.FunctionComponent<ProductDetailsProps> = ({
         } else {
           //todo: handle failure case (might be session expiry or server error)
           notify(
-            <DangerNotification
-              message="Something went wrong!Product could not be added to cart!"
-              dismiss
-            />
+            <DangerNotification message={ADD_PRODUCT_TO_CART_FAILED} dismiss />
           );
         }
       },
@@ -273,13 +271,13 @@ const ProductDetails: React.FunctionComponent<ProductDetailsProps> = ({
             <ProductPriceWrapper>
               {product.discountInPercent ? (
                 <SalePrice>
-                  {CURRENCY}
+                  {getWorkFlowPolicyOfStore().currency}
                   {product.price.price}
                 </SalePrice>
               ) : null}
 
               <ProductPrice>
-                {CURRENCY}
+                {getWorkFlowPolicyOfStore().currency}
                 {product.price.price}
               </ProductPrice>
             </ProductPriceWrapper>

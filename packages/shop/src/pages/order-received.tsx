@@ -10,21 +10,34 @@ import { S_ORDER_STATUS_SUBSCRIPTION } from "graphql/subscriptions/order-status.
 import { S_ORDER_PAYMENT_SUBSCRIPTION } from "graphql/subscriptions/stripe-payment.subscription";
 import { useEffect } from "react";
 import { Q_GET_USER_ACTIVE_ORDERS } from "graphql/query/get-user-active-order.query";
+import { GENERAL_ERROR_MSG } from "utils/constant";
 
 const OrderReceivedPage = () => {
   const { data, error, loading } = useQuery(Q_GET_USER_ACTIVE_ORDERS);
 
-  
+  const { getWorkFlowPolicyOfStore, clearCart } = useCart();
 
   if (loading) return <Loader />;
-  if (error) return <ErrorMessage message="Something went wrong :(" />;
+  if (error)
+    return (
+      <ErrorMessage
+        message={
+          "Couldn't fetch your last order! Try after sometime or contact our support team"
+        }
+      />
+    );
 
   const currentOrder = data?.userActiveOrders[0];
 
+  console.log('currentOrder',currentOrder);
+
   return (
     <>
-      <SEO title="Invoice - PickBazar" description="Invoice Details" />
-      <OrderReceived orderDetails={currentOrder} />
+      <SEO title="Invoice - Orderznow" description="Invoice Details" />
+      <OrderReceived
+        orderDetails={currentOrder}
+        currency={getWorkFlowPolicyOfStore().currency}
+      />
     </>
   );
 };

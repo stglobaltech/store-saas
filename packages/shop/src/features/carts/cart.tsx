@@ -21,7 +21,6 @@ import {
 import { CloseIcon } from "assets/icons/CloseIcon";
 import { ShoppingBagLarge } from "assets/icons/ShoppingBagLarge";
 import { NoCartBag } from "assets/icons/NoCartBag";
-import { CURRENCY } from "utils/constant";
 import { FormattedMessage } from "react-intl";
 import { useLocale } from "contexts/language/language.provider";
 import { AuthContext } from "contexts/auth/auth.context";
@@ -52,6 +51,7 @@ const Cart: React.FC<CartPropsType> = ({
     removeItemFromCart,
     cartItemsCount,
     calculatePrice,
+    getWorkFlowPolicyOfStore,
   } = useCart();
   const router = useRouter();
   const {
@@ -92,7 +92,9 @@ const Cart: React.FC<CartPropsType> = ({
             items.map((item) => (
               <CartItem
                 key={`cartItem-${item._id}`}
-                onIncrement={() => addItem(refactorProductbeforeAddingToCart(item))}
+                onIncrement={() =>
+                  addItem(refactorProductbeforeAddingToCart(item))
+                }
                 onDecrement={() => removeItem(item)}
                 onRemove={() => removeItemFromCart(item)}
                 data={item}
@@ -136,7 +138,7 @@ const Cart: React.FC<CartPropsType> = ({
                 </CouponBoxWrapper>
               )}
             </>
-          ) : (
+          ) : (Cart
             <CouponCode>
               <FormattedMessage
                 id="couponApplied"
@@ -158,7 +160,7 @@ const Cart: React.FC<CartPropsType> = ({
                   />
                 </Title>
                 <PriceBox>
-                  {CURRENCY}
+                  {getWorkFlowPolicyOfStore().currency}
                   {calculatePrice()}
                 </PriceBox>
               </>
@@ -171,7 +173,7 @@ const Cart: React.FC<CartPropsType> = ({
                 <FormattedMessage id="nav.checkout" defaultMessage="Checkout" />
               </Title>
               <PriceBox>
-                {CURRENCY}
+                {getWorkFlowPolicyOfStore().currency}
                 {calculatePrice()}
               </PriceBox>
             </>

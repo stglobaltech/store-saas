@@ -65,7 +65,7 @@ export const AUTHORIZED_MENU_ITEMS = [
   //   href: CHECKOUT_PAGE_TWO,
   //   defaultMessage: 'Checkout Alternative',
   // },
-  ORDER_MENU_ITEM,
+  // ORDER_MENU_ITEM,
   {
     id: 'nav.order_received',
     href: ORDER_RECEIVED_PAGE,

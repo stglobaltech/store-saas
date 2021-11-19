@@ -17,6 +17,10 @@ import Loader from "components/loader/loader";
 import { Paginate } from "components/pagination/pagination";
 import { Q_SEARCH_PRODUCT_BASED_ON_STORE } from "graphql/query/searchProductInStore.query";
 import { Q_SEARCH_PRODUCTS_BASED_ON_CATEGORY_FOR_USER } from "graphql/query/search-products-based-on-category-for-user.query";
+import { useCart } from "contexts/cart/use-cart";
+import { Q_GET_CART } from "graphql/query/get-cart.query";
+import { refactorGetCartDataBeforeAddingToCart } from "utils/refactor-product-before-adding-to-cart";
+import { getToken } from "utils/localStorage";
 
 const Grid = styled.div(
   css({
@@ -57,6 +61,7 @@ interface Props {
   style?: any;
   storeId?: string;
   firstPageProducts?: any;
+  workFlowPolicyData?: any;
 }
 
 export const ProductGrid = ({
@@ -64,13 +69,27 @@ export const ProductGrid = ({
   storeId,
   fetchLimit = 30,
   firstPageProducts,
+  workFlowPolicyData,
   loadMore = true,
 }: Props) => {
   const router = useRouter();
+  const {
+    setWorkFlowPolicyOfStore,
+    getWorkFlowPolicyOfStore,
+    cartItemsCount,
+    addItem,
+    items,
+  } = useCart();
   const [page, setPage] = useState(1);
   const {
     query: { category, search },
   } = router;
+
+  if (workFlowPolicyData && !Object.keys(getWorkFlowPolicyOfStore()).length) {
+    setWorkFlowPolicyOfStore(
+      workFlowPolicyData.getWorkFlowpolicyPlanOfStoreForUserWeb.data.plan[0]
+    );
+  }
 
   useEffect(() => {
     setPage(1);
@@ -263,7 +282,11 @@ export const ProductGrid = ({
     <section>
       <Grid style={style}>
         {fetchedProducts.map((product) => (
-          <ProductCard data={product} key={product._id} />
+          <ProductCard
+            data={product}
+            key={product._id}
+            currency={getWorkFlowPolicyOfStore().currency}
+          />
         ))}
       </Grid>
 

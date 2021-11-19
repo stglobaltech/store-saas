@@ -12,16 +12,18 @@ import OrderReceivedWrapper, {
   ListItem,
   ListTitle,
   ListDes,
-  Item
+  Item,
 } from "./order-received.style";
 import { FormattedMessage } from "react-intl";
 
 type OrderReceivedProps = {
   orderDetails: any;
+  currency: string;
 };
 
 const OrderReceived: React.FunctionComponent<OrderReceivedProps> = ({
   orderDetails,
+  currency,
 }) => {
   return (
     <OrderReceivedWrapper>
@@ -69,7 +71,9 @@ const OrderReceived: React.FunctionComponent<OrderReceivedProps> = ({
               <Text bold className="title">
                 <FormattedMessage id="totalText" defaultMessage="Total" />
               </Text>
-              <Text>SAR {orderDetails.costToCustomer}</Text>
+              <Text>
+                {currency} {orderDetails.orderCart.totalPrice}
+              </Text>
             </InfoBlock>
 
             <InfoBlock>
@@ -79,10 +83,7 @@ const OrderReceived: React.FunctionComponent<OrderReceivedProps> = ({
                   defaultMessage="Payment Method"
                 />
               </Text>
-              <Text>
-                <FormattedMessage id="paymentMethodName" />
-                {orderDetails.orderPayType}
-              </Text>
+              <Text>{orderDetails.orderPayType}</Text>
             </InfoBlock>
           </InfoBlockWrapper>
         </OrderInfo>
@@ -121,7 +122,11 @@ const OrderReceived: React.FunctionComponent<OrderReceivedProps> = ({
             <ListDes>
               <Text>
                 {orderDetails.orderCart.products.map((product, index) => {
-                  return <Item key={index}>{product.name.en} X {product.quantity}</Item>;
+                  return (
+                    <Item key={index}>
+                      {product.name.en} X {product.quantity}
+                    </Item>
+                  );
                 })}
               </Text>
             </ListDes>

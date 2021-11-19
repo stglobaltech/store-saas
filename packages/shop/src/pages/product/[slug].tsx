@@ -9,7 +9,6 @@ import ProductSingleWrapper, {
 import { GET_PRODUCT_DETAILS } from "graphql/query/product.query";
 import { initializeApollo } from "utils/apollo";
 
-
 const ProductDetails = dynamic(
   () =>
     import("components/product-details/product-details-one/product-details-one")
@@ -30,8 +29,12 @@ type Props = {
 };
 
 const ProductPage: NextPage<Props> = ({ data, deviceType }) => {
+
   const content = (
-    <ProductDetails product={data.getProductForUser} deviceType={deviceType} />
+    <ProductDetails
+      product={data.getProductForUser}
+      deviceType={deviceType}
+    />
   );
 
   return (

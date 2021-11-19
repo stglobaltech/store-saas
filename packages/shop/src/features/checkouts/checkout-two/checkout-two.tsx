@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useNotifier } from "react-headless-notifier";
 import { useSubscription } from "@apollo/client";
 import { Button } from "components/button/button";
-import { CURRENCY, CHEF_NOT_AVAILABLE } from "utils/constant";
+import { CHEF_NOT_AVAILABLE } from "utils/constant";
 import { Scrollbar } from "components/scrollbar/scrollbar";
 import CheckoutWrapper, {
   CheckoutContainer,
@@ -67,6 +67,7 @@ interface MyFormProps {
 
 type CartItemProps = {
   product: any;
+  currency: string;
 };
 
 const OrderItem: React.FC<CartItemProps> = ({ product }) => {
@@ -79,10 +80,7 @@ const OrderItem: React.FC<CartItemProps> = ({ product }) => {
       <ItemInfo>
         {productName ? productName.en : title} {unit ? `| ${unit}` : ""}
       </ItemInfo>
-      <Price>
-        {CURRENCY}
-        {(displayPrice.price * quantity).toFixed(2)}
-      </Price>
+      <Price>{(displayPrice.price * quantity).toFixed(2)}</Price>
     </Items>
   );
 };
@@ -109,9 +107,11 @@ const CheckoutWithSidebar: React.FC<MyFormProps> = ({
     calculateSubTotalPrice,
     isRestaurant,
     toggleRestaurant,
+    getWorkFlowPolicyOfStore,
   } = useCart();
 
   const size = useWindowSize();
+  const CURRENCY = getWorkFlowPolicyOfStore().currency;
 
   const [loading, setLoading] = useState(false);
   const [isValid, setIsValid] = useState(false);
@@ -176,13 +176,21 @@ const CheckoutWithSidebar: React.FC<MyFormProps> = ({
   function placeOrderHandler() {
     localStorage.setItem("cartId", cartId);
     const successUrl =
-      window.location.protocol +"//"+ window.location.host + "/order-received";
+      window.location.protocol +
+      "//" +
+      window.location.host +
+      "/order-received";
+    const cancelUrl=      window.location.protocol +
+    "//" +
+    window.location.host +
+    "/checkout";
     console.log("successurl", successUrl);
     placeOrder({
       variables: {
         createOrderInput: {
           cartId,
           successUrl,
+          cancelUrl
         },
       },
     });
@@ -362,6 +370,7 @@ const CheckoutWithSidebar: React.FC<MyFormProps> = ({
                         <OrderItem
                           key={`cartItem-${item._id}`}
                           product={item}
+                          currency={CURRENCY}
                         />
                       ))
                     ) : (

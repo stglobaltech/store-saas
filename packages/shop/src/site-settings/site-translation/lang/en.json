@@ -101,7 +101,7 @@
   "orderNumberText": "Order Number",
   "orderDateText": "Date",
   "paymenMethodText": "Payment Method",
-  "paymentMethodName": "Cash on delivery",
+  "paymentMethodName": "",
   "orderDetailsText": "Order Details",
   "totalItemText": "Total Item Types Ordered",
   "orderTimeText": "Order Time",

@@ -47,6 +47,7 @@ export const CartItem: React.FC<Props> = ({
     isInCart,
     cartItemsCount,
     getParticularItemCount,
+    getWorkFlowPolicyOfStore,
   } = useCart();
   const { notify } = useNotifier();
 
@@ -138,7 +139,7 @@ export const CartItem: React.FC<Props> = ({
       <Information>
         <Name>{productName.en}</Name>
         <Price>
-          {CURRENCY}
+          {getWorkFlowPolicyOfStore().currency}
           {displayPrice}
         </Price>
         <Weight>
@@ -146,7 +147,7 @@ export const CartItem: React.FC<Props> = ({
         </Weight>
       </Information>
       <Total>
-        {CURRENCY}
+        {getWorkFlowPolicyOfStore().currency}
         {(quantity * displayPrice).toFixed(2)}
       </Total>
       {!removeProductFromCartLoading ? (

@@ -115,9 +115,10 @@ const Title = styled.h2(
 
 interface Props {
   data: any;
+  currency: string;
 }
 
-export const ProductCard = ({ data }: Props) => {
+export const ProductCard = ({ data, currency }: Props) => {
   const {
     picture,
     price: { price, basePrice },
@@ -140,7 +141,9 @@ export const ProductCard = ({ data }: Props) => {
         </Box>
         <Box padding={20}>
           <PriceWrapper>
-            <Price>{price}</Price>
+            <Price>
+              {currency} {price}
+            </Price>
             {/* <SalePrice>{basePrice}</SalePrice> */}
           </PriceWrapper>
           <Title>{productName.en}</Title>
