@@ -187,8 +187,31 @@ export default function OrdersReport() {
                 boxShadow: "0 0 5px rgba(0, 0 ,0, 0.05)",
               }}
             >
-              <Col xs={12} md={2}>
+              <Col xs={12} md={10}>
                 <Heading>Orders Report</Heading>
+              </Col>
+
+              <Col xs={12} md={2}>
+                <Button
+                  type="button"
+                  overrides={{
+                    BaseButton: {
+                      style: ({ $theme, $size, $shape }) => {
+                        return {
+                          width: "100%",
+                          borderTopLeftRadius: "3px",
+                          borderTopRightRadius: "3px",
+                          borderBottomLeftRadius: "3px",
+                          borderBottomRightRadius: "3px",
+                          paddingTop: "8px",
+                          paddingBottom: "8px"
+                        };
+                      },
+                    },
+                  }}
+                >
+                  Export
+                </Button>
               </Col>
             </Header>
 
@@ -253,7 +276,7 @@ export default function OrdersReport() {
                   </Row>
 
                   <Row>
-                    <Col md={3} style={{ alignSelf: "end" }}>
+                    <Col md={2}>
                       <Button
                         type="submit"
                         overrides={{
@@ -265,8 +288,8 @@ export default function OrdersReport() {
                                 borderTopRightRadius: "3px",
                                 borderBottomLeftRadius: "3px",
                                 borderBottomRightRadius: "3px",
-                                paddingTop: "12px",
-                                paddingBottom: "12px",
+                                paddingTop: "8px",
+                                paddingBottom: "8px",
                               };
                             },
                           },
@@ -284,28 +307,6 @@ export default function OrdersReport() {
               <InLineLoader />
             ) : (
               <>
-                <div style={{textAlign: "right"}}>
-                  <Button
-                    type="button"
-                    overrides={{
-                      BaseButton: {
-                        style: ({ $theme, $size, $shape }) => {
-                          return {
-                            borderTopLeftRadius: "3px",
-                            borderTopRightRadius: "3px",
-                            borderBottomLeftRadius: "3px",
-                            borderBottomRightRadius: "3px",
-                            paddingTop: "6px",
-                            paddingBottom: "6px",
-                            marginBottom: "16px",
-                          };
-                        },
-                      },
-                    }}
-                  >
-                    Export
-                  </Button>
-                </div>
                 <Wrapper style={{ boxShadow: "0 0 5px rgba(0, 0 , 0, 0.05)" }}>
                   <TableWrapper>
                     <StyledTable
