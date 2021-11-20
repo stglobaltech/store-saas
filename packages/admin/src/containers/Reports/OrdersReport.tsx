@@ -99,6 +99,15 @@ export default function OrdersReport() {
     { value: "readyOrder", label: "Ready Order" },
   ];
 
+  const orderStatusTypes = [
+    { value: "FIN", label: "FIN" },
+    { value: "CONF", label: "CONF" },
+    { value: "REJ", label: "REJ" },
+    { value: "EXP", label: "EXP" },
+    { value: "CAN", label: "CAN" },
+    { value: "PEN", label: "PEN" }
+  ];
+
   const dispatch = useDrawerDispatch();
 
   const openDrawer = useCallback(
@@ -115,9 +124,9 @@ export default function OrdersReport() {
 
   const { register, handleSubmit } = useForm();
   const [orderType, setOrderType] = useState([]);
+  const [orderStatus, setOrderStatus] = useState([]);
   const [ordersFindInputDto, setOrdersFindInputDto] = useState({
     storeId: storeId,
-    status: "FIN",
     paginate: { page: 1, perPage: 10 },
   });
 
@@ -149,6 +158,7 @@ export default function OrdersReport() {
       ...ordersFindInputDto,
       ...values,
       orderType: orderType.length ? orderType[0].value : undefined,
+      status: orderStatus.length ? orderStatus[0].value : undefined,
       paginate: { page: 1, perPage: 10 },
     });
   };
@@ -180,8 +190,10 @@ export default function OrdersReport() {
               <Col xs={12} md={2}>
                 <Heading>Orders Report</Heading>
               </Col>
+            </Header>
 
-              <Col xs={12} md={10}>
+            <Row>
+              <Col xs={12} md={12}>
                 <Form
                   onSubmit={handleSubmit(onSubmit)}
                   style={{ paddingBottom: 0, backgroundColor: "transparent" }}
@@ -224,6 +236,23 @@ export default function OrdersReport() {
                       </FormFields>
                     </Col>
 
+                    <Col md={3}>
+                      <FormFields>
+                        <FormLabel>Order Status</FormLabel>
+                        <Select
+                          options={orderStatusTypes}
+                          labelKey="label"
+                          valueKey="value"
+                          placeholder="Order Status"
+                          value={orderStatus}
+                          searchable={false}
+                          onChange={({ value }) => setOrderStatus(value)}
+                        />
+                      </FormFields>
+                    </Col>
+                  </Row>
+
+                  <Row>
                     <Col md={3} style={{ alignSelf: "end" }}>
                       <Button
                         type="submit"
@@ -249,7 +278,7 @@ export default function OrdersReport() {
                   </Row>
                 </Form>
               </Col>
-            </Header>
+            </Row>
 
             {loading ? (
               <InLineLoader />
