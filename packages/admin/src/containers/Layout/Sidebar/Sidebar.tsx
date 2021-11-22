@@ -15,6 +15,7 @@ import {
   CUSTOMERS,
   COUPONS,
   SETTINGS,
+  REPORTS
 } from 'settings/constants';
 
 import { DashboardIcon } from 'assets/icons/DashboardIcon';
@@ -62,6 +63,12 @@ const sidebarMenus = [
     path: COUPONS,
     exact: false,
     icon: <CouponIcon />,
+  },
+  {
+    name: 'Reports',
+    path: REPORTS,
+    exact: false,
+    icon: <SettingIcon />,
   },
   {
     name: 'Settings',
