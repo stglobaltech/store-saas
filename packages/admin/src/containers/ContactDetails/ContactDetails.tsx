@@ -14,10 +14,10 @@ import {
 import { InLineLoader } from "../../components/InlineLoader/InlineLoader";
 import Select from "components/Select/Select";
 import UpdateAddressMap from "components/Map/UpdateAddressMap";
-import { useNotifier } from 'react-headless-notifier';
-import SuccessNotification from '../../components/Notification/SuccessNotification';
-import DangerNotification from '../../components/Notification/DangerNotification';
-import { useHistory } from 'react-router-dom';
+import { useNotifier } from "react-headless-notifier";
+import SuccessNotification from "../../components/Notification/SuccessNotification";
+import DangerNotification from "../../components/Notification/DangerNotification";
+import { useHistory } from "react-router-dom";
 
 type Props = {};
 
@@ -25,8 +25,15 @@ const ContactDetails: React.FC<Props> = () => {
   const history = useHistory();
   const { notify } = useNotifier();
 
-  const { data: { userId } } = useQuery(Q_GET_USER_ID);
-  const { register, handleSubmit, setValue, formState: { errors } } = useForm();
+  const {
+    data: { userId },
+  } = useQuery(Q_GET_USER_ID);
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    formState: { errors },
+  } = useForm();
   const [storeId, setStoreId] = useState("");
   const [countryCode, setCountryCode] = useState([]);
   const [addressState, setAddressState] = useState({
@@ -49,8 +56,8 @@ const ContactDetails: React.FC<Props> = () => {
       setCountryCode([
         { value: getStore.countryCode, label: getStore.countryCode },
       ]);
-      setAddressState({...addressState, address: getStore.address});
-    }
+      setAddressState({ ...addressState, address: getStore.address });
+    },
   });
 
   const [updateAddress, { loading: updating }] = useMutation(
@@ -91,8 +98,8 @@ const ContactDetails: React.FC<Props> = () => {
     };
     setAddressState({
       address: addressData.formatted_address,
-      coordinates: [pos.lat, pos.lng],
-      type: "Point"
+      coordinates: [pos.lng, pos.lat],
+      type: "Point",
     });
   }, []);
 
@@ -143,11 +150,11 @@ const ContactDetails: React.FC<Props> = () => {
             overrides={{
               BaseButton: {
                 style: ({ $theme }) => ({
-                  borderTopLeftRadius: '3px',
-                  borderTopRightRadius: '3px',
-                  borderBottomRightRadius: '3px',
-                  borderBottomLeftRadius: '3px',
-                  color: $theme.colors.red400
+                  borderTopLeftRadius: "3px",
+                  borderTopRightRadius: "3px",
+                  borderBottomRightRadius: "3px",
+                  borderBottomLeftRadius: "3px",
+                  color: $theme.colors.red400,
                 }),
               },
             }}
@@ -270,7 +277,8 @@ const ContactDetails: React.FC<Props> = () => {
                 name="address"
                 value={addressState.address}
                 inputRef={register}
-                disabled />
+                disabled
+              />
               {errors.address && (
                 <div
                   style={{
