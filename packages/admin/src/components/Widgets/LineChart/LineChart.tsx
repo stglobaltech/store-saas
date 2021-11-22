@@ -6,8 +6,7 @@ const LineChart = ({
   widgetTitle,
   series,
   color,
-  categories,
-  seriesName = '',
+  categories
 }: any) => {
   const options = {
     options: {
@@ -32,7 +31,7 @@ const LineChart = ({
       xaxis: {
         categories: categories,
         labels: {
-          show: false,
+          show: true,
         },
         axisBorder: {
           show: false,
@@ -70,6 +69,10 @@ const LineChart = ({
             fontFamily: "'Lato', sans-serif",
           },
         },
+        tickAmount: 5,
+        min: 0,
+        max: 5000,
+        decimalsInFloat: 0
       },
       grid: {
         borderColor: '#F7F7F7',
@@ -86,12 +89,7 @@ const LineChart = ({
         },
       },
     },
-    series: [
-      {
-        name: seriesName,
-        data: series,
-      },
-    ],
+    series,
   };
 
   return (
