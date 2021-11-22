@@ -21,7 +21,7 @@ import {
 } from './Coupon.style';
 import NoResult from 'components/NoResult/NoResult';
 import { PencilIcon } from 'assets/icons/PencilIcon';
-import { CloseIcon } from 'assets/icons/CloseIcon';
+import { TrashIcon } from 'assets/icons/TrashIcon';
 import Pagination from 'components/Pagination/Pagination';
 import { InLineLoader } from '../../components/InlineLoader/InlineLoader';
 
@@ -186,7 +186,7 @@ export default function Coupons() {
                                 className='icon-lg pointer'
                                 onClick={() => openEditDrawer({item, refetch})}
                               />
-                              <CloseIcon
+                              <TrashIcon
                                 className='icon-lg icon-danger pointer'
                                 onClick={() => openDeleteDrawer({discountID: item._id, refetch})}
                               />
