@@ -44,6 +44,7 @@ import {
   ADD_PRODUCT_TO_CART_FAILED,
   ERROR_CART_DELETED,
 } from "../../../utils/constant";
+import { useAppState } from "contexts/app/app.provider";
 
 type ProductDetailsProps = {
   product: any;
@@ -71,8 +72,9 @@ const ProductDetails: React.FunctionComponent<ProductDetailsProps> = ({
     isInCart,
     cartItemsCount,
     getParticularItemCount,
-    getWorkFlowPolicyOfStore,
   } = useCart();
+
+  const workFlowPolicy=useAppState("workFlowPolicy") as any;
 
   const { notify } = useNotifier();
 
@@ -271,13 +273,13 @@ const ProductDetails: React.FunctionComponent<ProductDetailsProps> = ({
             <ProductPriceWrapper>
               {product.discountInPercent ? (
                 <SalePrice>
-                  {getWorkFlowPolicyOfStore().currency}
+                  {workFlowPolicy.currency}
                   {product.price.price}
                 </SalePrice>
               ) : null}
 
               <ProductPrice>
-                {getWorkFlowPolicyOfStore().currency}
+                {workFlowPolicy.currency}
                 {product.price.price}
               </ProductPrice>
             </ProductPriceWrapper>

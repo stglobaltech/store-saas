@@ -21,6 +21,7 @@ import {
 import { ERROR_CART_DELETED } from "../../utils/constant";
 import Loader from "components/loader/loader";
 import { M_REMOVE_PRODUCT_FROM_CART } from "graphql/mutation/remove-product-from-cart.mutation";
+import { useAppState } from "contexts/app/app.provider";
 
 interface Props {
   data: any;
@@ -47,9 +48,10 @@ export const CartItem: React.FC<Props> = ({
     isInCart,
     cartItemsCount,
     getParticularItemCount,
-    getWorkFlowPolicyOfStore,
   } = useCart();
   const { notify } = useNotifier();
+
+  const workFlowPolicy=useAppState("workFlowPolicy") as any;
 
   const [
     updateProductQuantity,
@@ -139,7 +141,7 @@ export const CartItem: React.FC<Props> = ({
       <Information>
         <Name>{productName.en}</Name>
         <Price>
-          {getWorkFlowPolicyOfStore().currency}
+          {workFlowPolicy.currency}
           {displayPrice}
         </Price>
         <Weight>
@@ -147,7 +149,7 @@ export const CartItem: React.FC<Props> = ({
         </Weight>
       </Information>
       <Total>
-        {getWorkFlowPolicyOfStore().currency}
+        {workFlowPolicy.currency}
         {(quantity * displayPrice).toFixed(2)}
       </Total>
       {!removeProductFromCartLoading ? (

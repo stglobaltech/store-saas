@@ -29,6 +29,7 @@ import { useCart } from "contexts/cart/use-cart";
 import { CartItem } from "components/cart-item/cart-item";
 import Coupon from "features/coupon/coupon";
 import { refactorProductbeforeAddingToCart } from "utils/refactor-product-before-adding-to-cart";
+import { useAppState } from "contexts/app/app.provider";
 
 type CartPropsType = {
   style?: any;
@@ -51,7 +52,6 @@ const Cart: React.FC<CartPropsType> = ({
     removeItemFromCart,
     cartItemsCount,
     calculatePrice,
-    getWorkFlowPolicyOfStore,
   } = useCart();
   const router = useRouter();
   const {
@@ -61,6 +61,8 @@ const Cart: React.FC<CartPropsType> = ({
 
   const storeId = process.env.NEXT_PUBLIC_STG_CLIENT_ID;
   const entityId = storeId;
+
+  const workFlowPolicy=useAppState("workFlowPolicy") as any;
 
   const [hasCoupon, setCoupon] = useState(false);
   const { isRtl } = useLocale();
@@ -160,7 +162,7 @@ const Cart: React.FC<CartPropsType> = ({
                   />
                 </Title>
                 <PriceBox>
-                  {getWorkFlowPolicyOfStore().currency}
+                  {workFlowPolicy.currency}
                   {calculatePrice()}
                 </PriceBox>
               </>
@@ -173,7 +175,7 @@ const Cart: React.FC<CartPropsType> = ({
                 <FormattedMessage id="nav.checkout" defaultMessage="Checkout" />
               </Title>
               <PriceBox>
-                {getWorkFlowPolicyOfStore().currency}
+                {workFlowPolicy.currency}
                 {calculatePrice()}
               </PriceBox>
             </>

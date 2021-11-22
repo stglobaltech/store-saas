@@ -7,6 +7,7 @@ export const ERROR_FETCHING_USER_DETAILS =
 export const ADD_PRODUCT_TO_CART_FAILED =
   "Something went wrong!Product could not be added to cart!";
 export const ERROR_CART_DELETED = "No products in the cart. Cart Deleted";
+export const CART_DOES_NOT_EXIST = "CART_DOES_NOT_EXISTS";
 export const CHEF_NOT_AVAILABLE = "Chef not available";
 export const MINIMUM_ORDER_VALIDATION = "Order Cost should be more than";
 export const ADDRESS_DELETED = "SUCCESS";

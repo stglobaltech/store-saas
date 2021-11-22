@@ -2,7 +2,7 @@ import React, { useContext, useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import { useNotifier } from "react-headless-notifier";
-import { useSubscription } from "@apollo/client";
+import { useQuery, useSubscription } from "@apollo/client";
 import { Button } from "components/button/button";
 import { CHEF_NOT_AVAILABLE } from "utils/constant";
 import { Scrollbar } from "components/scrollbar/scrollbar";
@@ -55,11 +55,12 @@ import { M_PLACE_ORDER } from "graphql/mutation/place-order.mutation";
 import SuccessNotification from "../../../components/Notification/SuccessNotification";
 import DangerNotification from "../../../components/Notification/DangerNotification";
 import TopupWallet from "features/topup-wallet/topup-wallet";
+import { Q_GET_STORE_ID } from "graphql/query/loggedIn-queries.query";
+import { useAppState } from "contexts/app/app.provider";
 
 // The type of props Checkout Form receives
 interface MyFormProps {
   cartId: string;
-  storeId: string;
   deviceType: any;
   deliveryCost: number;
   wallet: any;
@@ -87,7 +88,6 @@ const OrderItem: React.FC<CartItemProps> = ({ product }) => {
 
 const CheckoutWithSidebar: React.FC<MyFormProps> = ({
   cartId,
-  storeId,
   deliveryCost,
   deviceType,
   wallet,
@@ -107,11 +107,13 @@ const CheckoutWithSidebar: React.FC<MyFormProps> = ({
     calculateSubTotalPrice,
     isRestaurant,
     toggleRestaurant,
-    getWorkFlowPolicyOfStore,
   } = useCart();
 
+  const {data:storeIdData}=useQuery(Q_GET_STORE_ID);
+  const storeId=storeIdData.storeId;
+
   const size = useWindowSize();
-  const CURRENCY = getWorkFlowPolicyOfStore().currency;
+  const CURRENCY = (useAppState("workFlowPolicy") as any).currency;
 
   const [loading, setLoading] = useState(false);
   const [isValid, setIsValid] = useState(false);
@@ -184,7 +186,6 @@ const CheckoutWithSidebar: React.FC<MyFormProps> = ({
     "//" +
     window.location.host +
     "/checkout";
-    console.log("successurl", successUrl);
     placeOrder({
       variables: {
         createOrderInput: {

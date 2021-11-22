@@ -15,7 +15,7 @@ import {
   // Input,
   Divider,
 } from "./authentication-form.style";
-import { useLazyQuery, useMutation } from "@apollo/client";
+import {  useLazyQuery, useMutation } from "@apollo/client";
 import { AuthContext } from "contexts/auth/auth.context";
 import { FormattedMessage, useIntl } from "react-intl";
 import { closeModal } from "@redq/reuse-modal";
@@ -25,7 +25,7 @@ import { Select } from "components/forms/select";
 import { M_USER_LOGIN } from "graphql/mutation/me";
 import { setToken } from "utils/localStorage";
 import { initializeApollo } from "utils/apollo";
-import { Q_GET_USERID } from "graphql/query/loggedIn-user.query";
+import { Q_GET_ROLES, Q_GET_USERID } from "graphql/query/loggedIn-queries.query";
 import { useCart } from "contexts/cart/use-cart";
 import SuccessNotification from "../../components/Notification/SuccessNotification";
 import DangerNotification from "../../components/Notification/DangerNotification";
@@ -147,6 +147,10 @@ function VerifyOtp({ mobile, countryCode, handleLoginSuccess }) {
           query: Q_GET_USERID,
           data: { userId },
         });
+        client.writeQuery({
+          query:Q_GET_ROLES,
+          data:{roles}
+        })
       } else if(data && data.userLogin && data.userLogin.accessToken===null && data.userLogin.refreshToken===null) {
         notify(
           <DangerNotification

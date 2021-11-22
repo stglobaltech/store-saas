@@ -9,6 +9,7 @@ import CartPopupButton, {
 import { CartSlidePopup } from "./cart.style";
 import { FormattedMessage } from "react-intl";
 import { useCart } from "contexts/cart/use-cart";
+import { useAppState } from "contexts/app/app.provider";
 
 const CartPopupStyle = createGlobalStyle`
   .cartPopup{
@@ -42,13 +43,8 @@ type CartProps = {
 const CartPopUp: React.FC<CartProps> = ({
   deviceType: { mobile, tablet, desktop },
 }) => {
-  const {
-    isOpen,
-    cartItemsCount,
-    toggleCart,
-    calculatePrice,
-    getWorkFlowPolicyOfStore,
-  } = useCart();
+  const { isOpen, cartItemsCount, toggleCart, calculatePrice } = useCart();
+  const workFlowPolicy = useAppState("workFlowPolicy") as any;
   const handleModal = () => {
     openModal({
       show: true,
@@ -88,7 +84,7 @@ const CartPopUp: React.FC<CartProps> = ({
               )
             }
             price={calculatePrice()}
-            pricePrefix={getWorkFlowPolicyOfStore().currency}
+            pricePrefix={workFlowPolicy.currency}
             onClick={handleModal}
           />
         </>
@@ -111,7 +107,7 @@ const CartPopUp: React.FC<CartProps> = ({
               )
             }
             price={calculatePrice()}
-            pricePrefix={getWorkFlowPolicyOfStore().currency}
+            pricePrefix={workFlowPolicy.currency}
             onClick={toggleCart}
           />
         </>

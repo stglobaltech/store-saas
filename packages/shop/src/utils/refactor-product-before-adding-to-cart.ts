@@ -15,10 +15,11 @@ export function refactorProductbeforeAddingToCart(product) {
     quantity: product.quantity,
     maxQuantity: product.maxQuantity,
     price: product.price,
-    picture:product.picture
+    picture: product.picture,
   };
 }
 
+//incartProductId is the _id of the product in the products array of getCart response
 export function refactorGetCartDataBeforeAddingToCart(product) {
   return {
     inCartProductId: product._id,
@@ -35,14 +36,6 @@ export function refactorGetCartDataBeforeAddingToCart(product) {
     },
     quantity: product.quantity,
     maxQuantity: product.maxQuantity,
-    price: { price: product.price },
+    price: { price: Math.floor(product.price / product.quantity) },
   };
 }
-
-// inCartProductId: "6197999de25ba8002b82f4cb"
-// maxQuantity: 15
-// picture: "https://restaurant-stg.s3.ap-south-1.amazonaws.com/product-pic/product-pic-1632486889167.jpg"
-// price: {__typename: "PriceOutput", price: 100, basePrice: 95}
-// productName: {en: "Chicken Briyani", ar: "برياني دجاج"}
-// quantity: 1
-// _id: "614dc5eb5daa5e4e6f0ea92d"

@@ -21,6 +21,8 @@ import { useCart } from "contexts/cart/use-cart";
 import { Q_GET_CART } from "graphql/query/get-cart.query";
 import { refactorGetCartDataBeforeAddingToCart } from "utils/refactor-product-before-adding-to-cart";
 import { getToken } from "utils/localStorage";
+import { Q_GET_STORE_ID } from "graphql/query/loggedIn-queries.query";
+import { useAppState } from "contexts/app/app.provider";
 
 const Grid = styled.div(
   css({
@@ -59,37 +61,25 @@ interface Props {
   loadMore?: boolean;
   fetchLimit?: number;
   style?: any;
-  storeId?: string;
   firstPageProducts?: any;
-  workFlowPolicyData?: any;
 }
 
 export const ProductGrid = ({
   style,
-  storeId,
   fetchLimit = 30,
   firstPageProducts,
-  workFlowPolicyData,
   loadMore = true,
 }: Props) => {
   const router = useRouter();
-  const {
-    setWorkFlowPolicyOfStore,
-    getWorkFlowPolicyOfStore,
-    cartItemsCount,
-    addItem,
-    items,
-  } = useCart();
+  const { cartItemsCount, addItem, items } = useCart();
+  const workFlowPolicy = useAppState("workFlowPolicy") as any;
   const [page, setPage] = useState(1);
   const {
     query: { category, search },
   } = router;
 
-  if (workFlowPolicyData && !Object.keys(getWorkFlowPolicyOfStore()).length) {
-    setWorkFlowPolicyOfStore(
-      workFlowPolicyData.getWorkFlowpolicyPlanOfStoreForUserWeb.data.plan[0]
-    );
-  }
+  const { data: storeIdData } = useQuery(Q_GET_STORE_ID);
+  const storeId = storeIdData.storeId;
 
   useEffect(() => {
     setPage(1);
@@ -285,7 +275,7 @@ export const ProductGrid = ({
           <ProductCard
             data={product}
             key={product._id}
-            currency={getWorkFlowPolicyOfStore().currency}
+            currency={workFlowPolicy.currency}
           />
         ))}
       </Grid>

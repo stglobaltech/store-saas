@@ -22,12 +22,10 @@ SwiperCore.use([Navigation]);
 
 interface Props {
   type: string;
-  storeId?: string;
   productCategories?: Array<any>;
 }
 
 export const HorizontalCategoryCardMenu = ({
-  storeId,
   productCategories,
 }: Props) => {
   const router = useRouter();

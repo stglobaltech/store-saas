@@ -11,11 +11,13 @@ import { S_ORDER_PAYMENT_SUBSCRIPTION } from "graphql/subscriptions/stripe-payme
 import { useEffect } from "react";
 import { Q_GET_USER_ACTIVE_ORDERS } from "graphql/query/get-user-active-order.query";
 import { GENERAL_ERROR_MSG } from "utils/constant";
+import { useAppState } from "contexts/app/app.provider";
 
 const OrderReceivedPage = () => {
   const { data, error, loading } = useQuery(Q_GET_USER_ACTIVE_ORDERS);
 
-  const { getWorkFlowPolicyOfStore, clearCart } = useCart();
+  const { clearCart } = useCart();
+  const currency = (useAppState("workFlowPolicy") as any).currency;
 
   if (loading) return <Loader />;
   if (error)
@@ -29,14 +31,10 @@ const OrderReceivedPage = () => {
 
   const currentOrder = data?.userActiveOrders[0];
 
-
   return (
     <>
       <SEO title="Invoice - Orderznow" description="Invoice Details" />
-      <OrderReceived
-        orderDetails={currentOrder}
-        currency={getWorkFlowPolicyOfStore().currency}
-      />
+      <OrderReceived orderDetails={currentOrder} currency={currency} />
     </>
   );
 };
