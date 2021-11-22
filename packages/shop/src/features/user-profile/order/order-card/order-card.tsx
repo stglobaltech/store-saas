@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import {
   SingleOrderList,
   OrderListHeader,
@@ -6,10 +6,8 @@ import {
   Status,
   OrderMeta,
   Meta,
-} from './order-card.style';
-import { FormattedMessage } from 'react-intl';
-
-import { CURRENCY } from 'utils/constant';
+} from "./order-card.style";
+import { FormattedMessage } from "react-intl";
 
 type OrderCardProps = {
   orderId?: any;
@@ -19,6 +17,8 @@ type OrderCardProps = {
   date?: any;
   deliveryTime?: any;
   amount?: number;
+  currency?: string;
+  orderPayType?:string;
 };
 
 const OrderCard: React.FC<OrderCardProps> = ({
@@ -27,8 +27,9 @@ const OrderCard: React.FC<OrderCardProps> = ({
   className,
   status,
   date,
-  deliveryTime,
   amount,
+  currency,
+  orderPayType
 }) => {
   return (
     <>
@@ -50,14 +51,14 @@ const OrderCard: React.FC<OrderCardProps> = ({
               id="intlOrderCardDateText"
               defaultMessage="Order Date"
             />
-            : <span>{date}</span>
+            : <span>{new Date(date).toDateString()}</span>
           </Meta>
           <Meta>
             <FormattedMessage
-              id="deliveryTimeText"
-              defaultMessage="Delivery Time"
+              id="sss"
+              defaultMessage="Payment Method"
             />
-            : <span>{deliveryTime}</span>
+            : <span>{orderPayType}</span>
           </Meta>
           <Meta className="price">
             <FormattedMessage
@@ -66,7 +67,7 @@ const OrderCard: React.FC<OrderCardProps> = ({
             />
             :
             <span>
-              {CURRENCY}
+              {currency}
               {amount}
             </span>
           </Meta>

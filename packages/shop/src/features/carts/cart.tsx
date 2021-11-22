@@ -62,7 +62,7 @@ const Cart: React.FC<CartPropsType> = ({
   const storeId = process.env.NEXT_PUBLIC_STG_CLIENT_ID;
   const entityId = storeId;
 
-  const workFlowPolicy=useAppState("workFlowPolicy") as any;
+  const workFlowPolicy = useAppState("workFlowPolicy") as any;
 
   const [hasCoupon, setCoupon] = useState(false);
   const { isRtl } = useLocale();

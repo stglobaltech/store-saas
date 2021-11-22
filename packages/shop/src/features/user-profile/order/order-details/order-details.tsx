@@ -1,5 +1,5 @@
-import React from 'react';
-import Table from 'rc-table';
+import React from "react";
+import Table from "rc-table";
 import {
   DeliveryInfo,
   DeliveryAddress,
@@ -10,17 +10,17 @@ import {
   ProgressWrapper,
   OrderTableWrapper,
   OrderTable,
-} from './order-details.style';
-import Progress from 'components/progress-box/progress-box';
-import { CURRENCY } from 'utils/constant';
-import { FormattedMessage } from 'react-intl';
+} from "./order-details.style";
+import Progress from "components/progress-box/progress-box";
+import { CURRENCY } from "utils/constant";
+import { FormattedMessage } from "react-intl";
 
 type OrderDetailsProps = {
   tableData?: any;
   columns?: any;
   progressData?: any;
   progressStatus?: any;
-  address?: string;
+  address?: any;
   subtotal?: number;
   discount?: number;
   deliveryFee?: number;
@@ -52,43 +52,33 @@ const OrderDetails: React.FC<OrderDetailsProps> = ({
               defaultMessage="Delivery Address"
             />
           </h3>
-          <Address>{address}</Address>
+          <Address>
+            <b>{address.name}</b> -{address.buildingNo}-{address.address}
+          </Address>
         </DeliveryAddress>
 
         <CostCalculation>
           <PriceRow>
             <FormattedMessage id="subTotal" defaultMessage="Sub total" />
-            <Price>
-              {CURRENCY}
-              {subtotal}
-            </Price>
+            <Price>{subtotal}</Price>
           </PriceRow>
           <PriceRow>
             <FormattedMessage
               id="intlOrderDetailsDiscount"
               defaultMessage="Discount"
             />
-            <Price>
-              {CURRENCY}
-              {discount}
-            </Price>
+            <Price>{discount}</Price>
           </PriceRow>
           <PriceRow>
             <FormattedMessage
               id="intlOrderDetailsDelivery"
               defaultMessage="Delivery Fee"
             />
-            <Price>
-              {CURRENCY}
-              {deliveryFee}
-            </Price>
+            <Price>{deliveryFee}</Price>
           </PriceRow>
           <PriceRow className="grandTotal">
             <FormattedMessage id="totalText" defaultMessage="Total" />
-            <Price>
-              {CURRENCY}
-              {grandTotal}
-            </Price>
+            <Price>{Number(subtotal) + Number(deliveryFee)}</Price>
           </PriceRow>
         </CostCalculation>
       </DeliveryInfo>
@@ -101,7 +91,7 @@ const OrderDetails: React.FC<OrderDetailsProps> = ({
         <Table
           columns={columns}
           data={tableData}
-          rowKey={(record) => record.id}
+          rowKey={(record) => record._id}
           components={components}
           className="orderDetailsTable"
           // scroll={{ y: 350 }}

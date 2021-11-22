@@ -1,7 +1,7 @@
-import React from 'react';
-import Table from 'rc-table';
-import Collapse, { Panel } from 'rc-collapse';
-import Progress from 'components/progress-box/progress-box';
+import React from "react";
+import Table from "rc-table";
+import Collapse, { Panel } from "rc-collapse";
+import Progress from "components/progress-box/progress-box";
 
 import {
   OrderListHeader,
@@ -20,9 +20,9 @@ import {
   ProgressWrapper,
   OrderTable,
   OrderTableMobile,
-} from './order-card.style';
+} from "./order-card.style";
 
-import { CURRENCY } from 'utils/constant';
+import { CURRENCY } from "utils/constant";
 
 type MobileOrderCardProps = {
   orderId?: any;
@@ -56,7 +56,7 @@ const OrderCard: React.FC<MobileOrderCardProps> = ({
   orders,
 }) => {
   //   const displayDetail = className === 'active' ? '100%' : '0';
-  const addAllClasses: string[] = ['accordion'];
+  const addAllClasses: string[] = ["accordion"];
 
   if (className) {
     addAllClasses.push(className);
@@ -65,7 +65,7 @@ const OrderCard: React.FC<MobileOrderCardProps> = ({
     <>
       <Collapse
         accordion={true}
-        className={addAllClasses.join(' ')}
+        className={addAllClasses.join(" ")}
         defaultActiveKey="active"
       >
         {orders.map((order: any) => (
@@ -74,65 +74,53 @@ const OrderCard: React.FC<MobileOrderCardProps> = ({
               <CardWrapper onClick={onClick}>
                 <OrderListHeader>
                   <TrackID>
-                    Order <span>#{order.id}</span>
+                    Order <span>#{order.shortOrderId}</span>
                   </TrackID>
-                  <Status>{progressData[order.status - 1]}</Status>
+                  <Status>{order.status}</Status>
                 </OrderListHeader>
 
                 <OrderMeta>
                   <Meta>
-                    Order Date: <span>{order.date}</span>
-                  </Meta>
-                  <Meta>
-                    Delivery Time: <span>{order.deliveryTime}</span>
+                    Order Date: <span>{new Date(order.createdAt).toLocaleString()}</span>
                   </Meta>
                   <Meta className="price">
                     Total Price:
-                    <span>
-                      {CURRENCY}
-                      {order.amount}
-                    </span>
+                    <span>{order.orderCart.totalQuotedPrice}</span>
                   </Meta>
                 </OrderMeta>
               </CardWrapper>
             }
             headerClass="accordion-title"
-            key={order.id}
+            key={order._id}
           >
             <OrderDetail>
               <DeliveryInfo>
                 <DeliveryAddress>
                   <h3>Delivery Address</h3>
-                  <Address>{order.deliveryAddress}</Address>
+                  <Address>{order.orderCart.address.name}-{order.orderCart.address.buildingNo}-{order.orderCart.address.address}</Address>
                 </DeliveryAddress>
 
                 <CostCalculation>
                   <PriceRow>
                     Subtotal
-                    <Price>
-                      {CURRENCY}
-                      {order.subtotal}
-                    </Price>
+                    <Price>{order.orderCart.totalQuotedPrice}</Price>
                   </PriceRow>
-                  <PriceRow>
+                  {/* <PriceRow>
                     Discount
                     <Price>
                       {CURRENCY}
                       {order.discount}
                     </Price>
-                  </PriceRow>
+                  </PriceRow> */}
                   <PriceRow>
                     Delivery Fee
-                    <Price>
-                      {CURRENCY}
-                      {order.deliveryFee}
-                    </Price>
+                    <Price>{order.orderCart.deliveryCost}</Price>
                   </PriceRow>
                   <PriceRow className="grandTotal">
                     Total
                     <Price>
-                      {CURRENCY}
-                      {order.amount}
+                      {Number(order.orderCart.totalQuotedPrice) +
+                        Number(order.orderCart.deliveryCost)}
                     </Price>
                   </PriceRow>
                 </CostCalculation>
@@ -145,8 +133,8 @@ const OrderCard: React.FC<MobileOrderCardProps> = ({
               <OrderTableMobile>
                 <Table
                   columns={columns}
-                  data={order.products}
-                  rowKey={(record) => record.id}
+                  data={order.orderCart.products}
+                  rowKey={(record) => record._id}
                   components={components}
                   scroll={{ x: 450 }}
                   // scroll={{ y: 250 }}
