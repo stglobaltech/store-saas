@@ -78,8 +78,7 @@ export const ProductGrid = ({
     query: { category, search },
   } = router;
 
-  const { data: storeIdData } = useQuery(Q_GET_STORE_ID);
-  const storeId = storeIdData.storeId;
+  const storeId = process.env.NEXT_PUBLIC_STG_CLIENT_ID;
 
   useEffect(() => {
     setPage(1);

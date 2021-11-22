@@ -8,6 +8,11 @@ import {
   Meta,
 } from "./order-card.style";
 import { FormattedMessage } from "react-intl";
+import { useSubscription } from "@apollo/client";
+import {
+  S_CHEF_ORDER_SUBSCRIPTION,
+  S_ORDER_STATUS_SUBSCRIPTION,
+} from "graphql/subscriptions/order-status.subscription";
 
 type OrderCardProps = {
   orderId?: any;
@@ -18,7 +23,7 @@ type OrderCardProps = {
   deliveryTime?: any;
   amount?: number;
   currency?: string;
-  orderPayType?:string;
+  orderPayType?: string;
 };
 
 const OrderCard: React.FC<OrderCardProps> = ({
@@ -29,8 +34,20 @@ const OrderCard: React.FC<OrderCardProps> = ({
   date,
   amount,
   currency,
-  orderPayType
+  orderPayType,
 }) => {
+
+  const { data: orderStatusData, error: orderStatusError } = useSubscription(
+    S_ORDER_STATUS_SUBSCRIPTION,
+    {
+      variables: {
+        input: {
+          orderId,
+        },
+      },
+    }
+  );
+
   return (
     <>
       <SingleOrderList onClick={onClick} className={className}>
@@ -42,7 +59,13 @@ const OrderCard: React.FC<OrderCardProps> = ({
             />
             <span>#{orderId}</span>
           </TrackID>
-          <Status>{status}</Status>
+          <Status>
+            {orderStatusData &&
+            orderStatusData.orderStatusUpdateSubscribe &&
+            orderStatusData.orderStatusUpdateSubscribe.event
+              ? orderStatusData?.orderStatusUpdateSubscribe?.event
+              : status}
+          </Status>
         </OrderListHeader>
 
         <OrderMeta>
@@ -54,11 +77,8 @@ const OrderCard: React.FC<OrderCardProps> = ({
             : <span>{new Date(date).toDateString()}</span>
           </Meta>
           <Meta>
-            <FormattedMessage
-              id="sss"
-              defaultMessage="Payment Method"
-            />
-            : <span>{orderPayType}</span>
+            <FormattedMessage id="sss" defaultMessage="Payment Method" />:{" "}
+            <span>{orderPayType}</span>
           </Meta>
           <Meta className="price">
             <FormattedMessage

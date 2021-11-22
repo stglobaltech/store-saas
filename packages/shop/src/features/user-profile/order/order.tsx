@@ -176,6 +176,7 @@ const OrdersContent: React.FC<{}> = () => {
               grandTotal={order.amount}
               tableData={order.orderCart.products}
               columns={orderTableColumns}
+              orderId={order._id}
             />
           )}
         </OrderDetailsWrapper>

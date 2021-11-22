@@ -14,6 +14,8 @@ import {
 import Progress from "components/progress-box/progress-box";
 import { CURRENCY } from "utils/constant";
 import { FormattedMessage } from "react-intl";
+import { useSubscription } from "@apollo/client";
+import { S_ORDER_STATUS_SUBSCRIPTION } from "graphql/subscriptions/order-status.subscription";
 
 type OrderDetailsProps = {
   tableData?: any;
@@ -25,6 +27,7 @@ type OrderDetailsProps = {
   discount?: number;
   deliveryFee?: number;
   grandTotal?: number;
+  orderId?: string;
 };
 
 const components = {
@@ -41,7 +44,19 @@ const OrderDetails: React.FC<OrderDetailsProps> = ({
   discount,
   deliveryFee,
   grandTotal,
+  orderId,
 }) => {
+  const { data: orderStatusUpdateData } = useSubscription(
+    S_ORDER_STATUS_SUBSCRIPTION,
+    {
+      variables: {
+        input: {
+          orderId,
+        },
+      },
+    }
+  );
+
   return (
     <>
       <DeliveryInfo>
@@ -84,7 +99,16 @@ const OrderDetails: React.FC<OrderDetailsProps> = ({
       </DeliveryInfo>
 
       <ProgressWrapper>
-        <Progress data={progressData} status={progressStatus} />
+        <Progress
+          data={progressData}
+          status={
+            orderStatusUpdateData &&
+            orderStatusUpdateData.orderStatusUpdateSubscribe &&
+            orderStatusUpdateData.orderStatusUpdateSubscribe.event
+              ? orderStatusUpdateData.orderStatusUpdateSubscribe.event
+              : progressStatus
+          }
+        />
       </ProgressWrapper>
 
       <OrderTableWrapper>

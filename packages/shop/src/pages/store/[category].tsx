@@ -60,11 +60,6 @@ export default function Categories({
   const client = useApolloClient();
   const router = useRouter();
 
-  client.writeQuery({
-    query: Q_GET_STORE_ID,
-    data: { storeId },
-  });
-
   const { authDispatch, authState } = React.useContext<any>(AuthContext);
   const appDispatch = useAppDispatch();
   const { clearCart, items, addItem, isInCart } = useCart();

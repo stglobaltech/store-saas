@@ -57,7 +57,7 @@ const OrderReceived: React.FunctionComponent<OrderReceivedProps> = ({
                   defaultMessage="Order Number"
                 />
               </Text>
-              <Text>{orderDetails._id}</Text>
+              <Text>{orderDetails.shortOrderId}</Text>
             </InfoBlock>
 
             <InfoBlock>

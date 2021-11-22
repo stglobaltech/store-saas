@@ -22,7 +22,6 @@ import {
   ERROR_FETCHING_USER_DETAILS,
   GENERAL_ERROR_MSG,
 } from "utils/constant";
-import { Q_GET_STORE_ID } from "graphql/query/loggedIn-queries.query";
 
 type Props = {
   deviceType: {
@@ -33,9 +32,7 @@ type Props = {
 };
 
 const CheckoutPage: NextPage<Props> = ({ deviceType }) => {
-  
-  const {data:storeIdData}=useQuery(Q_GET_STORE_ID);
-  const storeId=storeIdData.storeId;
+  const storeId = process.env.NEXT_PUBLIC_STG_CLIENT_ID
 
   const { cartItemsCount, clearCart } = useCart();
   const router = useRouter();
@@ -55,7 +52,7 @@ const CheckoutPage: NextPage<Props> = ({ deviceType }) => {
     Q_GET_CART,
     {
       variables: {
-        entityId:storeId,
+        entityId: storeId,
       },
       fetchPolicy: "network-only",
     }

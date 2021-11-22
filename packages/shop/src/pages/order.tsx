@@ -12,7 +12,7 @@ import { Modal } from "@redq/reuse-modal";
 const OrderPage = () => {
   return (
     <>
-      <SEO title="Order - PickBazar" description="Order Details" />
+      <SEO title="Your Orders- Orderznow" description="Order Details" />
       <Modal>
         <PageWrapper>
           <SidebarSection>
