@@ -34,6 +34,12 @@ const OrderReceived: React.FunctionComponent<OrderReceivedProps> = ({
           </a>
         </Link>
 
+        <Link href="/">
+          <a className="home-btn">
+            <FormattedMessage id="backHomeBtn" defaultMessage="Back to Home" />
+          </a>
+        </Link>
+
         <OrderInfo>
           <BlockTitle>
             <FormattedMessage

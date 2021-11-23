@@ -24,6 +24,7 @@ type OrderCardProps = {
   amount?: number;
   currency?: string;
   orderPayType?: string;
+  shortOrderId?:string;
 };
 
 const OrderCard: React.FC<OrderCardProps> = ({
@@ -35,6 +36,7 @@ const OrderCard: React.FC<OrderCardProps> = ({
   amount,
   currency,
   orderPayType,
+  shortOrderId
 }) => {
 
   const { data: orderStatusData, error: orderStatusError } = useSubscription(
@@ -57,7 +59,7 @@ const OrderCard: React.FC<OrderCardProps> = ({
               id="intlOrderCardTitleText"
               defaultMessage="Order"
             />
-            <span>#{orderId}</span>
+            <span>#{shortOrderId}</span>
           </TrackID>
           <Status>
             {orderStatusData &&

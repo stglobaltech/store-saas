@@ -134,7 +134,8 @@ const OrdersContent: React.FC<{}> = () => {
                 data.getUserOrders.orders.map((current: any) => (
                   <OrderCard
                     key={current._id}
-                    orderId={current.shortOrderId}
+                    shortOrderId={current.shortOrderId}
+                    orderId={current._id}
                     className={current._id === active ? "active" : ""}
                     status={current.status}
                     date={current.createdAt}
