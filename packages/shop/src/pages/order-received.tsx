@@ -10,7 +10,7 @@ import { S_CHEF_ORDER_SUBSCRIPTION, S_ORDER_STATUS_SUBSCRIPTION } from "graphql/
 import { S_ORDER_PAYMENT_SUBSCRIPTION } from "graphql/subscriptions/stripe-payment.subscription";
 import { useEffect } from "react";
 import { Q_GET_USER_ACTIVE_ORDERS } from "graphql/query/get-user-active-order.query";
-import { GENERAL_ERROR_MSG } from "utils/constant";
+import { ERROR_FETCHING_YOUR_LAST_ORDER, GENERAL_ERROR_MSG } from "utils/constant";
 import { useAppState } from "contexts/app/app.provider";
 
 const PaymentSubscriptionWrapper = (userId,cartId) => {
@@ -37,7 +37,7 @@ const OrderReceivedPage = () => {
     return (
       <ErrorMessage
         message={
-          "Couldn't fetch your last order! Try after sometime or contact our support team"
+          ERROR_FETCHING_YOUR_LAST_ORDER
         }
       />
     );

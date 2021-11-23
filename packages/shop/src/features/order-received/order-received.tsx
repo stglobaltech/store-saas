@@ -28,15 +28,12 @@ const OrderReceived: React.FunctionComponent<OrderReceivedProps> = ({
   return (
     <OrderReceivedWrapper>
       <OrderReceivedContainer>
-        <Link href="/">
+        <Link href="/order">
           <a className="home-btn">
-            <FormattedMessage id="backHomeBtn" defaultMessage="Back to Home" />
-          </a>
-        </Link>
-
-        <Link href="/">
-          <a className="home-btn">
-            <FormattedMessage id="backHomeBtn" defaultMessage="Back to Home" />
+            <FormattedMessage
+              id="orderHistoryAndTracking"
+              defaultMessage="Track your orders"
+            />
           </a>
         </Link>
 
