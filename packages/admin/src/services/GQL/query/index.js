@@ -7,3 +7,4 @@ export * from './products/products';
 export * from './categories/categories';
 export * from './offers/offers';
 export * from './dashboard';
+export * from './storePlan';

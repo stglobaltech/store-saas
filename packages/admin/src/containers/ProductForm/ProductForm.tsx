@@ -24,11 +24,13 @@ import {
   Q_GET_USER_ID,
   Q_GET_PARENTRESTAURANTID,
   Q_GET_CATEGORIES,
+  Q_STORE_PLAN_FOR_USER_WEB_ADMIN,
   M_CREATE_PRODUCT
 } from 'services/GQL';
 import { useNotifier } from 'react-headless-notifier';
 import SuccessNotification from '../../components/Notification/SuccessNotification';
 import DangerNotification from '../../components/Notification/DangerNotification';
+import { InLineLoader } from 'components/InlineLoader/InlineLoader';
 
 interface imgUploadRes {[
   urlText: string
@@ -64,7 +66,7 @@ const AddProduct: React.FC<Props> = (props) => {
   });
   const [category, setCategory] = useState([]);
 
-  const { error } = useQuery(Q_GET_CATEGORIES, {
+  const { loading, error } = useQuery(Q_GET_CATEGORIES, {
     variables: { storeId },
     onCompleted: ({ getCategories }) => {
       const { productCategories } = getCategories;
@@ -76,6 +78,10 @@ const AddProduct: React.FC<Props> = (props) => {
         setCategories(categoryOptions);
       }
     }
+  });
+
+  const { data: storePlan, loading: storePlanLoading, error: storePlanError } = useQuery(Q_STORE_PLAN_FOR_USER_WEB_ADMIN, {
+    variables: { storeId }
   });
 
   const [doCreate, { loading: saving }] = useMutation(M_CREATE_PRODUCT, {
@@ -130,17 +136,47 @@ const AddProduct: React.FC<Props> = (props) => {
     setDescription(value);
   };
 
+  const vatPercentage = (storePlanData) => {
+    if(
+      storePlanData &&
+      storePlanData.plan &&
+      storePlanData.plan.length &&
+      storePlanData.plan[0].vat
+    )
+      return storePlanData.plan[0].vat;
+    else if(
+      storePlanData &&
+      storePlanData.globalVat
+    )
+      return storePlanData.globalVat;
+  };
+
   const handlePriceChange = (e) => {
+    const vat = vatPercentage(storePlan.getStorePlanForUserWebAdmin.data);
     let price, priceWithoutVat, vatPrice;
-    price = Number(e.target.value);
-    if (price > 0) {
-      priceWithoutVat = (price - price * 0.05).toFixed(2);
-      vatPrice = (price - priceWithoutVat).toFixed(2);
-      setPriceSplit({ price, priceWithoutVat, vatPrice });
-    } else {
-      setPriceSplit({ price: "0", priceWithoutVat: "0", vatPrice: "0" });
+    switch(e.target.name) {
+      case "price":
+        price = Number(e.target.value);
+        if (price > 0) {
+          priceWithoutVat = (price - price * (vat / 100)).toFixed(2);
+          vatPrice = (price - priceWithoutVat).toFixed(2);
+          setPriceSplit({ price, priceWithoutVat, vatPrice });
+        } else {
+          setPriceSplit({ price: "0", priceWithoutVat: "0", vatPrice: "0" });
+        }
+        break;
+      case "priceWithoutVat":
+        priceWithoutVat = Number(e.target.value);
+        if (priceWithoutVat > 0) {
+          price = (priceWithoutVat / (1 - vat / 100)).toFixed(2);
+          vatPrice = (price - priceWithoutVat).toFixed(2);
+          setPriceSplit({ price, priceWithoutVat, vatPrice });
+        } else {
+          setPriceSplit({ price: "0", priceWithoutVat: "0", vatPrice: "0" });
+        }
+        break;
     }
-  }
+  };
 
   const handleCategoryChange = ({ value }) => {
     setValue('category', value);
@@ -156,7 +192,8 @@ const AddProduct: React.FC<Props> = (props) => {
       price: {
         price: parseFloat(priceSplit.price),
         basePrice: parseFloat(priceSplit.priceWithoutVat),
-        vatPrice: parseFloat(priceSplit.vatPrice)
+        vatPrice: parseFloat(priceSplit.vatPrice),
+        vatPercentage: vatPercentage(storePlan.getStorePlanForUserWebAdmin.data)
       },
       maxQuantity: parseFloat(values.quantity),
       description: {
@@ -175,9 +212,11 @@ const AddProduct: React.FC<Props> = (props) => {
     doCreate({ variables: { productCreateInput } });
   };
 
-  if (error) {
-    return <div>Error! {error.message}</div>;
-  }
+  if(loading || storePlanLoading)
+    return <InLineLoader />;
+
+  if(error || storePlanError)
+    return <div>Error Fetching Data</div>;
 
   return (
     <>
@@ -272,6 +311,22 @@ const AddProduct: React.FC<Props> = (props) => {
                   <Input
                     type="number"
                     name="price"
+                    value={priceSplit.price.toString()}
+                    min="0"
+                    step="0.01"
+                    inputRef={register}
+                    onChange={handlePriceChange}
+                  />
+                </FormFields>
+
+                <FormFields>
+                  <FormLabel>Price Without VAT</FormLabel>
+                  <Input
+                    type="number"
+                    name="priceWithoutVat"
+                    value={priceSplit.priceWithoutVat.toString()}
+                    min="0"
+                    step="0.01"
                     inputRef={register}
                     onChange={handlePriceChange}
                   />
