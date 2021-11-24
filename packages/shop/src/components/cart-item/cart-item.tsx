@@ -113,7 +113,7 @@ export const CartItem: React.FC<Props> = ({
         res.data.updateCartProductQuantity &&
         res.data.updateCartProductQuantity.totalPrice
       ) {
-        onDecrement();
+        removeAllFromCart?onRemove():onDecrement();
       }
     } catch (error) {
       if (error.message === ERROR_CART_DELETED) {

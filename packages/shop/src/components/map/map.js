@@ -25,7 +25,7 @@ function Map(props) {
     if (addressAndMarker.position) handleAddress(addressAndMarker);
     if (storeLoc && !addressAndMarker.position && !coordinates) {
       let geocoder = new window.google.maps.Geocoder();
-      let pos = { lat: storeLoc[0], lng: storeLoc[1] };
+      let pos = { lat: storeLoc[1], lng: storeLoc[0] };
       geocoder.geocode(
         {
           latLng: pos,
@@ -42,8 +42,8 @@ function Map(props) {
         }
       );
       let center = {
-        lat: storeLoc[0],
-        lng: storeLoc[1],
+        lat: storeLoc[1],
+        lng: storeLoc[0],
       };
       setMapLocation({ center: center });
     }
