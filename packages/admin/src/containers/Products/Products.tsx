@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useEffect } from 'react';
+import React, { useCallback, useState } from 'react';
 import { styled, withStyle } from 'baseui';
 import Button from 'components/Button/Button';
 import { Grid, Row as Rows, Col as Column } from 'components/FlexBox/FlexBox';
@@ -12,7 +12,6 @@ import NoResult from 'components/NoResult/NoResult';
 import { CURRENCY } from 'settings/constants';
 import Placeholder from 'components/Placeholder/Placeholder';
 import { useDrawerDispatch } from 'context/DrawerContext';
-import { useForm } from "react-hook-form";
 import {
   Q_GET_STORE_ID,
   Q_GET_CATEGORIES,
@@ -74,15 +73,17 @@ export default function Products() {
     [dispatch]
   );
 
-  const { register, setValue, getValues } = useForm();
   const { data: { storeId } } = useQuery(Q_GET_STORE_ID);
 
   const [categories, setCategories] = useState([]);
-  const [category, setCategory] = useState([]);
+  const [filterInput, setFilterInput] = useState({
+    category: [],
+    productKey: ""
+  });
 
   const [productSearchInput, setProductSearchInput] = useState({
     storeId,
-    categoryId: undefined,
+    categoryId: null,
     productKey: "",
     paginate: {
       page: 1,
@@ -108,10 +109,6 @@ export default function Products() {
     variables: { productSearchInput }
   });
 
-  useEffect(() => {
-    register("category");
-  }, [register]);
-
   const goToPage = (page) => {
     setProductSearchInput({
       ...productSearchInput,
@@ -122,38 +119,20 @@ export default function Products() {
     });
   };
 
-  const handleCategory = ({ value }) => {
-    setCategory(value);
-    setValue("category", value[0].value);
-    handleSearch();
-  };
-
-  const handleSearch = () => {
-    const { category, productKey } = getValues();
-    const inputDto = category ? {
+  const handleSearch = (category, productKey) => {
+    setProductSearchInput({
       ...productSearchInput,
-      categoryId: category,
+      categoryId: category.length ? category[0].value : null,
       productKey,
       paginate: {
         page: 1,
         perPage: 12
       }
-    } : {
-      ...productSearchInput,
-      productKey,
-      paginate: {
-        page: 1,
-        perPage: 12
-      }
-    }
-    setProductSearchInput(inputDto);
+    });
   };
 
-  if (getCategoriesError || error) {
-    return (
-      <div>Error Fetching Data</div>
-    )
-  }
+  if (getCategoriesError || error)
+    return <div>Error Fetching Data</div>;
 
   let hasNextPage = false,
     hasPrevPage = false,
@@ -183,18 +162,23 @@ export default function Products() {
                     labelKey="label"
                     valueKey="value"
                     placeholder="Category"
-                    value={category}
+                    value={filterInput.category}
                     searchable={false}
-                    onChange={handleCategory}
+                    onChange={({ value }) => {
+                      setFilterInput({...filterInput, category: value});
+                      handleSearch(value, filterInput.productKey);
+                    }}
                   />
                 </Col>
 
                 <Col md={6} xs={12}>
                   <Input
-                    name="productKey"
                     placeholder="Search..."
-                    inputRef={register}
-                    onChange={handleSearch}
+                    value={filterInput.productKey}
+                    onChange={(e) => {
+                      setFilterInput({...filterInput, productKey: e.currentTarget.value});
+                      handleSearch(filterInput.category, e.currentTarget.value);
+                    }}
                     clearable
                   />
                 </Col>
