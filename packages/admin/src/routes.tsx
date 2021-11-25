@@ -11,7 +11,8 @@ import {
   COUPONS,
   CONTACT_DETAILS,
   STORE_SETTINGS,
-  REPORTS
+  REPORTS,
+  TRANSACTIONS
 } from 'settings/constants';
 import AuthProvider from 'context/auth';
 import { InLineLoader } from 'components/InlineLoader/InlineLoader';
@@ -33,6 +34,7 @@ const Coupons = lazy(() => import('containers/Coupons/Coupons'));
 const Login = lazy(() => import('containers/Login/Login'));
 const NotFound = lazy(() => import('containers/NotFound/NotFound'));
 const Reports = lazy(() => import('containers/Reports/OrdersReport'));
+const Transactions = lazy(() => import('containers/Transactions/Transactions'));
 
 /**
  *
@@ -107,6 +109,13 @@ const Routes = () => {
             <AdminLayout>
               <Suspense fallback={<InLineLoader />}>
                 <Coupons />
+              </Suspense>
+            </AdminLayout>
+          </PrivateRoute>
+          <PrivateRoute path={TRANSACTIONS}>
+            <AdminLayout>
+              <Suspense fallback={<InLineLoader />}>
+                <Transactions />
               </Suspense>
             </AdminLayout>
           </PrivateRoute>
