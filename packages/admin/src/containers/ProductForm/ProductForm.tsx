@@ -313,7 +313,6 @@ const AddProduct: React.FC<Props> = (props) => {
                     name="price"
                     value={priceSplit.price.toString()}
                     min="0"
-                    step="0.01"
                     inputRef={register}
                     onChange={handlePriceChange}
                   />
@@ -326,7 +325,6 @@ const AddProduct: React.FC<Props> = (props) => {
                     name="priceWithoutVat"
                     value={priceSplit.priceWithoutVat.toString()}
                     min="0"
-                    step="0.01"
                     inputRef={register}
                     onChange={handlePriceChange}
                   />
