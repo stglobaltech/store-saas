@@ -18,10 +18,11 @@ import {
   ButtonGroup,
 } from '../DrawerItems/DrawerItems.style';
 import { useQuery, useMutation } from '@apollo/client';
-import { Q_GET_STORE_ID, M_EDIT_PRODUCT } from 'services/GQL';
+import { Q_GET_STORE_ID, Q_STORE_PLAN_FOR_USER_WEB_ADMIN, M_EDIT_PRODUCT } from 'services/GQL';
 import { useNotifier } from 'react-headless-notifier';
 import SuccessNotification from '../../components/Notification/SuccessNotification';
 import DangerNotification from '../../components/Notification/DangerNotification';
+import { InLineLoader } from 'components/InlineLoader/InlineLoader';
 
 interface imgUploadRes {[
   urlText: string
@@ -43,7 +44,10 @@ const AddProduct: React.FC<Props> = () => {
   const { data: { storeId } } = useQuery(Q_GET_STORE_ID);
 
   const { register, handleSubmit, setValue, formState: { errors } } = useForm({
-    defaultValues: data,
+    defaultValues: {
+      productNameEn: data.productName.en,
+      maxQuantity: data.maxQuantity
+    },
   });
 
   useEffect(() => {
@@ -59,6 +63,10 @@ const AddProduct: React.FC<Props> = () => {
     price: data.price.price,
     priceWithoutVat: data.price.basePrice,
     vatPrice: data.price.vatPrice
+  });
+
+  const { data: storePlan, loading: storePlanLoading, error: storePlanError } = useQuery(Q_STORE_PLAN_FOR_USER_WEB_ADMIN, {
+    variables: { storeId }
   });
 
   const [doUpdate, { loading: updating }] = useMutation(M_EDIT_PRODUCT, {
@@ -108,30 +116,61 @@ const AddProduct: React.FC<Props> = () => {
     setDescription(value);
   };
 
+  const vatPercentage = (storePlanData) => {
+    if(
+      storePlanData &&
+      storePlanData.plan &&
+      storePlanData.plan.length &&
+      storePlanData.plan[0].vat
+    )
+      return storePlanData.plan[0].vat;
+    else if(
+      storePlanData &&
+      storePlanData.globalVat
+    )
+      return storePlanData.globalVat;
+  };
+
   const handlePriceChange = (e) => {
+    const vat = vatPercentage(storePlan.getStorePlanForUserWebAdmin.data);
     let price, priceWithoutVat, vatPrice;
-    price = Number(e.target.value);
-    if (price > 0) {
-      priceWithoutVat = (price - price * 0.05).toFixed(2);
-      vatPrice = (price - priceWithoutVat).toFixed(2);
-      setPriceSplit({ price, priceWithoutVat, vatPrice });
-    } else {
-      setPriceSplit({ price: "0", priceWithoutVat: "0", vatPrice: "0" });
+    switch(e.target.name) {
+      case "price":
+        price = Number(e.target.value);
+        if (price > 0) {
+          priceWithoutVat = (price - price * (vat / 100)).toFixed(2);
+          vatPrice = (price - priceWithoutVat).toFixed(2);
+          setPriceSplit({ price, priceWithoutVat, vatPrice });
+        } else {
+          setPriceSplit({ price: "0", priceWithoutVat: "0", vatPrice: "0" });
+        }
+        break;
+      case "priceWithoutVat":
+        priceWithoutVat = Number(e.target.value);
+        if (priceWithoutVat > 0) {
+          price = (priceWithoutVat / (1 - vat / 100)).toFixed(2);
+          vatPrice = (price - priceWithoutVat).toFixed(2);
+          setPriceSplit({ price, priceWithoutVat, vatPrice });
+        } else {
+          setPriceSplit({ price: "0", priceWithoutVat: "0", vatPrice: "0" });
+        }
+        break;
     }
-  }
+  };
 
   const onSubmit = (values) => {
     const productEditInput = {
       _id: data._id,
       storeId,
       productName: {
-        en: values.productName.en,
+        en: values.productNameEn,
         ar: ""
       },
       price: {
         price: parseFloat(priceSplit.price),
         basePrice: parseFloat(priceSplit.priceWithoutVat),
-        vatPrice: parseFloat(priceSplit.vatPrice)
+        vatPrice: parseFloat(priceSplit.vatPrice),
+        vatPercentage: vatPercentage(storePlan.getStorePlanForUserWebAdmin.data)
       },
       maxQuantity: parseFloat(values.maxQuantity),
       description: {
@@ -143,6 +182,12 @@ const AddProduct: React.FC<Props> = () => {
     
     doUpdate({ variables: { productEditInput } });
   };
+
+  if(storePlanLoading)
+    return <InLineLoader />;
+
+  if(storePlanError)
+    return <div>Error Fetching Data</div>;
 
   return (
     <>
@@ -190,10 +235,10 @@ const AddProduct: React.FC<Props> = () => {
                 <FormFields>
                   <FormLabel>Product Name</FormLabel>
                   <Input
-                    name="productName.en"
+                    name="productNameEn"
                     inputRef={register({ required: true, minLength: 3, maxLength: 20 })}
                   />
-                  {errors.productName && (
+                  {errors.productNameEn && (
                     <div
                       style={{
                         margin: "5px 0 0 auto",
@@ -203,10 +248,10 @@ const AddProduct: React.FC<Props> = () => {
                         color: "rgb(252, 92, 99)",
                       }}
                     >
-                      {errors.productName.en.type === "required"
+                      {errors.productNameEn.type === "required"
                         ? "Required"
-                        : (errors.productName.en.type === "minLength" ||
-                            errors.productName.en.type === "maxLength") &&
+                        : (errors.productNameEn.type === "minLength" ||
+                            errors.productNameEn.type === "maxLength") &&
                           "Product Name must be 3-20 characters"}
                     </div>
                   )}
@@ -224,7 +269,21 @@ const AddProduct: React.FC<Props> = () => {
                   <FormLabel>Price</FormLabel>
                   <Input
                     type="number"
-                    name="price.price"
+                    name="price"
+                    value={priceSplit.price.toString()}
+                    min="0"
+                    inputRef={register}
+                    onChange={handlePriceChange}
+                  />
+                </FormFields>
+
+                <FormFields>
+                  <FormLabel>Price Without VAT</FormLabel>
+                  <Input
+                    type="number"
+                    name="priceWithoutVat"
+                    value={priceSplit.priceWithoutVat.toString()}
+                    min="0"
                     inputRef={register}
                     onChange={handlePriceChange}
                   />
