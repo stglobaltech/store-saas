@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
-import dayjs from 'dayjs';
-import { styled, withStyle } from 'baseui';
+import { styled, withStyle, createThemedUseStyletron } from 'baseui';
 import { Grid, Row as Rows, Col as Column } from 'components/FlexBox/FlexBox';
 import Input from 'components/Input/Input';
 import Select from 'components/Select/Select';
-import { useQuery, gql } from '@apollo/client';
+import { useQuery } from '@apollo/client';
 import { Wrapper, Header, Heading } from 'components/Wrapper.style';
 
 import {
@@ -12,26 +11,19 @@ import {
   StyledTable,
   StyledHeadCell,
   StyledBodyCell,
+  StyledBodyCellCenter
 } from './Customers.style';
 import NoResult from 'components/NoResult/NoResult';
+import { Q_GET_USERS } from 'services/GQL';
+import Pagination from "components/Pagination/Pagination";
+import { useForm } from "react-hook-form";
+import { Form } from "../DrawerItems/DrawerItems.style";
+import { FormFields, FormLabel } from "components/FormFields/FormFields";
+import Button from "components/Button/Button";
+import { InLineLoader } from "../../components/InlineLoader/InlineLoader";
 
-const GET_CUSTOMERS = gql`
-  query getCustomers($searchBy: String, $sortBy: String) {
-    customers(searchBy: $searchBy, sortBy: $sortBy) {
-      id
-      image
-      name
-      contacts {
-        id
-        type
-        number
-      }
-      total_order
-      total_order_amount
-      creation_date
-    }
-  }
-`;
+type CustomThemeT = { red400: string; textNormal: string; colors: any };
+const themedUseStyletron = createThemedUseStyletron<CustomThemeT>();
 
 const Col = withStyle(Column, () => ({
   '@media only screen and (max-width: 767px)': {
@@ -49,57 +41,148 @@ const Row = withStyle(Rows, () => ({
   },
 }));
 
-const ImageWrapper = styled('div', ({ $theme }) => ({
-  width: '38px',
-  height: '38px',
-  overflow: 'hidden',
-  display: 'inline-block',
-  borderTopLeftRadius: '20px',
-  borderTopRightRadius: '20px',
-  borderBottomRightRadius: '20px',
-  borderBottomLeftRadius: '20px',
-  backgroundColor: $theme.colors.backgroundF7,
+const Status = styled('div', ({ $theme }) => ({
+  ...$theme.typography.fontBold14,
+  color: $theme.colors.textDark,
+  display: 'flex',
+  alignItems: 'center',
+  lineHeight: '1',
+  textTransform: 'capitalize',
+
+  ':before': {
+    content: '""',
+    width: '10px',
+    height: '10px',
+    display: 'inline-block',
+    borderTopLeftRadius: '10px',
+    borderTopRightRadius: '10px',
+    borderBottomRightRadius: '10px',
+    borderBottomLeftRadius: '10px',
+    backgroundColor: $theme.borders.borderE6,
+    marginRight: '10px',
+  },
 }));
 
-const Image = styled('img', () => ({
-  width: '100%',
-  height: 'auto',
+const Badge = styled("div", ({ $theme }) => ({
+  ...$theme.typography.fontBold14,
+  color: $theme.colors.textDark,
+  display: "inline-block",
+  lineHeight: "1",
+  padding: "4px",
+  borderRadius: "4px",
 }));
-
-const sortByOptions = [
-  { value: 'highestToLowest', label: 'Highest To Lowest' },
-  { value: 'lowestToHighest', label: 'Lowest To Highest' },
-];
 
 export default function Customers() {
-  const { data, error, refetch } = useQuery(GET_CUSTOMERS);
-  const [stock, setStock] = useState([]);
-  const [search, setSearch] = useState([]);
+  const [useCss, theme] = themedUseStyletron();
 
-  if (error) {
-    return <div>Error! {error.message}</div>;
-  }
+  const sent = useCss({
+    ':before': {
+      content: '""',
+      backgroundColor: theme.colors.primary,
+    },
+  });
 
-  function handleSort({ value }) {
-    setStock(value);
-    if (value.length) {
-      refetch({
-        sortBy: value[0].value,
-      });
-    } else {
-      refetch({
-        sortBy: null,
-      });
+  const failed = useCss({
+    ':before': {
+      content: '""',
+      backgroundColor: theme.colors.red400,
+    },
+  });
+
+  const paid = useCss({
+    ':before': {
+      content: '""',
+      backgroundColor: theme.colors.blue400,
+    },
+  });
+
+  const successBg = useCss({
+    backgroundColor: theme.colors.primary,
+  });
+
+  const warningBg = useCss({
+    backgroundColor: theme.colors.red400,
+  });
+
+  const countryCodes = [
+    { value: "IND", label: "India" },
+    { value: "KWT", label: "Kuwait" },
+    { value: "KSA", label: "Saudi Arabia" },
+    { value: "OMN", label: "Oman" },
+    { value: "UAE", label: "UAE" },
+    { value: "QAT", label: "Qatar" }
+  ];
+
+  const statusTypes = [
+    { value: "ON", label: "ON" },
+    { value: "OFF", label: "OFF" },
+    { value: "BUSY", label: "BUSY" }
+  ];
+
+  const { register, handleSubmit, setValue } = useForm();
+  const [countryCode, setCountryCode] = useState([]);
+  const [status, setStatus] = useState([]);
+
+  const [userFindInputDto, setUserFindInputDto] = useState({
+    paginate: {
+      page: 1,
+      perPage: 10
     }
-  }
-  function handleSearch(event) {
-    const value = event.currentTarget.value;
-    console.log(value, 'cus val');
+  });
 
-    setSearch(value);
-    refetch({ searchBy: value });
+  const { data, loading, error } = useQuery(Q_GET_USERS, {
+    variables: { userFindInputDto }
+  });
+
+  const fetchNextPage = (page) => {
+    setUserFindInputDto({
+      ...userFindInputDto,
+      paginate: { page, perPage: 10 }
+    });
+  };
+
+  const onSubmit = (values) => {
+    let formValues;
+    Object.keys(values).forEach((value) => {
+      if (values[value]) formValues = { ...formValues, [value]: values[value] };
+    });
+
+    if (countryCode.length)
+      formValues = { ...formValues, countryCode: countryCode[0].value };
+    
+    if (status.length)
+      formValues = { ...formValues, status: status[0].value };
+
+    setUserFindInputDto({
+      paginate: { page: 1, perPage: 10 },
+      ...formValues
+    });
+  };
+
+  const clearFilters = () => {
+    setValue("mobile", "");
+    setValue("email", "");
+    setCountryCode([]);
+    setStatus([]);
+
+    setUserFindInputDto({
+      paginate: { page: 1, perPage: 10 }
+    });
+  };
+
+  if(error)
+    return <div>Error! {error.message}</div>;
+  
+  let hasNextPage = false,
+  hasPrevPage = false,
+  page;
+
+  if (data) {
+    const { reeshaGetUsers: { pagination } } = data;
+    hasNextPage = pagination.hasNextPage;
+    hasPrevPage = pagination.hasPrevPage;
+    page = pagination.page;
   }
-  console.log(data, 'data');
 
   return (
     <Grid fluid={true}>
@@ -114,63 +197,169 @@ export default function Customers() {
             <Col md={3}>
               <Heading>Customers</Heading>
             </Col>
-
-            <Col md={9}>
-              <Row>
-                <Col md={9}>
-                  <Input
-                    value={search}
-                    placeholder="Ex: Search By Name"
-                    onChange={handleSearch}
-                    clearable
-                  />
-                </Col>
-
-                <Col md={3}>
-                  <Select
-                    options={sortByOptions}
-                    labelKey="label"
-                    valueKey="value"
-                    placeholder="Order Amount"
-                    value={stock}
-                    searchable={false}
-                    onChange={handleSort}
-                  />
-                </Col>
-              </Row>
-            </Col>
           </Header>
 
+          <Row>
+            <Col md={12}>
+              <Form
+                onSubmit={handleSubmit(onSubmit)}
+                style={{ paddingBottom: 0, backgroundColor: "transparent" }}
+              >
+                <Row>
+                  <Col md={3}>
+                    <FormFields>
+                      <FormLabel>Email</FormLabel>
+                      <Input
+                        name="email"
+                        placeholder="Email"
+                        inputRef={register}
+                      />
+                    </FormFields>
+                  </Col>
+
+                  <Col md={3}>
+                    <FormFields>
+                      <FormLabel>Mobile</FormLabel>
+                      <Input
+                        name="mobile"
+                        placeholder="Mobile"
+                        inputRef={register}
+                      />
+                    </FormFields>
+                  </Col>
+
+                  <Col md={3}>
+                    <FormFields>
+                      <FormLabel>Country Code</FormLabel>
+                      <Select
+                        options={countryCodes}
+                        labelKey="label"
+                        valueKey="value"
+                        placeholder="Country Code"
+                        value={countryCode}
+                        searchable={false}
+                        onChange={({ value }) => setCountryCode(value)}
+                      />
+                    </FormFields>
+                  </Col>
+
+                  <Col md={3}>
+                    <FormFields>
+                      <FormLabel>Status</FormLabel>
+                      <Select
+                        options={statusTypes}
+                        labelKey="label"
+                        valueKey="value"
+                        placeholder="Status"
+                        value={status}
+                        searchable={false}
+                        onChange={({ value }) => setStatus(value)}
+                      />
+                    </FormFields>
+                  </Col>
+                </Row>
+
+                <Row>
+                  <Col md={2}>
+                    <Button
+                      type="submit"
+                      overrides={{
+                        BaseButton: {
+                          style: ({ $theme, $size, $shape }) => {
+                            return {
+                              width: "100%",
+                              borderTopLeftRadius: "3px",
+                              borderTopRightRadius: "3px",
+                              borderBottomLeftRadius: "3px",
+                              borderBottomRightRadius: "3px",
+                              paddingTop: "8px",
+                              paddingBottom: "8px",
+                            };
+                          },
+                        },
+                      }}
+                    >
+                      Search
+                    </Button>
+                  </Col>
+
+                  <Col md={2}>
+                    <Button
+                      type="button"
+                      onClick={clearFilters}
+                      overrides={{
+                        BaseButton: {
+                          style: ({ $theme, $size, $shape }) => {
+                            return {
+                              width: "100%",
+                              borderTopLeftRadius: "3px",
+                              borderTopRightRadius: "3px",
+                              borderBottomLeftRadius: "3px",
+                              borderBottomRightRadius: "3px",
+                              paddingTop: "8px",
+                              paddingBottom: "8px",
+                            };
+                          },
+                        },
+                      }}
+                    >
+                      Clear
+                    </Button>
+                  </Col>
+                </Row>
+              </Form>
+            </Col>
+          </Row>
+
+          {loading ? <InLineLoader /> : (
           <Wrapper style={{ boxShadow: '0 0 5px rgba(0, 0 , 0, 0.05)' }}>
             <TableWrapper>
-              <StyledTable $gridTemplateColumns="minmax(70px, 70px) minmax(70px, 70px) minmax(200px, auto) minmax(150px, auto) minmax(150px, max-content) minmax(150px, auto) minmax(150px, auto)">
+              <StyledTable
+                style={{ borderBottom: "0px" }}
+                $gridTemplateColumns="minmax(70px, max-content) minmax(150px, auto) minmax(150px, auto) minmax(100px, max-content) minmax(130px, max-content) minmax(90px, max-content) minmax(100px, max-content)"
+              >
                 <StyledHeadCell>ID</StyledHeadCell>
-                <StyledHeadCell>Image</StyledHeadCell>
                 <StyledHeadCell>Name</StyledHeadCell>
-                <StyledHeadCell>Contacts</StyledHeadCell>
-                <StyledHeadCell>Total Order</StyledHeadCell>
-                <StyledHeadCell>Total Amount</StyledHeadCell>
-                <StyledHeadCell>Joining Date</StyledHeadCell>
+                <StyledHeadCell>Email</StyledHeadCell>
+                <StyledHeadCell>Mobile</StyledHeadCell>
+                <StyledHeadCell>Country Code</StyledHeadCell>
+                <StyledHeadCell>Status</StyledHeadCell>
+                <StyledHeadCell>Is Activated</StyledHeadCell>
 
                 {data ? (
-                  data.customers.length ? (
-                    data.customers
-                      .map((item) => Object.values(item))
-                      .map((row, index) => (
+                  data.reeshaGetUsers &&
+                  data.reeshaGetUsers.users.length ? (
+                    data.reeshaGetUsers.users
+                      .map((item, index) => (
                         <React.Fragment key={index}>
-                          <StyledBodyCell>{row[1]}</StyledBodyCell>
+                          <StyledBodyCell>{item._id}</StyledBodyCell>
                           <StyledBodyCell>
-                            <ImageWrapper>
-                              <Image src={row[2]} alt={row[3]} />
-                            </ImageWrapper>
+                            {item.name}
                           </StyledBodyCell>
-                          <StyledBodyCell>{row[3]}</StyledBodyCell>
-                          <StyledBodyCell>{row[4][1].number}</StyledBodyCell>
-                          <StyledBodyCell>{row[5]}</StyledBodyCell>
-                          <StyledBodyCell>${row[6]}</StyledBodyCell>
-                          <StyledBodyCell>
-                            {dayjs(row[6]).format('DD MMM YYYY')}
-                          </StyledBodyCell>
+                          <StyledBodyCell>{item.email}</StyledBodyCell>
+                          <StyledBodyCell>{item.mobile}</StyledBodyCell>
+                          <StyledBodyCellCenter>{item.countryCode}</StyledBodyCellCenter>
+                          <StyledBodyCellCenter>
+                            <Status
+                              className={
+                                item.status === 'ON'
+                                  ? sent
+                                  : item.status === 'OFF'
+                                  ? failed
+                                  : item.status === 'BUSY'
+                                  && paid
+                              }
+                            >
+                              {item.status}
+                            </Status>
+                          </StyledBodyCellCenter>
+                          <StyledBodyCellCenter>
+                            <Badge
+                              className={item.isActivated ? successBg : warningBg}
+                            >
+                              {item.isActivated ? "True" : "False"}
+                            </Badge>
+                          </StyledBodyCellCenter>
                         </React.Fragment>
                       ))
                   ) : (
@@ -185,7 +374,26 @@ export default function Customers() {
                 ) : null}
               </StyledTable>
             </TableWrapper>
+
+            {data &&
+              data.reeshaGetUsers &&
+              data.reeshaGetUsers.pagination && (
+                <Row>
+                  <Col
+                    md={12}
+                    style={{ display: "flex", justifyContent: "center" }}
+                  >
+                    <Pagination
+                      fetchMore={fetchNextPage}
+                      hasPrevPage={hasPrevPage}
+                      hasNextPage={hasNextPage}
+                      currentPage={page}
+                    />
+                  </Col>
+                </Row>
+            )}
           </Wrapper>
+          )}
         </Col>
       </Row>
     </Grid>
