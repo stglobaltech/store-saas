@@ -1,10 +1,10 @@
-import React, { useCallback, useState, useEffect } from 'react';
+import React, { useCallback, useState } from 'react';
 import { styled, withStyle } from 'baseui';
 import Button from 'components/Button/Button';
 import { Grid, Row as Rows, Col as Column } from 'components/FlexBox/FlexBox';
 import Input from 'components/Input/Input';
 import Select from 'components/Select/Select';
-import { useQuery, useLazyQuery } from '@apollo/client';
+import { useQuery } from '@apollo/client';
 import { Header, Heading } from 'components/Wrapper.style';
 import Fade from 'react-reveal/Fade';
 import ProductCard from 'components/ProductCard/ProductCard';
@@ -15,8 +15,7 @@ import { useDrawerDispatch } from 'context/DrawerContext';
 import {
   Q_GET_STORE_ID,
   Q_GET_CATEGORIES,
-  Q_GET_PRODUCTS_BASED_ON_STORE,
-  Q_GET_PRODUCTS_BASED_ON_CATEGORY
+  Q_SEARCH_PRODUCTS
 } from 'services/GQL';
 
 export const ProductsRow = styled('div', ({ $theme }) => ({
@@ -70,28 +69,22 @@ export const LoaderItem = styled('div', () => ({
 export default function Products() {
   const dispatch = useDrawerDispatch();
   const openCreateDrawer = useCallback(
-    (data) => dispatch({ type: 'OPEN_DRAWER', drawerComponent: 'PRODUCT_FORM', data: data }),
+    (data) => dispatch({ type: 'OPEN_DRAWER', drawerComponent: 'PRODUCT_FORM', data }),
     [dispatch]
   );
 
   const { data: { storeId } } = useQuery(Q_GET_STORE_ID);
 
   const [categories, setCategories] = useState([]);
-  const [category, setCategory] = useState([]);
-  const [search, setSearch] = useState("");
-  const [products, setProducts] = useState({
-    products: [],
-    pagination: {
-      hasPrevPage: false,
-      hasNextPage: false,
-      prevPage: null,
-      nextPage: null,
-      page: 1,
-    }
+  const [filterInput, setFilterInput] = useState({
+    category: [],
+    productKey: ""
   });
 
-  const [storeProductFindInputDto, setStoreProductFindInputDto] = useState({
+  const [productSearchInput, setProductSearchInput] = useState({
     storeId,
+    categoryId: null,
+    productKey: "",
     paginate: {
       page: 1,
       perPage: 12
@@ -112,91 +105,44 @@ export default function Products() {
     }
   });
 
-  const { data: storeBasedData, loading: storeBasedLoading, error: storeBasedError, refetch: storeBasedRefetch } = useQuery(Q_GET_PRODUCTS_BASED_ON_STORE, {
-    variables: { storeProductFindInputDto }
+  const { data, loading, error, refetch } = useQuery(Q_SEARCH_PRODUCTS, {
+    variables: { productSearchInput }
   });
 
-  const [getCategoryBasedProducts, {
-    data: categoryBasedData, loading: categoryBasedLoading, error: categoryBasedError, refetch: categoryBasedRefetch
-  }] = useLazyQuery(Q_GET_PRODUCTS_BASED_ON_CATEGORY);
-
-  useEffect(() => {
-    if(category.length && categoryBasedData) {
-      const { getProductsBasedOnCategory } = categoryBasedData;
-      setProducts(getProductsBasedOnCategory);
-    } else if(storeBasedData) {
-      const { getProductsBasedOnStore } = storeBasedData;
-      setProducts(getProductsBasedOnStore);
-    }
-    
-  }, [storeBasedData, categoryBasedData, category]);
-
   const goToPage = (page) => {
-    if(category.length) {
-      getCategoryBasedProducts({
-        variables: {
-          productFindInput: {
-            categoryId: category[0].value,
-            storeId,
-            paginate: {
-              page: page,
-              perPage: 12
-            }
-          }
-        }
-      })
-    } else {
-      setStoreProductFindInputDto({
-        ...storeProductFindInputDto,
-        paginate: {
-          page: page,
-          perPage: 12
-        }
-      });
-    }
+    setProductSearchInput({
+      ...productSearchInput,
+      paginate: {
+        page: page,
+        perPage: 12
+      }
+    });
   };
 
-  const handleCategory = ({ value }) => {
-    setCategory(value);
-    if(value.length) {
-      getCategoryBasedProducts({
-        variables: {
-          productFindInput: {
-            categoryId: value[0].value,
-            storeId,
-            paginate: {
-              page: 1,
-              perPage: 12
-            }
-          }
-        }
-      });
-    }
-    else {
-      setStoreProductFindInputDto({
-        ...storeProductFindInputDto,
-        paginate: {
-          page: 1,
-          perPage: 12
-        }
-      });
-    }
+  const handleSearch = (category, productKey) => {
+    setProductSearchInput({
+      ...productSearchInput,
+      categoryId: category.length ? category[0].value : null,
+      productKey,
+      paginate: {
+        page: 1,
+        perPage: 12
+      }
+    });
   };
 
-  const handleSearch = (e) => {
-    const value = e.currentTarget.value;
-    setSearch(value);
-  };
+  if (getCategoriesError || error)
+    return <div>Error Fetching Data</div>;
 
-  if (getCategoriesError || storeBasedError || categoryBasedError) {
-    return (
-      <div>
-        Error! {
-          getCategoriesError.message ? getCategoriesError.message : (
-          storeBasedError.message ? storeBasedError.message : categoryBasedError.message
-        )}
-      </div>
-    )
+  let hasNextPage = false,
+    hasPrevPage = false,
+    page;
+
+  if (data) {
+    const { searchProduct: { pagination } } = data;
+    hasNextPage = pagination.hasNextPage;
+    hasPrevPage = pagination.hasPrevPage;
+    page = pagination.page;
   }
 
   return (
@@ -216,24 +162,30 @@ export default function Products() {
                     labelKey="label"
                     valueKey="value"
                     placeholder="Category"
-                    value={category}
+                    value={filterInput.category}
                     searchable={false}
-                    onChange={handleCategory}
+                    onChange={({ value }) => {
+                      setFilterInput({...filterInput, category: value});
+                      handleSearch(value, filterInput.productKey);
+                    }}
                   />
                 </Col>
 
                 <Col md={6} xs={12}>
                   <Input
-                    value={search}
-                    placeholder="Ex: Search By Name"
-                    onChange={handleSearch}
+                    placeholder="Search..."
+                    value={filterInput.productKey}
+                    onChange={(e) => {
+                      setFilterInput({...filterInput, productKey: e.currentTarget.value});
+                      handleSearch(filterInput.category, e.currentTarget.value);
+                    }}
                     clearable
                   />
                 </Col>
 
                 <Col md={3} xs={12}>
                   <Button
-                    onClick={() => openCreateDrawer(category.length ? categoryBasedRefetch : storeBasedRefetch)}
+                    onClick={() => openCreateDrawer(refetch)}
                     overrides={{
                       BaseButton: {
                         style: () => ({
@@ -256,9 +208,9 @@ export default function Products() {
           </Header>
 
           <Row>
-            {products.products.length ? (
-              products.products.length !== 0 ? (
-                products.products.map((item: any, index: number) => (
+            {data && data.searchProduct ? (
+              data.searchProduct.products.length ? (
+                data.searchProduct.products.map((item: any, index: number) => (
                   <Col
                     md={4}
                     lg={3}
@@ -273,9 +225,7 @@ export default function Products() {
                         image={item.picture}
                         currency={CURRENCY}
                         price={item.price.price}
-                        data={{...item,
-                          queryToRefetch: category.length ? categoryBasedRefetch : storeBasedRefetch
-                        }}
+                        data={{...item, queryToRefetch: refetch}}
                       />
                     </Fade>
                   </Col>
@@ -300,15 +250,15 @@ export default function Products() {
               </LoaderWrapper>
             )}
           </Row>
-          {products.products.length && (
+          {data && data.searchProduct && data.searchProduct.pagination && (
             <Row>
               <Col
                 md={12}
                 style={{ display: 'flex', justifyContent: 'center' }}
               >
                 <Button
-                  disabled={storeBasedLoading || categoryBasedLoading || !products.pagination.hasPrevPage}
-                  onClick={() => goToPage(products.pagination.prevPage)}
+                  disabled={loading || !hasPrevPage}
+                  onClick={() => goToPage(page - 1)}
                   overrides={{
                     BaseButton: {
                       style: () => ({
@@ -317,6 +267,8 @@ export default function Products() {
                         borderTopRightRadius: '3px',
                         borderBottomLeftRadius: '3px',
                         borderBottomRightRadius: '3px',
+                        paddingTop: "8px",
+                        paddingBottom: "8px"
                       }),
                     },
                   }}
@@ -333,16 +285,18 @@ export default function Products() {
                         borderTopRightRadius: '3px',
                         borderBottomLeftRadius: '3px',
                         borderBottomRightRadius: '3px',
+                        paddingTop: "8px",
+                        paddingBottom: "8px"
                       }),
                     },
                   }}
                 >
-                  {products.pagination.page}
+                  {page}
                 </Button>
 
                 <Button
-                  disabled={storeBasedLoading || categoryBasedLoading || !products.pagination.hasNextPage}
-                  onClick={() => goToPage(products.pagination.nextPage)}
+                  disabled={loading || !hasNextPage}
+                  onClick={() => goToPage(page + 1)}
                   overrides={{
                     BaseButton: {
                       style: () => ({
@@ -350,6 +304,8 @@ export default function Products() {
                         borderTopRightRadius: '3px',
                         borderBottomLeftRadius: '3px',
                         borderBottomRightRadius: '3px',
+                        paddingTop: "8px",
+                        paddingBottom: "8px"
                       }),
                     },
                   }}
