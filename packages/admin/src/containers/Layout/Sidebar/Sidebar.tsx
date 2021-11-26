@@ -26,6 +26,7 @@ import { CustomerIcon } from 'assets/icons/CustomerIcon';
 import { CouponIcon } from 'assets/icons/CouponIcon';
 import { SettingIcon } from 'assets/icons/SettingIcon';
 import { LogoutIcon } from 'assets/icons/LogoutIcon';
+import { BarChartIcon } from 'assets/icons/BarChartIcon';
 
 const sidebarMenus = [
   {
@@ -68,7 +69,7 @@ const sidebarMenus = [
     name: 'Reports',
     path: REPORTS,
     exact: false,
-    icon: <SettingIcon />,
+    icon: <BarChartIcon />,
   },
   {
     name: 'Settings',
