@@ -81,6 +81,8 @@ const OrderDetails: React.FC<OrderDetailsProps> = ({
     }
   );
 
+  console.log('orderStatusUpdate',orderStatusData);
+
   if (
     (chefEventsData && chefEventsData.chefOrderSubscribeForUser) ||
     (orderStatusData &&
