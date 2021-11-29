@@ -26,18 +26,18 @@ import { FormattedMessage } from "react-intl";
 const OrderReceivedPage = () => {
   const { data, error, loading } = useQuery(Q_GET_USER_ACTIVE_ORDERS);
   
-  const {
-    data: subscriptionData,
-    loading: subscriptionLoading,
-    error: subscriptionError,
-  } = useSubscription(S_ORDER_PAYMENT_SUBSCRIPTION, {
-    variables: {
-      input: {
-        userId: localStorage.getItem("userId"),
-        cartId: localStorage.getItem("cartId"),
-      },
-    },
-  });
+  // const {
+  //   data: subscriptionData,
+  //   loading: subscriptionLoading,
+  //   error: subscriptionError,
+  // } = useSubscription(S_ORDER_PAYMENT_SUBSCRIPTION, {
+  //   variables: {
+  //     input: {
+  //       userId: localStorage.getItem("userId"),
+  //       cartId: localStorage.getItem("cartId"),
+  //     },
+  //   },
+  // });
 
   const currency = (useAppState("workFlowPolicy") as any).currency;
 
