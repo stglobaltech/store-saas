@@ -20,20 +20,24 @@ export default function Image({
   style?: any;
 }) {
 
-  const { src } = useImage({
-    srcList: url
-  });
+  const ImageComponent = () => {
+    const { src } = useImage({
+      srcList: url
+    });
+   
+    return <img
+            key={key}
+            src={src}
+            alt={alt}
+            className={className}
+            style={style}
+            draggable={false}
+          />
+  };
 
   return (
     <Suspense fallback={<Placeholder />}>
-      <img
-        key={key}
-        src={src}
-        alt={alt}
-        className={className}
-        style={style}
-        draggable={false}
-      />
+      <ImageComponent />
     </Suspense>
   );
 }

@@ -8,3 +8,5 @@ export * from './categories/categories';
 export * from './offers/offers';
 export * from './dashboard';
 export * from './customers/customers';
+export * from './storePlan';
+export * from './transactions/transactions';

@@ -15,7 +15,8 @@ import {
   CUSTOMERS,
   COUPONS,
   SETTINGS,
-  REPORTS
+  REPORTS,
+  TRANSACTIONS
 } from 'settings/constants';
 
 import { DashboardIcon } from 'assets/icons/DashboardIcon';
@@ -26,6 +27,7 @@ import { CustomerIcon } from 'assets/icons/CustomerIcon';
 import { CouponIcon } from 'assets/icons/CouponIcon';
 import { SettingIcon } from 'assets/icons/SettingIcon';
 import { LogoutIcon } from 'assets/icons/LogoutIcon';
+import { BarChartIcon } from 'assets/icons/BarChartIcon';
 
 const sidebarMenus = [
   {
@@ -65,10 +67,16 @@ const sidebarMenus = [
     icon: <CouponIcon />,
   },
   {
+    name: 'Transactions',
+    path: TRANSACTIONS,
+    exact: false,
+    icon: <SettingIcon />,
+  },
+  {
     name: 'Reports',
     path: REPORTS,
     exact: false,
-    icon: <SettingIcon />,
+    icon: <BarChartIcon />,
   },
   {
     name: 'Settings',
