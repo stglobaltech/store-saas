@@ -23,20 +23,19 @@ import OrderCard from "./order-card/order-card";
 import OrderCardMobile from "./order-card/order-card-mobile";
 import useComponentSize from "utils/useComponentSize";
 import { FormattedMessage } from "react-intl";
-import { Q_USER_ORDER_HISTORY } from "graphql/query/user-order-history.query";
 import { useAppState } from "contexts/app/app.provider";
-import { Q_GET_USERID } from "graphql/query/loggedIn-queries.query";
-import { Q_GET_USER_ACTIVE_ORDERS } from "graphql/query/get-user-active-order.query";
-import ErrorMessage from "components/error-message/error-message";
+
 import {
   DELIVERED,
-  ERROR_FETCHING_ACTIVE_ORDERS,
+  ERROR_FETCHING_ORDER_HISTORY,
+  NO_ORDERS_MADE,
   OUT_FOR_DELIVERY,
   PENDING,
   REACHED_STORE,
   STORE_ACCEPTED,
   STORE_ORDER_READY,
 } from "utils/constant";
+import { Paginate } from "components/pagination/pagination";
 
 const progressData = [
   PENDING,
@@ -95,10 +94,8 @@ const orderTableColumns = [
 
 const OrdersContent: React.FC<{
   data: any;
-  error: any;
-  loading: any;
-  refetch: () => void;
-}> = ({ data, error, loading, refetch }) => {
+  handleNextPage: (nextPage: number) => void;
+}> = ({ data, handleNextPage }) => {
   const [order, setOrder] = useState(null);
   const [active, setActive] = useState("");
 
@@ -106,61 +103,19 @@ const OrdersContent: React.FC<{
 
   const [targetRef, size] = useComponentSize();
   const orderListHeight = size.height - 79;
-  // const { data, error, loading, refetch } = useQuery(Q_GET_USER_ACTIVE_ORDERS);
 
   useEffect(() => {
-    if (
-      data &&
-      data.userActiveOrders &&
-      data.userActiveOrders &&
-      data.userActiveOrders.length
-    ) {
-      const currentOrder = data.userActiveOrders[0];
-      if (order && active) {
-        const currentClickedOrder = data.userActiveOrders.filter(
-          (o) => o._id === order._id
-        );
-        if (currentClickedOrder) {
-          setOrder(currentClickedOrder[0]);
-          setActive(currentClickedOrder[0]._id);
-        } else {
-          setOrder(currentOrder);
-          setActive(currentOrder._id);
-        }
-      } else {
-        setOrder(currentOrder);
-        setActive(currentOrder._id);
-      }
+    const firstorder = data?.getUserOrders?.orders[0];
+    if (firstorder) {
+      setOrder(firstorder);
+      setActive(firstorder._id);
     }
-  }, [data && data.userActiveOrders]);
-
-  if (loading) {
-    return <div>loading...</div>;
-  }
-
-  if (error)
-    return (
-      <ErrorMessage>
-        <FormattedMessage
-          id="error"
-          defaultMessage={ERROR_FETCHING_ACTIVE_ORDERS}
-        />
-      </ErrorMessage>
-    );
+  }, [data && data.getUserOrders && data.getUserOrders.orders]);
 
   const handleClick = (order: any) => {
     setOrder(order);
     setActive(order._id);
   };
-
-  // if (data && data.userActiveOrders && !data.userActiveOrders.length) {
-  //   return (
-  //     <FormattedMessage
-  //       id="noActiveOrders"
-  //       defaultMessage={"No active orders.Place an order "}
-  //     />
-  //   );
-  // }
 
   return (
     <OrderBox>
@@ -168,14 +123,14 @@ const OrdersContent: React.FC<{
         <OrderListWrapper style={{ height: size.height }}>
           <Title style={{ padding: "0 20px" }}>
             <FormattedMessage
-              id="intlOrderPageTitle"
-              defaultMessage="My ongoing orders"
+              id="userOrderHistory"
+              defaultMessage="My Finished Orders"
             />
           </Title>
           <Scrollbar className="order-scrollbar">
             <OrderList>
-              {data.userActiveOrders.length !== 0 ? (
-                data.userActiveOrders.map((current: any) => (
+              {data?.getUserOrders?.orders?.length !== 0 ? (
+                data.getUserOrders?.orders.map((current: any) => (
                   <OrderCard
                     key={current._id}
                     shortOrderId={current.shortOrderId}
@@ -194,13 +149,19 @@ const OrdersContent: React.FC<{
               ) : (
                 <NoOrderFound>
                   <FormattedMessage
-                    id="intlNoOrderFound"
+                    id="userOrderHistoryNotFound"
                     defaultMessage="No order found"
                   />
                 </NoOrderFound>
               )}
             </OrderList>
           </Scrollbar>
+          <Paginate
+            currentPage={data?.getUserOrders?.pagination?.page}
+            hasNextPage={data?.getUserOrders?.pagination?.hasNextPage}
+            hasPrevPage={data?.getUserOrders?.pagination?.hasPrevPage}
+            fetchPage={handleNextPage}
+          />
         </OrderListWrapper>
 
         <OrderDetailsWrapper ref={targetRef}>
@@ -212,7 +173,7 @@ const OrdersContent: React.FC<{
           </Title>
           {order && order._id && (
             <OrderDetails
-              progressStatus={order.storeStatus}
+              progressStatus={DELIVERED}
               progressData={progressData}
               address={order.orderCart.address}
               subtotal={order.orderCart.totalQuotedPrice}
@@ -222,7 +183,6 @@ const OrdersContent: React.FC<{
               tableData={order.orderCart.products}
               columns={orderTableColumns}
               orderId={order._id}
-              refetch={refetch}
             />
           )}
         </OrderDetailsWrapper>
@@ -231,9 +191,8 @@ const OrdersContent: React.FC<{
       <MobileView>
         <OrderList>
           <OrderCardMobile
-            orders={data.userActiveOrders}
+            orders={data?.getUserOrders?.orders}
             className={order && order._id === active ? "active" : ""}
-            progressData={progressData}
             columns={orderTableColumns}
             onClick={() => {
               handleClick(order);

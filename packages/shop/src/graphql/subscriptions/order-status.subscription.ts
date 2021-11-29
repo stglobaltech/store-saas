@@ -25,8 +25,8 @@ export const S_ORDER_STATUS_SUBSCRIPTION = gql`
 
 //for testing sockets connections.Do not use it.
 export const S_CHEF_ORDER_SUBSCRIPTION=gql`
-subscription($input: ChefOrderSubscriptionInputDto!) {
-  chefOrderSubscribe(input: $input) {
+subscription($input: ChefOrderSubscriptionForUserInputDto!) {
+  chefOrderSubscribeForUser(input: $input) {
     payload {
       eventType
       orderId

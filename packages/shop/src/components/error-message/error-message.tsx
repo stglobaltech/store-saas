@@ -1,6 +1,6 @@
 import styled from 'styled-components';
-export default function ErrorMessage({ message }) {
-  return <StyledAside>{message}</StyledAside>;
+export default function ErrorMessage({ children }) {
+  return <StyledAside>{children}</StyledAside>;
 }
 
 const StyledAside = styled.aside({

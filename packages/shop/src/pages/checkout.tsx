@@ -22,6 +22,7 @@ import {
   ERROR_FETCHING_USER_DETAILS,
   GENERAL_ERROR_MSG,
 } from "utils/constant";
+import { FormattedMessage } from "react-intl";
 
 type Props = {
   deviceType: {
@@ -32,7 +33,7 @@ type Props = {
 };
 
 const CheckoutPage: NextPage<Props> = ({ deviceType }) => {
-  const storeId = process.env.NEXT_PUBLIC_STG_CLIENT_ID
+  const storeId = process.env.NEXT_PUBLIC_STG_CLIENT_ID;
 
   const { cartItemsCount, clearCart } = useCart();
   const router = useRouter();
@@ -76,12 +77,30 @@ const CheckoutPage: NextPage<Props> = ({ deviceType }) => {
 
   if (cartLoading || workFlowPolicyLoading || userProfileLoading || loading)
     return <Loader />;
-  if (workFlowPolicyError || error)
-    return <ErrorMessage message={GENERAL_ERROR_MSG} />;
+  if (workFlowPolicyError)
+    return (
+      <ErrorMessage>
+        <FormattedMessage id="error" defaultMessage={GENERAL_ERROR_MSG} />
+      </ErrorMessage>
+    );
   if (cartError)
-    return <ErrorMessage message={cartError.message || ERROR_FETCHING_CART} />;
-  if (userProfileError)
-    return <ErrorMessage message={ERROR_FETCHING_USER_DETAILS} />;
+    return (
+      <ErrorMessage>
+        <FormattedMessage
+          id="error"
+          defaultMessage={cartError.message || ERROR_FETCHING_CART}
+        />
+      </ErrorMessage>
+    );
+  if (userProfileError || error)
+    return (
+      <ErrorMessage>
+        <FormattedMessage
+          id="error"
+          defaultMessage={ERROR_FETCHING_USER_DETAILS}
+        />
+      </ErrorMessage>
+    );
 
   function formatAddress() {
     const addresses = data.getAllAddress.map((address) => ({

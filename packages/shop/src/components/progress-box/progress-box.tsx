@@ -16,12 +16,29 @@ type ProgressProps = {
 };
 
 const ProgressBox: React.FC<ProgressProps> = ({ status, data }) => {
+
+  const findStatusIndex = () => {
+    let idx;
+    data.forEach((value, index) => {
+      if(typeof status==="string"){
+        if (value.label === status) {
+          idx = index;
+        }
+      }else{
+        if (value.label === status.label) {
+          idx = index;
+        }
+      }
+    });
+    return idx;
+  };
+
   return (
     <>
       {data.map((item, index) => (
         <ProgressStep key={index}>
           <ProgressBarWrapper
-            className={data.lastIndexOf(status) >= index + 1 ? "checked" : ""}
+            className={findStatusIndex() >= index ? "checked" : ""}
           >
             <StatusBox>
               {status >= index + 1 ? (
@@ -35,7 +52,7 @@ const ProgressBox: React.FC<ProgressProps> = ({ status, data }) => {
             <ProgressBar />
           </ProgressBarWrapper>
           <StatusDetails>
-            {item ? <StatusTitle>{item}</StatusTitle> : ""}
+            {item ? <StatusTitle>{item.value}</StatusTitle> : ""}
           </StatusDetails>
         </ProgressStep>
       ))}

@@ -22,19 +22,7 @@ import {
   OrderTableMobile,
 } from "./order-card.style";
 
-import {
-  CURRENCY,
-  DELIVERED,
-  OUT_FOR_DELIVERY,
-  REACHED_STORE,
-} from "utils/constant";
-import { FormattedMessage } from "react-intl";
-import { useSubscription } from "@apollo/client";
-import {
-  S_CHEF_ORDER_SUBSCRIPTION,
-  S_ORDER_STATUS_SUBSCRIPTION,
-} from "graphql/subscriptions/order-status.subscription";
-import { getUserId } from "utils/localStorage";
+import { CURRENCY } from "utils/constant";
 
 type MobileOrderCardProps = {
   orderId?: any;
@@ -54,7 +42,6 @@ type MobileOrderCardProps = {
   deliveryFee?: number;
   grandTotal?: number;
   orders?: any;
-  refetch?: () => void;
 };
 
 const components = {
@@ -67,8 +54,6 @@ const OrderCard: React.FC<MobileOrderCardProps> = ({
   columns,
   progressData,
   orders,
-  refetch,
-  orderId,
 }) => {
   //   const displayDetail = className === 'active' ? '100%' : '0';
   const addAllClasses: string[] = ["accordion"];
@@ -76,45 +61,6 @@ const OrderCard: React.FC<MobileOrderCardProps> = ({
   if (className) {
     addAllClasses.push(className);
   }
-
-  const storeId = process.env.NEXT_PUBLIC_STG_CLIENT_ID;
-  const userId = getUserId();
-
-  const { data: chefEventsData } = useSubscription(S_CHEF_ORDER_SUBSCRIPTION, {
-    variables: {
-      input: {
-        orderId,
-        storeId,
-        userId,
-      },
-    },
-  });
-
-  const { data: orderStatusData } = useSubscription(
-    S_ORDER_STATUS_SUBSCRIPTION,
-    {
-      variables: {
-        input: {
-          orderId,
-        },
-      },
-    }
-  );
-
-  if (
-    (chefEventsData && chefEventsData.chefOrderSubscribeForUser) ||
-    (orderStatusData &&
-      orderStatusData.orderStatusUpdateSubscribe &&
-      orderStatusData.orderStatusUpdateSubscribe.tripStatus &&
-      (orderStatusData.orderStatusUpdateSubscribe.tripStatus ===
-        REACHED_STORE ||
-        orderStatusData.orderStatusUpdateSubscribe.tripStatus ===
-          OUT_FOR_DELIVERY ||
-        orderStatusData.orderStatusUpdateSubscribe.tripStatus === DELIVERED))
-  ) {
-    refetch();
-  }
-
   return (
     <>
       <Collapse
@@ -135,8 +81,7 @@ const OrderCard: React.FC<MobileOrderCardProps> = ({
 
                 <OrderMeta>
                   <Meta>
-                    Order Date:{" "}
-                    <span>{new Date(order.createdAt).toLocaleString()}</span>
+                    Order Date: <span>{new Date(order.createdAt).toLocaleString()}</span>
                   </Meta>
                   <Meta className="price">
                     Total Price:
@@ -152,11 +97,7 @@ const OrderCard: React.FC<MobileOrderCardProps> = ({
               <DeliveryInfo>
                 <DeliveryAddress>
                   <h3>Delivery Address</h3>
-                  <Address>
-                    {order.orderCart.address.name}-
-                    {order.orderCart.address.buildingNo}-
-                    {order.orderCart.address.address}
-                  </Address>
+                  <Address>{order.orderCart.address.name}-{order.orderCart.address.buildingNo}-{order.orderCart.address.address}</Address>
                 </DeliveryAddress>
 
                 <CostCalculation>

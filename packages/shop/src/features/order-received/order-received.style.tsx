@@ -48,6 +48,8 @@ export const OrderReceivedContainer = styled.div`
     top: 15px;
     right: 15px;
     transition: 0.15s ease-in-out;
+    background-color:#019376;
+    color:#fff;
     @media (max-width: 767px) {
       font-size: ${themeGet("fontSizes.sm", "13")}px;
       height: 34px;

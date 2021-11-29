@@ -12,19 +12,8 @@ import {
   OrderTable,
 } from "./order-details.style";
 import Progress from "components/progress-box/progress-box";
-import {
-  CURRENCY,
-  DELIVERED,
-  OUT_FOR_DELIVERY,
-  REACHED_STORE,
-} from "utils/constant";
+import { DELIVERED } from "utils/constant";
 import { FormattedMessage } from "react-intl";
-import { useSubscription } from "@apollo/client";
-import {
-  S_CHEF_ORDER_SUBSCRIPTION,
-  S_ORDER_STATUS_SUBSCRIPTION,
-} from "graphql/subscriptions/order-status.subscription";
-import { getUserId } from "utils/localStorage";
 
 type OrderDetailsProps = {
   tableData?: any;
@@ -37,7 +26,6 @@ type OrderDetailsProps = {
   deliveryFee?: number;
   grandTotal?: number;
   orderId?: string;
-  refetch?: () => void;
 };
 
 const components = {
@@ -55,46 +43,7 @@ const OrderDetails: React.FC<OrderDetailsProps> = ({
   deliveryFee,
   grandTotal,
   orderId,
-  refetch,
 }) => {
-  const storeId = process.env.NEXT_PUBLIC_STG_CLIENT_ID;
-  const userId = getUserId();
-
-  const { data: chefEventsData } = useSubscription(S_CHEF_ORDER_SUBSCRIPTION, {
-    variables: {
-      input: {
-        orderId,
-        storeId,
-        userId,
-      },
-    },
-  });
-
-  const { data: orderStatusData } = useSubscription(
-    S_ORDER_STATUS_SUBSCRIPTION,
-    {
-      variables: {
-        input: {
-          orderId,
-        },
-      },
-    }
-  );
-
-  if (
-    (chefEventsData && chefEventsData.chefOrderSubscribeForUser) ||
-    (orderStatusData &&
-      orderStatusData.orderStatusUpdateSubscribe &&
-      orderStatusData.orderStatusUpdateSubscribe.tripStatus &&
-      (orderStatusData.orderStatusUpdateSubscribe.tripStatus ===
-        REACHED_STORE ||
-        orderStatusData.orderStatusUpdateSubscribe.tripStatus ===
-          OUT_FOR_DELIVERY ||
-        orderStatusData.orderStatusUpdateSubscribe.tripStatus === DELIVERED))
-  ) {
-    refetch();
-  }
-
   return (
     <>
       <DeliveryInfo>
@@ -137,21 +86,7 @@ const OrderDetails: React.FC<OrderDetailsProps> = ({
       </DeliveryInfo>
 
       <ProgressWrapper>
-        <Progress
-          data={progressData}
-          status={
-            chefEventsData &&
-            chefEventsData.chefOrderSubscribeForUser &&
-            chefEventsData.chefOrderSubscribeForUser.payload &&
-            chefEventsData.chefOrderSubscribeForUser.payload.event
-              ? chefEventsData.chefOrderSubscribeForUser.payload
-              : orderStatusData &&
-                orderStatusData.orderStatusUpdateSubscribe &&
-                orderStatusData.orderStatusUpdateSubscribe.tripStatus
-              ? orderStatusData.orderStatusUpdateSubscribe.tripStatus
-              : progressStatus
-          }
-        />
+        <Progress data={progressData} status={progressStatus} />
       </ProgressWrapper>
 
       <OrderTableWrapper>

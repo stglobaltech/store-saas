@@ -33,6 +33,7 @@ import { Q_GET_STORE_ID } from "graphql/query/loggedIn-queries.query";
 import { useEffect } from "react";
 import { useState } from "react";
 import { useAppDispatch } from "contexts/app/app.provider";
+import { FormattedMessage } from "react-intl";
 
 const PAGE_TYPE = "categories";
 
@@ -86,7 +87,10 @@ export default function Categories({
       if (getCartData && getCartData.getCart && getCartData.getCart.products) {
         getCartData.getCart.products.forEach((product) => {
           if (!isInCart(product.productId)) {
-            addItem(refactorGetCartDataBeforeAddingToCart(product),product.quantity);
+            addItem(
+              refactorGetCartDataBeforeAddingToCart(product),
+              product.quantity
+            );
           }
         });
       }
@@ -136,7 +140,11 @@ export default function Categories({
     !workFlowPolicyData.getWorkFlowpolicyPlanOfStoreForUserWeb.data.plan ||
     !workFlowPolicyData.getWorkFlowpolicyPlanOfStoreForUserWeb.data.plan.length
   ) {
-    return <ErrorMessage message={GENERAL_ERROR_MSG} />;
+    return (
+      <ErrorMessage>
+        <FormattedMessage id="error" defaultMessage={GENERAL_ERROR_MSG} />
+      </ErrorMessage>
+    );
   }
 
   if (!isTokenValidOrUndefined()) {

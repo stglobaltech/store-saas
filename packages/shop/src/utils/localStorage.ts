@@ -54,3 +54,9 @@ export const removeToken = () => {
     // ignore write errors
   }
 };
+
+export const getUserId=()=>{
+  try{
+    return localStorage.getItem("userId");
+  }catch{}
+}

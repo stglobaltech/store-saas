@@ -29,6 +29,14 @@ const SidebarSection = styled.div`
   }
 `;
 
+const NoOrdersOrErrorSection=styled.div`
+width:calc(100-330px);
+flex-shrink:0;
+@media only screen and (min-width:){
+  width:100%;
+}
+`;
+
 const ContentBox = styled.div`
   width: calc(100% - 330px);
   height: auto;

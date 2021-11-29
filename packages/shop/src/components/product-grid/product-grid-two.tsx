@@ -160,14 +160,17 @@ export const ProductGrid = ({
     searchedProductError
   )
     return (
-      <ErrorMessage
-        message={
-          error.message ||
-          categoryProductsError.message ||
-          searchedProductInCategoryError.message ||
-          searchedProductError.message
-        }
-      />
+      <ErrorMessage>
+        <FormattedMessage
+          id="error"
+          defaultMessage={
+            error.message ||
+            categoryProductsError.message ||
+            searchedProductInCategoryError.message ||
+            searchedProductError.message
+          }
+        />
+      </ErrorMessage>
     );
   if (
     loading ||
