@@ -81,8 +81,6 @@ const OrderDetails: React.FC<OrderDetailsProps> = ({
     }
   );
 
-  console.log('driver side event',orderStatusData);
-
   if (
     (chefEventsData && chefEventsData.chefOrderSubscribeForUser) ||
     (orderStatusData &&
@@ -149,7 +147,11 @@ const OrderDetails: React.FC<OrderDetailsProps> = ({
               ? chefEventsData.chefOrderSubscribeForUser.payload
               : orderStatusData &&
                 orderStatusData.orderStatusUpdateSubscribe &&
-                orderStatusData.orderStatusUpdateSubscribe.tripStatus
+                orderStatusData.orderStatusUpdateSubscribe.tripStatus &&
+                !orderStatusData.orderStatusUpdateSubscribe.storeStatus
+              ? orderStatusData.orderStatusUpdateSubscribe.tripStatus
+              : orderStatusData.orderStatusUpdateSubscribe.tripStatus &&
+                orderStatusData.orderStatusUpdateSubscribe.storeStatus
               ? orderStatusData.orderStatusUpdateSubscribe.tripStatus
               : progressStatus
           }

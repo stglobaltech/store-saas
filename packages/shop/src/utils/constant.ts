@@ -26,6 +26,10 @@ export const ERROR_FETCHING_ORDER_HISTORY =
 export const PENDING = { label: "PEN", value: "Pending" };
 export const STORE_ACCEPTED = { label: "ACC", value: "Store Accepted Order" };
 export const STORE_ORDER_READY = { label: "READY", value: "Order Is Ready" };
+export const DRIVER_ON_THE_WAY_TO_STORE = {
+  label: "Pickup",
+  value: "Driver On The Way To Store",
+};
 export const REACHED_STORE = {
   label: "ReachedStore",
   value: "Driver Reached Store",

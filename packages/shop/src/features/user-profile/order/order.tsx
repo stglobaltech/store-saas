@@ -30,10 +30,10 @@ import { Q_GET_USER_ACTIVE_ORDERS } from "graphql/query/get-user-active-order.qu
 import ErrorMessage from "components/error-message/error-message";
 import {
   DELIVERED,
+  DRIVER_ON_THE_WAY_TO_STORE,
   ERROR_FETCHING_ACTIVE_ORDERS,
   OUT_FOR_DELIVERY,
   PENDING,
-  REACHED_STORE,
   STORE_ACCEPTED,
   STORE_ORDER_READY,
 } from "utils/constant";
@@ -42,7 +42,7 @@ const progressData = [
   PENDING,
   STORE_ACCEPTED,
   STORE_ORDER_READY,
-  REACHED_STORE,
+  DRIVER_ON_THE_WAY_TO_STORE,
   OUT_FOR_DELIVERY,
   DELIVERED,
 ];
