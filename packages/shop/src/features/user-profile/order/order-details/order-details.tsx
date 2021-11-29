@@ -151,10 +151,10 @@ const OrderDetails: React.FC<OrderDetailsProps> = ({
                 orderStatusData.orderStatusUpdateSubscribe &&
                 orderStatusData.orderStatusUpdateSubscribe.tripStatus &&
                 !orderStatusData.orderStatusUpdateSubscribe.storeStatus
-              ? orderStatusData.orderStatusUpdateSubscribe.tripStatus
-              : orderStatusData.orderStatusUpdateSubscribe.tripStatus &&
-                orderStatusData.orderStatusUpdateSubscribe.storeStatus
-              ? orderStatusData.orderStatusUpdateSubscribe.tripStatus
+              ? orderStatusData?.orderStatusUpdateSubscribe?.tripStatus
+              : orderStatusData?.orderStatusUpdateSubscribe?.tripStatus &&
+                orderStatusData?.orderStatusUpdateSubscribe?.storeStatus
+              ? orderStatusData?.orderStatusUpdateSubscribe?.tripStatus
               : progressStatus
           }
         />
