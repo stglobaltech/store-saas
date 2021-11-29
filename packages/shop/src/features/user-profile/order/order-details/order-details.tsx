@@ -81,6 +81,8 @@ const OrderDetails: React.FC<OrderDetailsProps> = ({
     }
   );
 
+  console.log('driver side event',orderStatusData);
+
   if (
     (chefEventsData && chefEventsData.chefOrderSubscribeForUser) ||
     (orderStatusData &&

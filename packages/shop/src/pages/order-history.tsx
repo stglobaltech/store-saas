@@ -24,7 +24,6 @@ const OrderHistory = () => {
           page,
           perPage: 10,
         },
-        status: "FIN",
       },
     },
   });

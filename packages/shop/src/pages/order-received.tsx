@@ -22,24 +22,39 @@ import {
 } from "utils/constant";
 import { useAppState } from "contexts/app/app.provider";
 import { FormattedMessage } from "react-intl";
+import { getCartId, getUserId } from "utils/localStorage";
+
+// const PaymentSubscriptionWrapper = (userId, cartId) => {
+//   const res = useSubscription(S_ORDER_STATUS_SUBSCRIPTION, {
+//     variables: {
+//       input: {
+//         userId,
+//         cartId,
+//       },
+//     }
+//   });
+//   return <div></div>;
+// };
 
 const OrderReceivedPage = () => {
-  const { data, error, loading } = useQuery(Q_GET_USER_ACTIVE_ORDERS);
-  
-  // const {
-  //   data: subscriptionData,
-  //   loading: subscriptionLoading,
-  //   error: subscriptionError,
-  // } = useSubscription(S_ORDER_PAYMENT_SUBSCRIPTION, {
-  //   variables: {
-  //     input: {
-  //       userId: localStorage.getItem("userId"),
-  //       cartId: localStorage.getItem("cartId"),
-  //     },
-  //   },
-  // });
+  const cartId = getCartId();
+  const userId = getUserId();
 
+  const {data:paymentStatusData} = useSubscription(S_ORDER_PAYMENT_SUBSCRIPTION, {
+    variables: {
+      input: {
+        userId,
+        cartId,
+      },
+    },
+  });
+
+  const { data, error, loading } = useQuery(Q_GET_USER_ACTIVE_ORDERS);
   const currency = (useAppState("workFlowPolicy") as any).currency;
+
+  if(paymentStatusData){
+    
+  }
 
   if (loading) return <Loader />;
   if (error) {

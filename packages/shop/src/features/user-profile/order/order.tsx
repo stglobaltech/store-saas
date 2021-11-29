@@ -106,7 +106,6 @@ const OrdersContent: React.FC<{
 
   const [targetRef, size] = useComponentSize();
   const orderListHeight = size.height - 79;
-  // const { data, error, loading, refetch } = useQuery(Q_GET_USER_ACTIVE_ORDERS);
 
   useEffect(() => {
     if (
@@ -152,15 +151,6 @@ const OrdersContent: React.FC<{
     setOrder(order);
     setActive(order._id);
   };
-
-  // if (data && data.userActiveOrders && !data.userActiveOrders.length) {
-  //   return (
-  //     <FormattedMessage
-  //       id="noActiveOrders"
-  //       defaultMessage={"No active orders.Place an order "}
-  //     />
-  //   );
-  // }
 
   return (
     <OrderBox>

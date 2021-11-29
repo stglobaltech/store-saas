@@ -55,8 +55,14 @@ export const removeToken = () => {
   }
 };
 
-export const getUserId=()=>{
-  try{
+export const getUserId = () => {
+  try {
     return localStorage.getItem("userId");
-  }catch{}
-}
+  } catch {}
+};
+
+export const getCartId = () => {
+  try {
+    return localStorage.getItem("cartId");
+  } catch {}
+};
