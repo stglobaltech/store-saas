@@ -124,7 +124,7 @@ const OrdersContent: React.FC<{
           <Title style={{ padding: "0 20px" }}>
             <FormattedMessage
               id="userOrderHistory"
-              defaultMessage="My Finished Orders"
+              defaultMessage="My Orders"
             />
           </Title>
           <Scrollbar className="order-scrollbar">
@@ -173,8 +173,9 @@ const OrdersContent: React.FC<{
           </Title>
           {order && order._id && (
             <OrderDetails
-              progressStatus={DELIVERED}
-              progressData={progressData}
+              // progressStatus={order.storeStatus}
+              // progressData={progressData}
+              orderStatus={order.status}
               address={order.orderCart.address}
               subtotal={order.orderCart.totalQuotedPrice}
               discount={order.discount}

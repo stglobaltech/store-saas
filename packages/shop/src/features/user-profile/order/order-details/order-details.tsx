@@ -12,12 +12,6 @@ import {
   OrderTable,
 } from "./order-details.style";
 import Progress from "components/progress-box/progress-box";
-import {
-  CURRENCY,
-  DELIVERED,
-  OUT_FOR_DELIVERY,
-  REACHED_STORE,
-} from "utils/constant";
 import { FormattedMessage } from "react-intl";
 import { useSubscription } from "@apollo/client";
 import {
@@ -25,18 +19,66 @@ import {
   S_ORDER_STATUS_SUBSCRIPTION,
 } from "graphql/subscriptions/order-status.subscription";
 import { getUserId } from "utils/localStorage";
+import {
+  DELIVERED,
+  DRIVER_ON_THE_WAY_TO_STORE,
+  OUT_FOR_DELIVERY,
+  PENDING,
+  REACHED_STORE,
+  STORE_ACCEPTED,
+  STORE_CANCELLED_ORDER,
+  STORE_ORDER_READY,
+  STORE_REJECTED_ORDER,
+} from "utils/constant";
+
+const progressStoreAcceptedData = [
+  PENDING,
+  STORE_ACCEPTED,
+  STORE_ORDER_READY,
+  DRIVER_ON_THE_WAY_TO_STORE,
+  REACHED_STORE,
+  OUT_FOR_DELIVERY,
+  DELIVERED,
+];
+
+const progressStoreRejectedData = [
+  PENDING,
+  STORE_REJECTED_ORDER,
+  STORE_ORDER_READY,
+  DRIVER_ON_THE_WAY_TO_STORE,
+  OUT_FOR_DELIVERY,
+  DELIVERED,
+];
+
+const progressStoreCancelledData = [
+  PENDING,
+  STORE_ACCEPTED,
+  STORE_CANCELLED_ORDER,
+  DRIVER_ON_THE_WAY_TO_STORE,
+  OUT_FOR_DELIVERY,
+  DELIVERED,
+];
+
+const progressStoreReadyOrderData = [
+  PENDING,
+  STORE_ACCEPTED,
+  STORE_ORDER_READY,
+  DRIVER_ON_THE_WAY_TO_STORE,
+  OUT_FOR_DELIVERY,
+  DELIVERED,
+];
 
 type OrderDetailsProps = {
   tableData?: any;
   columns?: any;
   progressData?: any;
-  progressStatus?: any;
   address?: any;
   subtotal?: number;
   discount?: number;
   deliveryFee?: number;
   grandTotal?: number;
   orderId?: string;
+  storeProgressStatus?: any;
   refetch?: () => void;
 };
 
@@ -48,13 +90,12 @@ const OrderDetails: React.FC<OrderDetailsProps> = ({
   tableData,
   columns,
   address,
-  progressStatus,
-  progressData,
   subtotal,
   discount,
   deliveryFee,
   grandTotal,
   orderId,
+  storeProgressStatus,
   refetch,
 }) => {
   const storeId = process.env.NEXT_PUBLIC_STG_CLIENT_ID;
@@ -81,20 +122,69 @@ const OrderDetails: React.FC<OrderDetailsProps> = ({
     }
   );
 
-  console.log('orderStatusUpdate',orderStatusData);
+  let progressData = progressStoreAcceptedData;
+  let progressStatus = storeProgressStatus ?? PENDING;
 
   if (
-    (chefEventsData && chefEventsData.chefOrderSubscribeForUser) ||
-    (orderStatusData &&
-      orderStatusData.orderStatusUpdateSubscribe &&
-      orderStatusData.orderStatusUpdateSubscribe.tripStatus &&
-      (orderStatusData.orderStatusUpdateSubscribe.tripStatus ===
-        REACHED_STORE ||
-        orderStatusData.orderStatusUpdateSubscribe.tripStatus ===
-          OUT_FOR_DELIVERY ||
-        orderStatusData.orderStatusUpdateSubscribe.tripStatus === DELIVERED))
+    chefEventsData &&
+    chefEventsData.chefOrderSubscribeForUser &&
+    chefEventsData.chefOrderSubscribeForUser.payload
   ) {
+    if (
+      chefEventsData.chefOrderSubscribeForUser.payload?.eventType ===
+      STORE_ACCEPTED.label
+    ) {
+      progressData = progressStoreAcceptedData;
+      progressStatus = STORE_ACCEPTED;
+    } else if (
+      chefEventsData.chefOrderSubscribeForUser.payload?.eventType ===
+      STORE_REJECTED_ORDER.label
+    ) {
+      progressData = progressStoreRejectedData;
+      progressStatus = STORE_REJECTED_ORDER;
+    } else if (
+      chefEventsData.chefOrderSubscribeForUser.payload?.eventType ===
+      STORE_CANCELLED_ORDER.label
+    ) {
+      progressData = progressStoreCancelledData;
+      progressStatus = STORE_CANCELLED_ORDER;
+    } else if (
+      chefEventsData.chefOrderSubscribeForUser.payload?.eventType ===
+      STORE_ORDER_READY.label
+    ) {
+      progressData = progressStoreReadyOrderData;
+      progressStatus = STORE_ORDER_READY;
+    }
     refetch();
+  }
+
+  if (
+    orderStatusData &&
+    orderStatusData.orderStatusUpdateSubscribe &&
+    orderStatusData.orderStatusUpdateSubscribe.tripStatus
+  ) {
+    if (
+      orderStatusData.orderStatusUpdateSubscribe.tripStatus ===
+      DRIVER_ON_THE_WAY_TO_STORE.label
+    ) {
+      progressData = progressStoreAcceptedData;
+      progressStatus = DRIVER_ON_THE_WAY_TO_STORE;
+    } else if (
+      orderStatusData.orderStatusUpdateSubscribe.tripStatus ===
+      REACHED_STORE.label
+    ) {
+      progressData = progressStoreAcceptedData;
+      progressStatus = REACHED_STORE;
+    } else if (
+      orderStatusData.orderStatusUpdateSubscribe.tripStatus ===
+      OUT_FOR_DELIVERY.label
+    ) {
+      progressData = progressStoreAcceptedData;
+      progressStatus = OUT_FOR_DELIVERY;
+    }else if(orderStatusData.orderStatusUpdateSubscribe.tripStatus===DELIVERED.label){
+      progressData=progressStoreAcceptedData;
+      progressStatus=DELIVERED;
+    }
   }
 
   return (
@@ -139,25 +229,7 @@ const OrderDetails: React.FC<OrderDetailsProps> = ({
       </DeliveryInfo>
 
       <ProgressWrapper>
-        <Progress
-          data={progressData}
-          status={
-            chefEventsData &&
-            chefEventsData.chefOrderSubscribeForUser &&
-            chefEventsData.chefOrderSubscribeForUser.payload &&
-            chefEventsData.chefOrderSubscribeForUser.payload.event
-              ? chefEventsData.chefOrderSubscribeForUser.payload
-              : orderStatusData &&
-                orderStatusData.orderStatusUpdateSubscribe &&
-                orderStatusData.orderStatusUpdateSubscribe.tripStatus &&
-                !orderStatusData.orderStatusUpdateSubscribe.storeStatus
-              ? orderStatusData?.orderStatusUpdateSubscribe?.tripStatus
-              : orderStatusData?.orderStatusUpdateSubscribe?.tripStatus &&
-                orderStatusData?.orderStatusUpdateSubscribe?.storeStatus
-              ? orderStatusData?.orderStatusUpdateSubscribe?.tripStatus
-              : progressStatus
-          }
-        />
+        <Progress data={progressData} status={progressStatus} />
       </ProgressWrapper>
 
       <OrderTableWrapper>

@@ -28,24 +28,8 @@ import { useAppState } from "contexts/app/app.provider";
 import { Q_GET_USERID } from "graphql/query/loggedIn-queries.query";
 import { Q_GET_USER_ACTIVE_ORDERS } from "graphql/query/get-user-active-order.query";
 import ErrorMessage from "components/error-message/error-message";
-import {
-  DELIVERED,
-  DRIVER_ON_THE_WAY_TO_STORE,
-  ERROR_FETCHING_ACTIVE_ORDERS,
-  OUT_FOR_DELIVERY,
-  PENDING,
-  STORE_ACCEPTED,
-  STORE_ORDER_READY,
-} from "utils/constant";
-
-const progressData = [
-  PENDING,
-  STORE_ACCEPTED,
-  STORE_ORDER_READY,
-  DRIVER_ON_THE_WAY_TO_STORE,
-  OUT_FOR_DELIVERY,
-  DELIVERED,
-];
+import { ERROR_FETCHING_ACTIVE_ORDERS } from "utils/constant";
+import { refactorStoreStatus } from "utils/refactor-product-before-adding-to-cart";
 
 const orderTableColumns = [
   {
@@ -120,8 +104,11 @@ const OrdersContent: React.FC<{
           (o) => o._id === order._id
         );
         if (currentClickedOrder) {
-          setOrder(currentClickedOrder[0]);
-          setActive(currentClickedOrder[0]._id);
+          setOrder(currentClickedOrder[0] ?? currentOrder);
+          setActive(
+            (currentClickedOrder[0] && currentClickedOrder[0]._id) ??
+              currentOrder
+          );
         } else {
           setOrder(currentOrder);
           setActive(currentOrder._id);
@@ -202,8 +189,7 @@ const OrdersContent: React.FC<{
           </Title>
           {order && order._id && (
             <OrderDetails
-              progressStatus={order.storeStatus}
-              progressData={progressData}
+              storeProgressStatus={refactorStoreStatus(order.storeStatus)}
               address={order.orderCart.address}
               subtotal={order.orderCart.totalQuotedPrice}
               discount={order.discount}
@@ -221,9 +207,9 @@ const OrdersContent: React.FC<{
       <MobileView>
         <OrderList>
           <OrderCardMobile
+            storeProgressStatus={refactorStoreStatus(order.storeStatus)}
             orders={data.userActiveOrders}
             className={order && order._id === active ? "active" : ""}
-            progressData={progressData}
             columns={orderTableColumns}
             onClick={() => {
               handleClick(order);

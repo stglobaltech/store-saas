@@ -12,20 +12,36 @@ import {
   OrderTable,
 } from "./order-details.style";
 import Progress from "components/progress-box/progress-box";
-import { DELIVERED } from "utils/constant";
 import { FormattedMessage } from "react-intl";
+import {
+  OH_PENDING,
+  OH_CANCELLED,
+  OH_CONF,
+  OH_FINISHED,
+  OH_REJECTED,
+  OH_EXP,
+} from "utils/constant";
+import { refactorOrderHistoryStatus } from "utils/refactor-product-before-adding-to-cart";
+
+const progressOrderStatus = [
+  OH_PENDING,
+  OH_CANCELLED,
+  OH_CONF,
+  OH_FINISHED,
+  OH_REJECTED,
+  OH_EXP,
+];
 
 type OrderDetailsProps = {
   tableData?: any;
   columns?: any;
-  progressData?: any;
-  progressStatus?: any;
   address?: any;
   subtotal?: number;
   discount?: number;
   deliveryFee?: number;
   grandTotal?: number;
   orderId?: string;
+  orderStatus?: string;
 };
 
 const components = {
@@ -36,8 +52,7 @@ const OrderDetails: React.FC<OrderDetailsProps> = ({
   tableData,
   columns,
   address,
-  progressStatus,
-  progressData,
+  orderStatus,
   subtotal,
   discount,
   deliveryFee,
@@ -86,7 +101,10 @@ const OrderDetails: React.FC<OrderDetailsProps> = ({
       </DeliveryInfo>
 
       <ProgressWrapper>
-        <Progress data={progressData} status={progressStatus} />
+        <Progress
+          data={progressOrderStatus}
+          status={refactorOrderHistoryStatus(orderStatus)}
+        />
       </ProgressWrapper>
 
       <OrderTableWrapper>
