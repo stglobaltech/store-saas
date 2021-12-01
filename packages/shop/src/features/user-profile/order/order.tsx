@@ -207,7 +207,7 @@ const OrdersContent: React.FC<{
       <MobileView>
         <OrderList>
           <OrderCardMobile
-            storeProgressStatus={refactorStoreStatus(order.storeStatus)}
+            storeProgressStatus={refactorStoreStatus(order?.storeStatus)}
             orders={data.userActiveOrders}
             className={order && order._id === active ? "active" : ""}
             columns={orderTableColumns}

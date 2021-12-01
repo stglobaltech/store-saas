@@ -122,6 +122,8 @@ const OrderDetails: React.FC<OrderDetailsProps> = ({
     }
   );
 
+  console.log('driver events',orderStatusData);
+
   let progressData = progressStoreAcceptedData;
   let progressStatus = storeProgressStatus ?? PENDING;
 
@@ -186,6 +188,8 @@ const OrderDetails: React.FC<OrderDetailsProps> = ({
       progressStatus=DELIVERED;
     }
   }
+
+
 
   return (
     <>
