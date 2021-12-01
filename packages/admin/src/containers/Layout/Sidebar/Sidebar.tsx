@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { withRouter } from 'react-router-dom';
 import {
   SidebarWrapper,
@@ -15,8 +15,9 @@ import {
   CUSTOMERS,
   COUPONS,
   SETTINGS,
+  REPORTS,
+  TRANSACTIONS
 } from 'settings/constants';
-import { AuthContext } from 'context/auth';
 
 import { DashboardIcon } from 'assets/icons/DashboardIcon';
 import { ProductIcon } from 'assets/icons/ProductIcon';
@@ -26,6 +27,7 @@ import { CustomerIcon } from 'assets/icons/CustomerIcon';
 import { CouponIcon } from 'assets/icons/CouponIcon';
 import { SettingIcon } from 'assets/icons/SettingIcon';
 import { LogoutIcon } from 'assets/icons/LogoutIcon';
+import { BarChartIcon } from 'assets/icons/BarChartIcon';
 
 const sidebarMenus = [
   {
@@ -65,6 +67,18 @@ const sidebarMenus = [
     icon: <CouponIcon />,
   },
   {
+    name: 'Transactions',
+    path: TRANSACTIONS,
+    exact: false,
+    icon: <SettingIcon />,
+  },
+  {
+    name: 'Reports',
+    path: REPORTS,
+    exact: false,
+    icon: <BarChartIcon />,
+  },
+  {
     name: 'Settings',
     path: SETTINGS,
     exact: false,
@@ -76,8 +90,8 @@ export default withRouter(function Sidebar({
   refs,
   style,
   onMenuItemClick,
+  onLogout
 }: any) {
-  const { signout } = useContext(AuthContext);
   return (
     <SidebarWrapper ref={refs} style={style}>
       <MenuWrapper>
@@ -100,9 +114,7 @@ export default withRouter(function Sidebar({
       </MenuWrapper>
 
       <LogoutBtn
-        onClick={() => {
-          signout();
-        }}
+        onClick={onLogout}
       >
         <Svg>
           <LogoutIcon />

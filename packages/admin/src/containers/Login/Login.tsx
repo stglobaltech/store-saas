@@ -1,8 +1,7 @@
-import React, { useContext } from 'react';
-import { Redirect, useHistory, useLocation } from 'react-router-dom';
+import React from 'react';
+import { Redirect, useLocation } from 'react-router-dom';
 import { Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
-import { AuthContext } from 'context/auth';
 import {
   FormFields,
   FormLabel,
@@ -13,42 +12,132 @@ import { Wrapper, FormWrapper, LogoImage, LogoWrapper } from './Login.style';
 import Input from 'components/Input/Input';
 import Button from 'components/Button/Button';
 import Logoimage from 'assets/image/PickBazar.png';
+import { useQuery, useMutation, useApolloClient, useLazyQuery } from '@apollo/client';
+import {
+  M_LOGIN,
+  Q_GET_RESTAURANT_ID,
+  Q_IS_LOGGED_IN,
+  Q_GET_USER_ID,
+  Q_GET_STORE_ID,
+  Q_GET_PARENTRESTAURANTID,
+  Q_GET_ROLES,
+  Q_GET_STORENAMEEN } from "../../services/GQL";
+import jwtDecode from 'jwt-decode' 
 
-const initialValues = {
-  username: '',
-  password: '',
-};
-
-const getLoginValidationSchema = () => {
-  return Yup.object().shape({
-    username: Yup.string().required('Username is Required!'),
-    password: Yup.string().required('Password is Required!'),
-  });
-};
-
-const MyInput = ({ field, form, ...props }) => {
-  return <Input {...field} {...props} />;
-};
+interface DecodedToken {
+  roles: string[];
+  exp: number;
+}
 
 export default function Login() {
-  let history = useHistory();
-  let location = useLocation();
-  const { authenticate, isAuthenticated } = useContext(AuthContext);
-  if (isAuthenticated) return <Redirect to={{ pathname: '/' }} />;
+  const location = useLocation();
+  const cache = useApolloClient();
+  const { data: { isLoggedIn = false } } = useQuery(Q_IS_LOGGED_IN);
+  const [getRestaurantId, getRestaurantData] = useLazyQuery(Q_GET_RESTAURANT_ID);
 
-  let { from } = (location.state as any) || { from: { pathname: '/' } };
-  let login = ({ username, password }) => {
-    authenticate({ username, password }, () => {
-      history.replace(from);
+  const { from } = (location.state as any) || { from: { pathname: '/' } };
+
+  const initialValues = {
+    email: '',
+    password: '',
+  };
+  
+  const getLoginValidationSchema = () => {
+    return Yup.object().shape({
+      email: Yup.string().required('Email is Required!'),
+      password: Yup.string().required('Password is Required!'),
     });
   };
+  
+  const MyInput = ({ field, form, ...props }) => {
+    return <Input {...field} {...props} />;
+  };
+
+  if (
+    getRestaurantData &&
+    getRestaurantData.data &&
+    getRestaurantData.data.getStore
+  ) {
+    let userId = getRestaurantData.data.getStore.ownerId;
+    let storeId = getRestaurantData.data.getStore._id;
+    let parentId = getRestaurantData.data.getStore.parentId;
+    let storeName = getRestaurantData.data.getStore.name.en;
+    localStorage.setItem("storeId", storeId);
+    localStorage.setItem("parentRestaurantId", parentId);
+    localStorage.setItem("storeName", storeName);
+
+    cache.writeQuery({
+      query: Q_IS_LOGGED_IN,
+      data: { isLoggedIn: !!localStorage.getItem("token") },
+    });
+
+    cache.writeQuery({
+      query: Q_GET_USER_ID,
+      data: { userId },
+    });
+
+    cache.writeQuery({
+      query: Q_GET_STORE_ID,
+      data: { storeId },
+    });
+
+    cache.writeQuery({
+      query: Q_GET_PARENTRESTAURANTID,
+      data: { parentRestaurantId: parentId },
+    });
+
+    cache.writeQuery({
+      query: Q_GET_STORENAMEEN,
+      data: { storeNameEn: storeName },
+    });
+  }
+
+  const [doLogin, { loading, error, data }] = useMutation(M_LOGIN, {
+    context: { clientName: "AUTH_SERVER" },
+    onCompleted({ gateLogin }) {
+      const { success, accessToken, userId, refreshToken } = gateLogin;
+      if (success && accessToken) {
+        const { exp, roles } = jwtDecode<DecodedToken>(accessToken);
+
+        const token = {
+          accessToken: accessToken,
+          refreshToken: refreshToken,
+          expiryDate: new Date(exp * 1000),
+        };
+        localStorage.setItem("token", JSON.stringify(token));
+        localStorage.setItem("userId", userId);
+        localStorage.setItem("roles", JSON.stringify(roles));
+
+        cache.writeQuery({
+          query: Q_GET_ROLES,
+          data: {
+            roles,
+          },
+        });
+
+        getRestaurantId({
+          context: { clientName: "CONTENT_SERVER" },
+          variables: { ownerId: userId },
+        });
+
+        return <Redirect to={from} />;
+      }
+    },
+  });
+
+  const login = (formValues) => {
+    doLogin({ variables: { gateLoginDto: {...formValues, deviceType: "WEB"} } });
+  };
+
+  if (isLoggedIn) {return <Redirect to={{ pathname: '/' }} />;}
+
   return (
     <Wrapper>
       <FormWrapper>
         <Formik
           initialValues={initialValues}
           onSubmit={login}
-          render={({ errors, status, touched, isSubmitting }) => (
+          render={({ errors, status, touched }) => (
             <Form>
               <FormFields>
                 <LogoWrapper>
@@ -58,15 +147,29 @@ export default function Login() {
               </FormFields>
 
               <FormFields>
-                <FormLabel>Username</FormLabel>
+              <div style={{fontFamily: "Lato, sans-serif", fontWeight: "bold", color: "rgb(252, 92, 99)"}}>
+                {error ? (
+                  <>{error.message}</>
+                    ) : (
+                      data &&
+                      (data.gateLogin.success === "error" ||
+                        !data.gateLogin.success) && (
+                        <>{data.gateLogin.message.en || "Error!!..Something went wrong."}</>
+                      )
+                    )}
+              </div>
+              </FormFields>
+
+              <FormFields>
+                <FormLabel>Email</FormLabel>
                 <Field
                   type="email"
-                  name="username"
+                  name="email"
                   component={MyInput}
                   placeholder="Ex: demo@demo.com"
                 />
-                {errors.username && touched.username && (
-                  <Error>{errors.username}</Error>
+                {errors.email && touched.email && (
+                  <Error>{errors.email}</Error>
                 )}
               </FormFields>
               <FormFields>
@@ -83,7 +186,7 @@ export default function Login() {
               </FormFields>
               <Button
                 type="submit"
-                disabled={isSubmitting}
+                disabled={loading}
                 overrides={{
                   BaseButton: {
                     style: ({ $theme }) => ({

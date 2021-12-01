@@ -64,48 +64,25 @@ export const GET_PRODUCT = gql`
     }
   }
 `;
+
 export const GET_PRODUCT_DETAILS = gql`
-  query getProduct($slug: String!) {
-    product(slug: $slug) {
-      id
-      slug
-      title
-      type
-      unit
-      price
-      salePrice
-      description
-      discountInPercent
-      gallery {
-        url
+  query getProductForUser($productId: String!) {
+    getProductForUser(productId: $productId) {
+      _id
+      productName {
+        en
+        ar
       }
-      image
-      categories {
-        id
-        slug
-        title
+      description{
+        en
+        ar
       }
-      author {
-        id
-        name
-        avatar
-        bio
-        socials {
-          id
-          media
-          profileLink
-        }
+      picture
+      price{
+        basePrice
+        price
       }
-      meta {
-        publisher
-        isbn
-        edition
-        languages
-        country
-        numberOfReader
-        numberOfPage
-        samplePDF
-      }
+      maxQuantity
     }
   }
 `;

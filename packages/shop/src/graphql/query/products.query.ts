@@ -1,45 +1,69 @@
 import { gql } from '@apollo/client';
 
 export const GET_PRODUCTS = gql`
-  query getProducts(
-    $type: String
-    $text: String
-    $category: String
-    $offset: Int
-    $limit: Int
+  query GetStoreProductsForUser(
+    $userStoreProductsFindInputDto: StoreProductFindInputDto!
   ) {
-    products(
-      type: $type
-      text: $text
-      category: $category
-      offset: $offset
-      limit: $limit
+    getStoreProductsForUser(
+      userStoreProductsFindInputDto: $userStoreProductsFindInputDto
     ) {
-      items {
-        id
-        title
-        slug
-        unit
-        price
-        salePrice
-        description
-        discountInPercent
-        type
-        image
-        author {
-          id
-          name
+      products {
+        _id
+        productName {
+          en
+          ar
         }
-        gallery {
-          url
+        price {
+          price
         }
-        categories {
-          id
-          title
-          slug
+        picture
+        description {
+          en
+        }
+        maxQuantity
+        payType
+        options {
+          _id
+          name {
+            en
+          }
+          values {
+            _id
+            name {
+              en
+            }
+            price {
+              price
+            }
+          }
+        }
+        meals {
+          _id
+          types {
+            _id
+            name {
+              en
+            }
+            price {
+              price
+            }
+          }
+          packages {
+            _id
+            name {
+              en
+            }
+            typeIds
+          }
         }
       }
-      hasMore
+      pagination {
+        hasNextPage
+        nextPage
+        hasPrevPage
+        prevPage
+        page
+      }
     }
   }
 `;

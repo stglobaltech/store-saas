@@ -10,7 +10,14 @@ import ProductUpdateForm from '../ProductForm/ProductUpdateForm';
 import CampaingForm from '../CampaingForm/CampaingForm';
 import CategoryForm from '../CategoryForm/CategoryForm';
 import StaffMemberForm from '../StaffMemberForm/StaffMemberForm';
+import QrCodeForm from '../QrCodeForm/QrCodeForm';
 import Sidebar from '../Layout/Sidebar/Sidebar';
+import OrderDetail from '../Orders/OrderDetailsDrawer';
+import DeleteCategoryForm from '../CategoryForm/CategoryDeleteDrawer';
+import CategoryEditForm from '../CategoryForm/CategoryEditForm';
+import CouponForm from '../CouponForm/CouponForm';
+import EditCouponForm from '../CouponForm/EditCouponForm';
+import DeleteCouponForm from '../CouponForm/DeleteCouponForm';
 
 /** Components Name Constants */
 const DRAWER_COMPONENTS = {
@@ -19,6 +26,14 @@ const DRAWER_COMPONENTS = {
   CAMPAING_FORM: CampaingForm,
   CATEGORY_FORM: CategoryForm,
   STAFF_MEMBER_FORM: StaffMemberForm,
+  QR_CODE_FORM: QrCodeForm,
+  ORDER_DETAIL_CARD: OrderDetail,
+  DELETE_CATEGORY_FORM: DeleteCategoryForm,
+  EDIT_CATEGORY_FORM: CategoryEditForm,
+  COUPON_FORM: CouponForm,
+  EDIT_COUPON_FORM: EditCouponForm,
+  DELETE_COUPON_FORM: DeleteCouponForm,
+
   SIDEBAR: Sidebar,
 };
 
@@ -102,7 +117,7 @@ export default function DrawerItems() {
         Close: {
           component: () => (
             <CloseButton onClick={closeDrawer}>
-              <CloseIcon width="6px" height="6px" />
+              <CloseIcon width='6px' height='6px' />
             </CloseButton>
           ),
         },

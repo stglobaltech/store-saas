@@ -1,16 +1,22 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { styled, withStyle } from 'baseui';
 import Button from 'components/Button/Button';
 import { Grid, Row as Rows, Col as Column } from 'components/FlexBox/FlexBox';
 import Input from 'components/Input/Input';
 import Select from 'components/Select/Select';
-import { useQuery, gql } from '@apollo/client';
+import { useQuery } from '@apollo/client';
 import { Header, Heading } from 'components/Wrapper.style';
 import Fade from 'react-reveal/Fade';
 import ProductCard from 'components/ProductCard/ProductCard';
 import NoResult from 'components/NoResult/NoResult';
 import { CURRENCY } from 'settings/constants';
 import Placeholder from 'components/Placeholder/Placeholder';
+import { useDrawerDispatch } from 'context/DrawerContext';
+import {
+  Q_GET_STORE_ID,
+  Q_GET_CATEGORIES,
+  Q_SEARCH_PRODUCTS
+} from 'services/GQL';
 
 export const ProductsRow = styled('div', ({ $theme }) => ({
   display: 'flex',
@@ -60,104 +66,83 @@ export const LoaderItem = styled('div', () => ({
   marginBottom: '30px',
 }));
 
-const GET_PRODUCTS = gql`
-  query getProducts(
-    $type: String
-    $sortByPrice: String
-    $searchText: String
-    $offset: Int
-  ) {
-    products(
-      type: $type
-      sortByPrice: $sortByPrice
-      searchText: $searchText
-      offset: $offset
-    ) {
-      items {
-        id
-        name
-        description
-        image
-        type
-        price
-        unit
-        salePrice
-        discountInPercent
-      }
-      totalCount
-      hasMore
-    }
-  }
-`;
-
-const typeSelectOptions = [
-  { value: 'grocery', label: 'Grocery' },
-  { value: 'women-cloths', label: 'Women Cloths' },
-  { value: 'bags', label: 'Bags' },
-  { value: 'makeup', label: 'Makeup' },
-];
-const priceSelectOptions = [
-  { value: 'highestToLowest', label: 'Highest To Lowest' },
-  { value: 'lowestToHighest', label: 'Lowest To Highest' },
-];
-
 export default function Products() {
-  const { data, error, refetch, fetchMore } = useQuery(GET_PRODUCTS);
-  const [loadingMore, toggleLoading] = useState(false);
-  const [type, setType] = useState([]);
-  const [priceOrder, setPriceOrder] = useState([]);
-  const [search, setSearch] = useState([]);
+  const dispatch = useDrawerDispatch();
+  const openCreateDrawer = useCallback(
+    (data) => dispatch({ type: 'OPEN_DRAWER', drawerComponent: 'PRODUCT_FORM', data }),
+    [dispatch]
+  );
 
-  if (error) {
-    return <div>Error! {error.message}</div>;
-  }
-  function loadMore() {
-    toggleLoading(true);
-    fetchMore({
-      variables: {
-        offset: data.products.items.length,
-      },
-      updateQuery: (prev, { fetchMoreResult }) => {
-        toggleLoading(false);
-        if (!fetchMoreResult) return prev;
-        return Object.assign({}, prev, {
-          products: {
-            __typename: prev.products.__typename,
-            items: [...prev.products.items, ...fetchMoreResult.products.items],
-            hasMore: fetchMoreResult.products.hasMore,
-          },
+  const { data: { storeId } } = useQuery(Q_GET_STORE_ID);
+
+  const [categories, setCategories] = useState([]);
+  const [filterInput, setFilterInput] = useState({
+    category: [],
+    productKey: ""
+  });
+
+  const [productSearchInput, setProductSearchInput] = useState({
+    storeId,
+    categoryId: null,
+    productKey: "",
+    paginate: {
+      page: 1,
+      perPage: 12
+    }
+  });
+
+  const { error: getCategoriesError } = useQuery(Q_GET_CATEGORIES, {
+    variables: { storeId },
+    onCompleted: ({ getCategories }) => {
+      const { productCategories } = getCategories;
+      if(productCategories.length) {
+        const categoryOptions = productCategories.map((option) => {
+          return { label: option.name.en, value: option._id };
         });
-      },
+
+        setCategories(categoryOptions);
+      }
+    }
+  });
+
+  const { data, loading, error, refetch } = useQuery(Q_SEARCH_PRODUCTS, {
+    variables: { productSearchInput }
+  });
+
+  const goToPage = (page) => {
+    setProductSearchInput({
+      ...productSearchInput,
+      paginate: {
+        page: page,
+        perPage: 12
+      }
     });
-  }
-  function handlePriceSort({ value }) {
-    setPriceOrder(value);
-    if (value.length) {
-      refetch({
-        sortByPrice: value[0].value,
-      });
-    } else {
-      refetch({
-        sortByPrice: null,
-      });
-    }
-  }
-  function handleCategoryType({ value }) {
-    setType(value);
-    if (value.length) {
-      refetch({
-        type: value[0].value,
-      });
-    } else {
-      refetch({
-        type: null,
-      });
-    }
-  }
-  function handleSearch(event) {
-    const value = event.currentTarget.value;
-    setSearch(value);
-    refetch({ searchText: value });
+  };
+
+  const handleSearch = (category, productKey) => {
+    setProductSearchInput({
+      ...productSearchInput,
+      categoryId: category.length ? category[0].value : null,
+      productKey,
+      paginate: {
+        page: 1,
+        perPage: 12
+      }
+    });
+  };
+
+  if (getCategoriesError || error)
+    return <div>Error Fetching Data</div>;
+
+  let hasNextPage = false,
+    hasPrevPage = false,
+    page;
+
+  if (data) {
+    const { searchProduct: { pagination } } = data;
+    hasNextPage = pagination.hasNextPage;
+    hasPrevPage = pagination.hasPrevPage;
+    page = pagination.page;
   }
 
   return (
@@ -173,44 +158,59 @@ export default function Products() {
               <Row>
                 <Col md={3} xs={12}>
                   <Select
-                    options={typeSelectOptions}
+                    options={categories}
                     labelKey="label"
                     valueKey="value"
-                    placeholder="Category Type"
-                    value={type}
+                    placeholder="Category"
+                    value={filterInput.category}
                     searchable={false}
-                    onChange={handleCategoryType}
-                  />
-                </Col>
-
-                <Col md={3} xs={12}>
-                  <Select
-                    options={priceSelectOptions}
-                    labelKey="label"
-                    valueKey="value"
-                    value={priceOrder}
-                    placeholder="Price"
-                    searchable={false}
-                    onChange={handlePriceSort}
+                    onChange={({ value }) => {
+                      setFilterInput({...filterInput, category: value});
+                      handleSearch(value, filterInput.productKey);
+                    }}
                   />
                 </Col>
 
                 <Col md={6} xs={12}>
                   <Input
-                    value={search}
-                    placeholder="Ex: Search By Name"
-                    onChange={handleSearch}
+                    placeholder="Search..."
+                    value={filterInput.productKey}
+                    onChange={(e) => {
+                      setFilterInput({...filterInput, productKey: e.currentTarget.value});
+                      handleSearch(filterInput.category, e.currentTarget.value);
+                    }}
                     clearable
                   />
+                </Col>
+
+                <Col md={3} xs={12}>
+                  <Button
+                    onClick={() => openCreateDrawer(refetch)}
+                    overrides={{
+                      BaseButton: {
+                        style: () => ({
+                          width: '100%',
+                          borderTopLeftRadius: '3px',
+                          borderTopRightRadius: '3px',
+                          borderBottomLeftRadius: '3px',
+                          borderBottomRightRadius: '3px',
+                          paddingTop: "12px",
+                          paddingBottom: "12px"
+                        }),
+                      },
+                    }}
+                  >
+                    Add Product
+                  </Button>
                 </Col>
               </Row>
             </Col>
           </Header>
 
           <Row>
-            {data ? (
-              data.products && data.products.items.length !== 0 ? (
-                data.products.items.map((item: any, index: number) => (
+            {data && data.searchProduct ? (
+              data.searchProduct.products.length ? (
+                data.searchProduct.products.map((item: any, index: number) => (
                   <Col
                     md={4}
                     lg={3}
@@ -221,14 +221,11 @@ export default function Products() {
                   >
                     <Fade bottom duration={800} delay={index * 10}>
                       <ProductCard
-                        title={item.name}
-                        weight={item.unit}
-                        image={item.image}
+                        title={item.productName.en}
+                        image={item.picture}
                         currency={CURRENCY}
-                        price={item.price}
-                        salePrice={item.salePrice}
-                        discountInPercent={item.discountInPercent}
-                        data={item}
+                        price={item.price.price}
+                        data={{...item, queryToRefetch: refetch}}
                       />
                     </Fade>
                   </Col>
@@ -253,14 +250,67 @@ export default function Products() {
               </LoaderWrapper>
             )}
           </Row>
-          {data && data.products && data.products.hasMore && (
+          {data && data.searchProduct && data.searchProduct.pagination && (
             <Row>
               <Col
                 md={12}
                 style={{ display: 'flex', justifyContent: 'center' }}
               >
-                <Button onClick={loadMore} isLoading={loadingMore}>
-                  Load More
+                <Button
+                  disabled={loading || !hasPrevPage}
+                  onClick={() => goToPage(page - 1)}
+                  overrides={{
+                    BaseButton: {
+                      style: () => ({
+                        marginRight: '5px',
+                        borderTopLeftRadius: '3px',
+                        borderTopRightRadius: '3px',
+                        borderBottomLeftRadius: '3px',
+                        borderBottomRightRadius: '3px',
+                        paddingTop: "8px",
+                        paddingBottom: "8px"
+                      }),
+                    },
+                  }}
+                >
+                  Prev
+                </Button>
+
+                <Button
+                  overrides={{
+                    BaseButton: {
+                      style: () => ({
+                        marginRight: '5px',
+                        borderTopLeftRadius: '3px',
+                        borderTopRightRadius: '3px',
+                        borderBottomLeftRadius: '3px',
+                        borderBottomRightRadius: '3px',
+                        paddingTop: "8px",
+                        paddingBottom: "8px"
+                      }),
+                    },
+                  }}
+                >
+                  {page}
+                </Button>
+
+                <Button
+                  disabled={loading || !hasNextPage}
+                  onClick={() => goToPage(page + 1)}
+                  overrides={{
+                    BaseButton: {
+                      style: () => ({
+                        borderTopLeftRadius: '3px',
+                        borderTopRightRadius: '3px',
+                        borderBottomLeftRadius: '3px',
+                        borderBottomRightRadius: '3px',
+                        paddingTop: "8px",
+                        paddingBottom: "8px"
+                      }),
+                    },
+                  }}
+                >
+                  Next
                 </Button>
               </Col>
             </Row>

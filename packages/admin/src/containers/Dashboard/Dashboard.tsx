@@ -14,8 +14,14 @@ import { Revenue } from 'assets/icons/Revenue';
 import { Refund } from 'assets/icons/Refund';
 import { CoinIcon } from 'assets/icons/CoinIcon';
 import { CartIconBig } from 'assets/icons/CartIconBig';
-import { UserIcon } from 'assets/icons/UserIcon';
-import { DeliveryIcon } from 'assets/icons/DeliveryIcon';
+
+import { useQuery } from "@apollo/client";
+import {
+  Q_GET_STORE_ID,
+  Q_GET_TODAYS_AND_MONTHS_ORDER_COUNT_AND_EARNINGS,
+  Q_GRAPH_REPORT_ORDER_STATS
+} from "services/GQL";
+import { InLineLoader } from 'components/InlineLoader/InlineLoader';
 
 const Col = withStyle(Column, () => ({
   '@media only screen and (max-width: 574px)': {
@@ -34,62 +40,134 @@ const Dashboard = () => {
       marginBottom: '16px',
     },
   });
+
+  const monthNames = [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
+  ];
+  
+  const date = new Date();
+
+  const { data: { storeId } } = useQuery(Q_GET_STORE_ID);
+
+  const { loading: statsLoader, error: statsError, data: stats } = useQuery(Q_GET_TODAYS_AND_MONTHS_ORDER_COUNT_AND_EARNINGS, {
+    variables: { storeId }
+  });
+
+  const { loading: graphLoader, error: graphError, data: graph } = useQuery(Q_GRAPH_REPORT_ORDER_STATS, {
+    variables: { storeId }
+  });
+
+  const daysInMonth = (month, year) => {
+    return new Date(year, month, 0).getDate();
+  }
+
+  const getLabels = (() => {
+    let today = new Date();
+    let month = today.getMonth();
+    let labels = daysInMonth(month + 1, today.getFullYear());
+    let days = [];
+    for (let i = 1; i <= labels; i++) {
+      days.push(i);
+    }
+    return days;
+  })();
+
+  const dataSets = (() => {
+    if(graph) {
+    let todaysDate = new Date();
+    const [month, year] = [todaysDate.getMonth(), todaysDate.getFullYear()];
+    const numberOfDays = new Date(year, month, 0).getDate();
+    const data1 = new Array(numberOfDays).fill(0);
+    const data2 = new Array(numberOfDays).fill(0);
+    for (let i = 0; i < graph.graphReportOrderStats.length; i++) {
+      let date = new Date(graph.graphReportOrderStats[i].date).getDate();
+      data1[date - 1] = graph.graphReportOrderStats[i].totalEarnings;
+      data2[date - 1] = graph.graphReportOrderStats[i].totalOrders;
+    }
+
+    return [
+      {
+        name: "Total Order Earnings",
+        data: data1
+      },
+      {
+        name: "Total Order Count",
+        data: data2
+      }
+    ]
+  }
+  })();
+
+  let todaysOrders = "0",
+  todaysEarning = "0",
+  monthlyOrders = "0",
+  monthlyEarning = "0";
+
+  if(stats) {
+    const statsData = stats.getTodaysAndMonthsOrderCountAndEarnings;
+    if(statsData.todaysStats.length) {
+      todaysOrders = statsData.todaysStats[0].orderCount ? statsData.todaysStats[0].orderCount.toString() : "0";
+      todaysEarning = statsData.todaysStats[0].totalEarnings ? statsData.todaysStats[0].totalEarnings.toString() : "0";
+    }
+
+    if(statsData.monthsStats.length) {
+      monthlyOrders = statsData.monthsStats[0].orderCount ? statsData.monthsStats[0].orderCount.toString() : "0";
+      monthlyEarning = statsData.monthsStats[0].totalEarnings ? statsData.monthsStats[0].totalEarnings.toString() : "0";
+    }
+  }
+
+  if(statsLoader || graphLoader)
+    return <InLineLoader />;
+  
+  if(statsError || graphError)
+    return <div>Error Fetching Data</div>;
+
   return (
     <Grid fluid={true}>
       <Row>
-        <Col md={5} lg={4} sm={6}>
-          <RadialBarChart
-            widgetTitle="Target"
-            series={[43, 75]}
-            label={['$1,342', '$8,908']}
-            colors={['#03D3B5', '#666d92']}
-            helperText={['Weekly Targets', 'Monthly Targets']}
-          />
-        </Col>
-        <Col md={7} lg={8} sm={6}>
-          <LineChart
-            widgetTitle="User Hit Rate"
-            color={['#03D3B5']}
-            categories={[
-              'January',
-              'February',
-              'March',
-              'April',
-              'May',
-              'June',
-              'July',
-              'August',
-              'September',
-              'October',
-              'November',
-              'December',
-            ]}
-            seriesName="Unique visitors"
-            series={[
-              200,
-              150,
-              430,
-              320,
-              600,
-              468,
-              309,
-              500,
-              273,
-              370,
-              260,
-              180,
-            ]}
-          />
-        </Col>
-      </Row>
-
-      <Row>
         <Col lg={3} sm={6} xs={12} className={mb30}>
           <StickerCard
-            title="Total Revenue"
+            title="Today's Orders"
+            subtitle="(Last 30 Days)"
+            icon={<CartIconBig />}
+            price={todaysOrders}
+            indicator="down"
+            indicatorText="Order down"
+            note="(previous 30 days)"
+            link="#"
+            linkText="Full Details"
+          />
+        </Col>
+        <Col lg={3} sm={6} xs={12} className={mb30}>
+          <StickerCard
+            title="Monthly Orders"
+            subtitle="(Last 30 Days)"
+            icon={<CartIconBig />}
+            price={monthlyOrders}
+            indicator="down"
+            indicatorText="Order down"
+            note="(previous 30 days)"
+            link="#"
+            linkText="Full Details"
+          />
+        </Col>
+        <Col lg={3} sm={6} xs={12} className={mb30}>
+          <StickerCard
+            title="Today's Earning"
             subtitle="(Last 30 Days)"
             icon={<CoinIcon />}
-            price="$711.66"
+            price={`$${todaysEarning}`}
             indicator="up"
             indicatorText="Revenue up"
             note="(previous 30 days)"
@@ -99,44 +177,31 @@ const Dashboard = () => {
         </Col>
         <Col lg={3} sm={6} xs={12} className={mb30}>
           <StickerCard
-            title="Total Order"
+            title="Monthly Earning"
             subtitle="(Last 30 Days)"
-            icon={<CartIconBig />}
-            price="88,568"
-            indicator="down"
-            indicatorText="Order down"
-            note="(previous 30 days)"
-            link="#"
-            linkText="Full Details"
-          />
-        </Col>
-        <Col lg={3} sm={6} xs={12}>
-          <StickerCard
-            title="New Customer"
-            subtitle="(Last 30 Days)"
-            icon={<UserIcon />}
-            price="5,678"
+            icon={<CoinIcon />}
+            price={`$${monthlyEarning}`}
             indicator="up"
-            indicatorText="Customer up"
-            note="(previous 30 days)"
-            link="#"
-            linkText="Full Details"
-          />
-        </Col>
-        <Col lg={3} sm={6} xs={12}>
-          <StickerCard
-            title="Total Delivery"
-            subtitle="(Last 30 Days)"
-            icon={<DeliveryIcon />}
-            price="78,000"
-            indicator="up"
-            indicatorText="Delivery up"
+            indicatorText="Revenue up"
             note="(previous 30 days)"
             link="#"
             linkText="Full Details"
           />
         </Col>
       </Row>
+
+      {graph && (
+      <Row>
+        <Col md={12} lg={12}>
+          <LineChart
+            widgetTitle={`Sales - ${monthNames[date.getMonth()]}`}
+            color={['#03D3B5', '#666d92']}
+            categories={getLabels}
+            series={dataSets}
+          />
+        </Col>
+      </Row>
+      )}
 
       <Row>
         <Col md={7} lg={8}>
@@ -170,7 +235,16 @@ const Dashboard = () => {
       </Row>
 
       <Row>
-        <Col md={12} lg={12}>
+        <Col md={5} lg={4} sm={6}>
+          <RadialBarChart
+            widgetTitle="Target"
+            series={[43, 75]}
+            label={['$1,342', '$8,908']}
+            colors={['#03D3B5', '#666d92']}
+            helperText={['Weekly Targets', 'Monthly Targets']}
+          />
+        </Col>
+        <Col md={7} lg={8} sm={6}>
           <ColumnChart
             widgetTitle="Sale History"
             colors={['#03D3B5']}

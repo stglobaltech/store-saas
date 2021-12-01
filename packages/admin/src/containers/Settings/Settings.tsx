@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
 import SettingsCard from 'components/SettingsCard/SettingsCard';
 import { useDrawerDispatch } from 'context/DrawerContext';
-import { STAFF_MEMBERS, SITE_SETTINGS } from 'settings/constants';
+import { CONTACT_DETAILS, STORE_SETTINGS } from 'settings/constants';
 import { withStyle } from 'baseui';
 
 import { SiteSettings } from 'assets/icons/SiteSettings';
@@ -45,7 +45,12 @@ export default function Settings() {
   );
 
   const openCouponForm = useCallback(
-    () => dispatch({ type: 'OPEN_DRAWER', drawerComponent: 'CAMPAING_FORM' }),
+    () => dispatch({ type: 'OPEN_DRAWER', drawerComponent: 'COUPON_FORM' }),
+    [dispatch]
+  );
+
+  const openQrForm = useCallback(
+    () => dispatch({ type: 'OPEN_DRAWER', drawerComponent: 'QR_CODE_FORM' }),
     [dispatch]
   );
 
@@ -54,18 +59,19 @@ export default function Settings() {
       <Row>
         <Col md={6}>
           <SettingsCard
-            icon={<Members />}
-            title="Staff Members"
-            subtitle="Manage your employees and their permission"
-            onClick={() => history.push(STAFF_MEMBERS)}
+            icon={<SiteSettings />}
+            title="Store Settings"
+            subtitle="View and update your store settings"
+            onClick={() => history.push(STORE_SETTINGS)}
           />
         </Col>
+
         <Col md={6}>
           <SettingsCard
-            icon={<SiteSettings />}
-            title="Site Settings"
-            subtitle="View and update your site settings"
-            onClick={() => history.push(SITE_SETTINGS)}
+            icon={<Members />}
+            title="Contact Address"
+            subtitle="View and update your contact details"
+            onClick={() => history.push(CONTACT_DETAILS)}
           />
         </Col>
       </Row>
@@ -105,6 +111,17 @@ export default function Settings() {
             title="Add Coupons"
             subtitle="Add coupons from here"
             onClick={openCouponForm}
+          />
+        </Col>
+      </Row>
+
+      <Row>
+        <Col md={6}>
+          <SettingsCard
+            icon={<OrderIcon width="56px" height="56px" />}
+            title="Generate QR Code"
+            subtitle="Generate qr code from here"
+            onClick={openQrForm}
           />
         </Col>
       </Row>

@@ -11,7 +11,7 @@ export const Header = styled('header', () => ({
   flex: '0 1 auto',
   flexDirection: 'row',
   flexWrap: 'wrap',
-  padding: '40px',
+  padding: '10px',
   /* margin-bottom: 40px, */
   backgroundColor: '#ffffff',
 

@@ -1,9 +1,9 @@
 import React, { useCallback, useState } from 'react';
+import { useDrawerDispatch } from 'context/DrawerContext';
 import { Link } from 'react-router-dom';
-import Button from 'components/Button/Button';
+import Button, { KIND } from 'components/Button/Button';
 import Popover, { PLACEMENT } from 'components/Popover/Popover';
 import Notification from 'components/Notification/Notification';
-import { AuthContext } from 'context/auth';
 import { STAFF_MEMBERS, SETTINGS } from 'settings/constants';
 import { NotificationIcon } from 'assets/icons/NotificationIcon';
 import { AlertDotIcon } from 'assets/icons/AlertDotIcon';
@@ -27,9 +27,10 @@ import {
 } from './Topbar.style';
 import Logoimage from 'assets/image/PickBazar.png';
 import UserImage from 'assets/image/user.jpg';
-import { useDrawerDispatch } from 'context/DrawerContext';
 import Drawer, { ANCHOR } from 'components/Drawer/Drawer';
 import Sidebar from '../Sidebar/Sidebar';
+import { useQuery } from '@apollo/client';
+import { Q_GET_USER_ID, Q_GET_RESTAURANT } from 'services/GQL';
 
 const data = [
   {
@@ -38,14 +39,28 @@ const data = [
     message: 'Order #34567 had been placed',
   },
 ];
-const Topbar = ({ refs }: any) => {
+const Topbar = ({ refs, onLogout }: any) => {
   const dispatch = useDrawerDispatch();
-  const { signout } = React.useContext(AuthContext);
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const openDrawer = useCallback(
-    () => dispatch({ type: 'OPEN_DRAWER', drawerComponent: 'PRODUCT_FORM' }),
+  const openQrForm = useCallback(
+    () => dispatch({ type: 'OPEN_DRAWER', drawerComponent: 'QR_CODE_FORM' }),
     [dispatch]
   );
+
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+
+  const [storeUrl, setStoreUrl] = useState("");
+  const { data: { userId } } = useQuery(Q_GET_USER_ID);
+
+  const { error } = useQuery(Q_GET_RESTAURANT, {
+    context: { clientName: "CONTENT_SERVER" },
+    variables: { ownerId: userId },
+    onCompleted: ({ getStore }) => {
+      setStoreUrl(getStore.url);
+    }
+  });
+
+  if(error)
+    return <div>Error! {error.message}</div>;
 
   return (
     <TopbarWrapper ref={refs}>
@@ -100,7 +115,54 @@ const Topbar = ({ refs }: any) => {
       </DrawerWrapper>
 
       <TopbarRightSide>
-        <Button onClick={openDrawer}>Add Products</Button>
+        {storeUrl ? (
+        <Link to={{pathname: storeUrl}} target="_blank" style={{textDecoration: "none"}}>
+          <Button
+            type="button"
+            kind={KIND.minimal}
+            overrides={{
+              BaseButton: {
+                style: ({ $theme }) => ({
+                  borderTopLeftRadius: "3px",
+                  borderTopRightRadius: "3px",
+                  borderBottomRightRadius: "3px",
+                  borderBottomLeftRadius: "3px",
+                  paddingTop: "8px",
+                  paddingRight: "12px",
+                  paddingBottom: "8px",
+                  paddingLeft: "12px",
+                  outline: "1px solid"
+                }),
+              },
+            }}
+          >
+            Visit Store
+          </Button>
+        </Link>
+        ) : (
+          <Button
+            type="button"
+            kind={KIND.minimal}
+            onClick={openQrForm}
+            overrides={{
+              BaseButton: {
+                style: ({ $theme }) => ({
+                  borderTopLeftRadius: "3px",
+                  borderTopRightRadius: "3px",
+                  borderBottomRightRadius: "3px",
+                  borderBottomLeftRadius: "3px",
+                  paddingTop: "8px",
+                  paddingRight: "12px",
+                  paddingBottom: "8px",
+                  paddingLeft: "12px",
+                  outline: "1px solid"
+                }),
+              },
+            }}
+          >
+            QR Code
+          </Button>
+        )}
 
         <Popover
           content={({ close }) => <Notification data={data} onClear={close} />}
@@ -139,7 +201,7 @@ const Topbar = ({ refs }: any) => {
               </NavLink>
               <LogoutBtn
                 onClick={() => {
-                  signout();
+                  onLogout();
                   close();
                 }}
               >

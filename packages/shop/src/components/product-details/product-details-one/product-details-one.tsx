@@ -1,7 +1,7 @@
-import React, { useEffect } from 'react';
-import Link from 'next/link';
-import Router from 'next/router';
-import { Button } from 'components/button/button';
+import React, { useEffect } from "react";
+import Link from "next/link";
+import Router from "next/router";
+import { Button } from "components/button/button";
 import {
   ProductDetailsWrapper,
   ProductPreview,
@@ -21,17 +21,17 @@ import {
   MetaSingle,
   MetaItem,
   RelatedItems,
-} from './product-details-one.style';
-import { LongArrowLeft } from 'assets/icons/LongArrowLeft';
-import { CartIcon } from 'assets/icons/CartIcon';
-import ReadMore from 'components/truncate/truncate';
-import CarouselWithCustomDots from 'components/multi-carousel/multi-carousel';
-import Products from 'components/product-grid/product-list/product-list';
-import { CURRENCY } from 'utils/constant';
-import { FormattedMessage } from 'react-intl';
-import { useLocale } from 'contexts/language/language.provider';
-import { useCart } from 'contexts/cart/use-cart';
-import { Counter } from 'components/counter/counter';
+} from "./product-details-one.style";
+import { LongArrowLeft } from "assets/icons/LongArrowLeft";
+import { CartIcon } from "assets/icons/CartIcon";
+import ReadMore from "components/truncate/truncate";
+import CarouselWithCustomDots from "components/multi-carousel/multi-carousel";
+import Products from "components/product-grid/product-list/product-list";
+import { CURRENCY } from "utils/constant";
+import { FormattedMessage } from "react-intl";
+import { useLocale } from "contexts/language/language.provider";
+import { useCart } from "contexts/cart/use-cart";
+import { Counter } from "components/counter/counter";
 
 type ProductDetailsProps = {
   product: any;
@@ -76,9 +76,9 @@ const ProductDetails: React.FunctionComponent<ProductDetailsProps> = ({
                 type="button"
                 size="small"
                 style={{
-                  backgroundColor: '#ffffff',
-                  border: '1px solid #f1f1f1',
-                  color: '#77798c',
+                  backgroundColor: "#ffffff",
+                  border: "1px solid #f1f1f1",
+                  color: "#77798c",
                 }}
                 onClick={Router.back}
               >
@@ -88,38 +88,42 @@ const ProductDetails: React.FunctionComponent<ProductDetailsProps> = ({
             </BackButton>
 
             <CarouselWithCustomDots
-              items={product.gallery}
+              items={[{url:product.picture}]}
               deviceType={deviceType}
             />
           </ProductPreview>
         )}
 
-        <ProductInfo dir={isRtl ? 'rtl' : 'ltr'}>
+        <ProductInfo dir={isRtl ? "rtl" : "ltr"}>
           <ProductTitlePriceWrapper>
-            <ProductTitle>{product.title}</ProductTitle>
+            <ProductTitle>{product.productName.en}</ProductTitle>
             <ProductPriceWrapper>
               {product.discountInPercent ? (
                 <SalePrice>
                   {CURRENCY}
-                  {product.price}
+                  {product.price.price}
                 </SalePrice>
               ) : null}
 
               <ProductPrice>
                 {CURRENCY}
-                {product.salePrice ? product.salePrice : product.price}
+                {product.price.basePrice
+                  ? product.price.basePrice
+                  : product.price.price}
               </ProductPrice>
             </ProductPriceWrapper>
           </ProductTitlePriceWrapper>
 
-          <ProductWeight>{product.unit}</ProductWeight>
+          <ProductWeight>
+            <b>maximum quantity</b> : {product.maxQuantity}
+          </ProductWeight>
           <ProductDescription>
-            <ReadMore character={600}>{product.description}</ReadMore>
+            <ReadMore character={600}>{product.description.en}</ReadMore>
           </ProductDescription>
 
           <ProductCartWrapper>
             <ProductCartBtn>
-              {!isInCart(data.id) ? (
+              {!isInCart(data._id) ? (
                 <Button
                   className="cart-button"
                   variant="secondary"
@@ -136,14 +140,14 @@ const ProductDetails: React.FunctionComponent<ProductDetailsProps> = ({
                 </Button>
               ) : (
                 <Counter
-                  value={getItem(data.id).quantity}
+                  value={getItem(data._id).quantity}
                   onDecrement={handleRemoveClick}
                   onIncrement={handleAddClick}
                 />
               )}
             </ProductCartBtn>
           </ProductCartWrapper>
-
+          {/* 
           <ProductMeta>
             <MetaSingle>
               {product?.categories?.map((item: any) => (
@@ -157,10 +161,10 @@ const ProductDetails: React.FunctionComponent<ProductDetailsProps> = ({
                 </Link>
               ))}
             </MetaSingle>
-          </ProductMeta>
+          </ProductMeta> */}
         </ProductInfo>
 
-        {isRtl && (
+        {/* {isRtl && (
           <ProductPreview>
             <BackButton>
               <Button
@@ -183,10 +187,10 @@ const ProductDetails: React.FunctionComponent<ProductDetailsProps> = ({
               deviceType={deviceType}
             />
           </ProductPreview>
-        )}
+        )} */}
       </ProductDetailsWrapper>
 
-      <RelatedItems>
+      {/* <RelatedItems>
         <h2>
           <FormattedMessage
             id="intlRelatedItems"
@@ -199,7 +203,7 @@ const ProductDetails: React.FunctionComponent<ProductDetailsProps> = ({
           loadMore={false}
           fetchLimit={10}
         />
-      </RelatedItems>
+      </RelatedItems> */}
     </>
   );
 };

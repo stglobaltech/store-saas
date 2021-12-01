@@ -29,6 +29,7 @@ import {
   PROFILE_PAGE,
 } from 'site-settings/site-navigation';
 import { useAppState, useAppDispatch } from 'contexts/app/app.provider';
+import { removeToken } from 'utils/localStorage';
 
 const MobileDrawer: React.FunctionComponent = () => {
   const isDrawerOpen = useAppState('isDrawerOpen');
@@ -46,7 +47,7 @@ const MobileDrawer: React.FunctionComponent = () => {
 
   const handleLogout = () => {
     if (typeof window !== 'undefined') {
-      localStorage.removeItem('access_token');
+      removeToken();
       authDispatch({ type: 'SIGN_OUT' });
       Router.push('/');
     }
@@ -104,10 +105,10 @@ const MobileDrawer: React.FunctionComponent = () => {
                   <UserAvatar>
                     <img src={UserImage} alt='user_avatar' />
                   </UserAvatar>
-                  <UserDetails>
+                  {/* <UserDetails>
                     <h3>David Kinderson</h3>
                     <span>+990 374 987</span>
-                  </UserDetails>
+                  </UserDetails> */}
                 </LoginView>
               ) : (
                 <LogoutView>

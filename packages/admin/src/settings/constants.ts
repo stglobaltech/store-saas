@@ -10,7 +10,10 @@ export const CUSTOMERS = '/customers';
 export const COUPONS = '/coupons';
 export const SETTINGS = '/settings';
 export const STAFF_MEMBERS = '/staff-members';
-export const SITE_SETTINGS = '/site-settings';
+export const STORE_SETTINGS = '/store-settings';
+export const CONTACT_DETAILS = '/contact-details';
+export const REPORTS = '/reports/ordersreport';
+export const TRANSACTIONS = '/transactions';
 // **************** ROUTE CONSTANT END **************************
 
 export const CURRENCY = '$';

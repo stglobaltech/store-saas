@@ -1,24 +1,60 @@
-import { useMemo } from 'react';
+import { useMemo } from "react";
 import {
   ApolloClient,
   InMemoryCache,
-  HttpLink,
   NormalizedCacheObject,
-} from '@apollo/client';
+  createHttpLink,
+  ApolloLink,
+  concat,
+} from "@apollo/client";
+
+import { getToken } from "./localStorage";
+import customFetch from "./customFetch";
 
 let apolloClient: ApolloClient<NormalizedCacheObject> | undefined;
 
-function createIsomorphLink() {
-  return new HttpLink({
-    uri: process.env.NEXT_PUBLIC_GRAPHQL_API_ENDPOINT, // Server URL (must be absolute)
-    credentials: 'same-origin', // Additional fetch() options like `credentials` or `headers`
-  });
-}
+const apiLink = createHttpLink({
+  uri: process.env.NEXT_PUBLIC_GRAPHQL_API_ENDPOINT,
+  credentials: "same-origin", // Additional fetch() options like `credentials` or `headers`
+  fetch: customFetch,
+});
+
+const authLink = createHttpLink({
+  uri: process.env.NEXT_PUBLIC_GRAPHQL_AUTH_API_ENDPOINT,
+  fetch: customFetch,
+});
+
+const link = ApolloLink.split(
+  (operation) => {
+    return operation.getContext().linkName === "auth";
+  },
+  authLink,
+  apiLink
+);
+
+const authMiddleware = new ApolloLink((operation, forward) => {
+  let token;
+
+  // get the authentication token from local storage if it exists
+  if (typeof window !== "undefined") {
+    token = getToken();
+    token = JSON.parse(token);
+  }
+
+  operation.setContext(({ headers = {} }) => ({
+    headers: {
+      ...headers,
+      authorization: token ? `Bearer ${token.accessToken}` : "",
+    },
+  }));
+
+  return forward(operation);
+});
 
 function createApolloClient() {
   return new ApolloClient({
-    ssrMode: typeof window === 'undefined',
-    link: createIsomorphLink(),
+    ssrMode: typeof window === "undefined",
+    link: concat(authMiddleware, link),
     cache: new InMemoryCache({
       typePolicies: {
         Query: {
@@ -26,7 +62,7 @@ function createApolloClient() {
             // Reusable helper function to generate a field
             // policy for the Query.products field.
             products: {
-              keyArgs: ['type', 'category', 'text'],
+              keyArgs: ["type", "category", "text"],
               merge(existing, incoming) {
                 const { items: newItems } = incoming;
                 return existing
@@ -57,7 +93,7 @@ export function initializeApollo(initialState: any = null) {
     _apolloClient.cache.restore({ ...existingCache, ...initialState });
   }
   // For SSG and SSR always create a new Apollo Client
-  if (typeof window === 'undefined') return _apolloClient;
+  if (typeof window === "undefined") return _apolloClient;
   // Create the Apollo Client once in the client
   if (!apolloClient) apolloClient = _apolloClient;
 
