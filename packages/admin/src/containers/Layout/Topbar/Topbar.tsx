@@ -12,7 +12,6 @@ import { MenuIcon } from 'assets/icons/MenuIcon';
 import {
   TopbarWrapper,
   Logo,
-  LogoImage,
   TopbarRightSide,
   ProfileImg,
   Image,
@@ -24,9 +23,9 @@ import {
   DrawerIcon,
   CloseButton,
   DrawerWrapper,
+  BrandName,
 } from './Topbar.style';
-import Logoimage from 'assets/image/PickBazar.png';
-import UserImage from 'assets/image/user.jpg';
+import UserImage from 'assets/image/user.png';
 import Drawer, { ANCHOR } from 'components/Drawer/Drawer';
 import Sidebar from '../Sidebar/Sidebar';
 import { useQuery } from '@apollo/client';
@@ -48,26 +47,27 @@ const Topbar = ({ refs, onLogout }: any) => {
 
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
-  const [storeUrl, setStoreUrl] = useState("");
-  const { data: { userId } } = useQuery(Q_GET_USER_ID);
+  const [storeUrl, setStoreUrl] = useState('');
+  const {
+    data: { userId },
+  } = useQuery(Q_GET_USER_ID);
 
-  const { error } = useQuery(Q_GET_RESTAURANT, {
-    context: { clientName: "CONTENT_SERVER" },
+  const { data: restaurantData, error } = useQuery(Q_GET_RESTAURANT, {
+    context: { clientName: 'CONTENT_SERVER' },
     variables: { ownerId: userId },
     onCompleted: ({ getStore }) => {
       setStoreUrl(getStore.url);
-    }
+    },
   });
 
-  if(error)
-    return <div>Error! {error.message}</div>;
+  if (error) return <div>Error! {error.message}</div>;
 
   return (
     <TopbarWrapper ref={refs}>
       <Logo>
-        <Link to="/">
-          <LogoImage src={Logoimage} alt="pickbazar-admin" />
-        </Link>
+        <NavLink to='/'>
+          <BrandName>{restaurantData?.getStore?.name?.en}</BrandName>
+        </NavLink>
       </Logo>
 
       <DrawerWrapper>
@@ -116,46 +116,50 @@ const Topbar = ({ refs, onLogout }: any) => {
 
       <TopbarRightSide>
         {storeUrl ? (
-        <Link to={{pathname: storeUrl}} target="_blank" style={{textDecoration: "none"}}>
-          <Button
-            type="button"
-            kind={KIND.minimal}
-            overrides={{
-              BaseButton: {
-                style: ({ $theme }) => ({
-                  borderTopLeftRadius: "3px",
-                  borderTopRightRadius: "3px",
-                  borderBottomRightRadius: "3px",
-                  borderBottomLeftRadius: "3px",
-                  paddingTop: "8px",
-                  paddingRight: "12px",
-                  paddingBottom: "8px",
-                  paddingLeft: "12px",
-                  outline: "1px solid"
-                }),
-              },
-            }}
+          <Link
+            to={{ pathname: storeUrl }}
+            target='_blank'
+            style={{ textDecoration: 'none' }}
           >
-            Visit Store
-          </Button>
-        </Link>
+            <Button
+              type='button'
+              kind={KIND.minimal}
+              overrides={{
+                BaseButton: {
+                  style: ({ $theme }) => ({
+                    borderTopLeftRadius: '3px',
+                    borderTopRightRadius: '3px',
+                    borderBottomRightRadius: '3px',
+                    borderBottomLeftRadius: '3px',
+                    paddingTop: '8px',
+                    paddingRight: '12px',
+                    paddingBottom: '8px',
+                    paddingLeft: '12px',
+                    outline: '1px solid',
+                  }),
+                },
+              }}
+            >
+              Visit Store
+            </Button>
+          </Link>
         ) : (
           <Button
-            type="button"
+            type='button'
             kind={KIND.minimal}
             onClick={openQrForm}
             overrides={{
               BaseButton: {
                 style: ({ $theme }) => ({
-                  borderTopLeftRadius: "3px",
-                  borderTopRightRadius: "3px",
-                  borderBottomRightRadius: "3px",
-                  borderBottomLeftRadius: "3px",
-                  paddingTop: "8px",
-                  paddingRight: "12px",
-                  paddingBottom: "8px",
-                  paddingLeft: "12px",
-                  outline: "1px solid"
+                  borderTopLeftRadius: '3px',
+                  borderTopRightRadius: '3px',
+                  borderBottomRightRadius: '3px',
+                  borderBottomLeftRadius: '3px',
+                  paddingTop: '8px',
+                  paddingRight: '12px',
+                  paddingBottom: '8px',
+                  paddingLeft: '12px',
+                  outline: '1px solid',
                 }),
               },
             }}
@@ -226,7 +230,7 @@ const Topbar = ({ refs, onLogout }: any) => {
           }}
         >
           <ProfileImg>
-            <Image src={UserImage} alt="user" />
+            <Image src={UserImage} alt='user' />
           </ProfileImg>
         </Popover>
       </TopbarRightSide>
