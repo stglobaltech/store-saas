@@ -117,7 +117,7 @@ const UpdateAddress = (props: FormikProps<FormValues> & MyFormProps) => {
         address: addressValue.info,
         geoHash: userGeohash,
         location: {
-          coordinates: [addressCoordinates.lat, addressCoordinates.lng],
+          coordinates: [addressCoordinates.lng, addressCoordinates.lat],
           type: "Point",
         },
       };
