@@ -30,7 +30,7 @@ export const TopbarWrapper = styled('div', () => ({
   alignItems: 'center',
   justifyContent: 'space-between',
   backgroundColor: '#fff',
-  padding: '30px 60px',
+  padding: '10px 60px',
   boxShadow: '0px 1px 2px rgba(0, 0, 0, 0.06)',
   position: 'relative',
 
@@ -146,4 +146,10 @@ export const DrawerWrapper = styled('div', ({ $theme }) => ({
   '@media only screen and (min-width: 1200px)': {
     display: 'none',
   },
+}));
+
+export const BrandName = styled('h1', ({ $theme }) => ({
+  color: $theme.colors.textDark,
+  cursor: 'pointer',
+  margin: '0',
 }));
