@@ -10,15 +10,18 @@ import {
   StyledCell,
 } from './Orders.style';
 import NoResult from 'components/NoResult/NoResult';
-import { Q_GET_ORDERS, Q_GET_STORE_ID, S_CHEF_ORDER_PUSH } from 'services/GQL';
+import {
+  Q_GET_ACTIVE_ORDERS,
+  Q_GET_STORE_ID,
+  S_CHEF_ORDER_PUSH,
+} from 'services/GQL';
 import Pagination from 'components/Pagination/Pagination';
 import { useDrawerDispatch } from 'context/DrawerContext';
-import { useForm } from "react-hook-form";
-import { Form } from "../DrawerItems/DrawerItems.style";
-import { FormFields, FormLabel } from "components/FormFields/FormFields";
-import Select from "components/Select/Select";
-import Input from "components/Input/Input";
-import Button from "components/Button/Button";
+import { useForm } from 'react-hook-form';
+import { Form } from '../DrawerItems/DrawerItems.style';
+import { FormFields } from 'components/FormFields/FormFields';
+import Select from 'components/Select/Select';
+import Button from 'components/Button/Button';
 import { InLineLoader } from 'components/InlineLoader/InlineLoader';
 
 type CustomThemeT = { red400: string; textNormal: string; colors: any };
@@ -65,13 +68,6 @@ const Row = withStyle(Rows, () => ({
 export default function Orders() {
   const [useCss, theme] = themedUseStyletron();
 
-  const sent = useCss({
-    ':before': {
-      content: '""',
-      backgroundColor: theme.colors.primary,
-    },
-  });
-
   const failed = useCss({
     ':before': {
       content: '""',
@@ -94,12 +90,8 @@ export default function Orders() {
   });
 
   const orderStatusTypes = [
-    { value: "FIN", label: "FIN" },
-    { value: "CONF", label: "CONF" },
-    { value: "REJ", label: "REJ" },
-    { value: "EXP", label: "EXP" },
-    { value: "CAN", label: "CAN" },
-    { value: "PEN", label: "PEN" }
+    { value: 'CONF', label: 'CONF' },
+    { value: 'PEN', label: 'PEN' },
   ];
 
   const dispatch = useDrawerDispatch();
@@ -114,17 +106,20 @@ export default function Orders() {
     [dispatch]
   );
 
-  const { data: { storeId } } = useQuery(Q_GET_STORE_ID);
+  const {
+    data: { storeId },
+  } = useQuery(Q_GET_STORE_ID);
 
-  const { register, handleSubmit, setValue } = useForm();
+  const { handleSubmit } = useForm();
   const [orderStatus, setOrderStatus] = useState([]);
-  const [ordersFindInputDto, setOrdersFindInputDto] = useState({
+  const [input, setInput] = useState({
     storeId: storeId,
-    paginate: { page: 1, perPage: 10 }
+    paginate: { page: 1, perPage: 10 },
+    status: ['PEN', 'CONF'],
   });
 
-  const { data, loading, error, refetch } = useQuery(Q_GET_ORDERS, {
-    variables: { ordersFindInputDto }
+  const { data, loading, error, refetch } = useQuery(Q_GET_ACTIVE_ORDERS, {
+    variables: { input },
   });
 
   useSubscription(S_CHEF_ORDER_PUSH, {
@@ -140,35 +135,16 @@ export default function Orders() {
   });
 
   const fetchNextPage = (page) => {
-    setOrdersFindInputDto({
-      ...ordersFindInputDto,
-      paginate: { page, perPage: 10 }
+    setInput({
+      ...input,
+      paginate: { page, perPage: 10 },
     });
   };
 
-  const onSubmit = (values) => {
-    let formValues;
-    Object.keys(values).forEach((value) => {
-      if (values[value]) formValues = { ...formValues, [value]: values[value] };
-    });
-
-    if (orderStatus.length)
-      formValues = { ...formValues, status: orderStatus[0].value };
-
-    setOrdersFindInputDto({
-      storeId: storeId,
-      paginate: { page: 1, perPage: 10 },
-      ...formValues,
-    });
-  };
-
-  const clearFilters = () => {
-    setValue("orderId", "");
-    setOrderStatus([]);
-
-    setOrdersFindInputDto({
-      storeId: storeId,
-      paginate: { page: 1, perPage: 10 }
+  const onSubmit = () => {
+    setInput({
+      ...input,
+      status: orderStatus.length ? [orderStatus[0].value] : ['PEN', 'CONF'],
     });
   };
 
@@ -177,7 +153,9 @@ export default function Orders() {
     page;
 
   if (data) {
-    const { gateGetOrders: { pagination } } = data;
+    const {
+      storeActiveOrders: { pagination },
+    } = data;
     hasNextPage = pagination.hasNextPage;
     hasPrevPage = pagination.hasPrevPage;
     page = pagination.page;
@@ -205,27 +183,16 @@ export default function Orders() {
               <Col xs={12} md={12}>
                 <Form
                   onSubmit={handleSubmit(onSubmit)}
-                  style={{ paddingBottom: 0, backgroundColor: "transparent" }}
+                  style={{ paddingBottom: 0, backgroundColor: 'transparent' }}
                 >
-                  <Row>
-                  <Col md={3}>
+                  <Row style={{ justifyContent: 'flex-end' }}>
+                    <Col md={3} xs={12}>
                       <FormFields>
-                        <FormLabel>Order Id</FormLabel>
-                        <Input
-                          name="orderId"
-                          inputRef={register}
-                        />
-                      </FormFields>
-                    </Col>
-
-                    <Col md={3}>
-                      <FormFields>
-                        <FormLabel>Order Status</FormLabel>
                         <Select
                           options={orderStatusTypes}
-                          labelKey="label"
-                          valueKey="value"
-                          placeholder="Order Status"
+                          labelKey='label'
+                          valueKey='value'
+                          placeholder='Order Status'
                           value={orderStatus}
                           searchable={false}
                           onChange={({ value }) => setOrderStatus(value)}
@@ -233,50 +200,26 @@ export default function Orders() {
                       </FormFields>
                     </Col>
 
-                    <Col md={2} style={{alignSelf: "end"}}>
+                    <Col md={2} style={{ alignSelf: 'end' }}>
                       <Button
-                        type="submit"
+                        type='submit'
                         overrides={{
                           BaseButton: {
                             style: ({ $theme, $size, $shape }) => {
                               return {
-                                width: "100%",
-                                borderTopLeftRadius: "3px",
-                                borderTopRightRadius: "3px",
-                                borderBottomLeftRadius: "3px",
-                                borderBottomRightRadius: "3px",
-                                paddingTop: "12px",
-                                paddingBottom: "12px",
+                                width: '100%',
+                                borderTopLeftRadius: '3px',
+                                borderTopRightRadius: '3px',
+                                borderBottomLeftRadius: '3px',
+                                borderBottomRightRadius: '3px',
+                                paddingTop: '12px',
+                                paddingBottom: '12px',
                               };
                             },
                           },
                         }}
                       >
                         Search
-                      </Button>
-                    </Col>
-
-                    <Col md={2} style={{alignSelf: "end"}}>
-                      <Button
-                        type="button"
-                        onClick={clearFilters}
-                        overrides={{
-                          BaseButton: {
-                            style: ({ $theme, $size, $shape }) => {
-                              return {
-                                width: "100%",
-                                borderTopLeftRadius: "3px",
-                                borderTopRightRadius: "3px",
-                                borderBottomLeftRadius: "3px",
-                                borderBottomRightRadius: "3px",
-                                paddingTop: "12px",
-                                paddingBottom: "12px",
-                              };
-                            },
-                          },
-                        }}
-                      >
-                        Clear
                       </Button>
                     </Col>
                   </Row>
@@ -287,21 +230,20 @@ export default function Orders() {
             {loading ? (
               <InLineLoader />
             ) : (
-            <Wrapper style={{ boxShadow: '0 0 5px rgba(0, 0 , 0, 0.05)' }}>
-              <TableWrapper>
-                <StyledTable
-                  style={{ borderBottom: '0px' }}
-                  $gridTemplateColumns='minmax(150px, auto) minmax(150px, auto) minmax(120px, auto) minmax(100px, auto) minmax(100px, auto) minmax(150px, auto)'
-                >
-                  <StyledHeadCell>ID</StyledHeadCell>
-                  <StyledHeadCell>User Name</StyledHeadCell>
-                  <StyledHeadCell>User Contact</StyledHeadCell>
-                  <StyledHeadCell>Amount</StyledHeadCell>
-                  <StyledHeadCell>Status</StyledHeadCell>
-                  <StyledHeadCell>Time</StyledHeadCell>
-                  {data ? (
-                    data.gateGetOrders && data.gateGetOrders.orders.length ? (
-                      data.gateGetOrders.orders.map((item, index) => (
+              <Wrapper style={{ boxShadow: '0 0 5px rgba(0, 0 , 0, 0.05)' }}>
+                <TableWrapper>
+                  <StyledTable
+                    style={{ borderBottom: '0px' }}
+                    $gridTemplateColumns='minmax(150px, auto) minmax(150px, auto) minmax(120px, auto) minmax(100px, auto) minmax(100px, auto) minmax(150px, auto)'
+                  >
+                    <StyledHeadCell>ID</StyledHeadCell>
+                    <StyledHeadCell>User Name</StyledHeadCell>
+                    <StyledHeadCell>User Contact</StyledHeadCell>
+                    <StyledHeadCell>Amount</StyledHeadCell>
+                    <StyledHeadCell>Status</StyledHeadCell>
+                    <StyledHeadCell>Time</StyledHeadCell>
+                    {data?.storeActiveOrders?.order?.length ? (
+                      data.storeActiveOrders.order.map((item, index) => (
                         <React.Fragment key={index}>
                           <StyledCell
                             onClick={() => openDrawer(item)}
@@ -317,9 +259,7 @@ export default function Orders() {
                           <StyledCell>
                             <Status
                               className={
-                                item.status === 'FIN'
-                                  ? sent
-                                  : item.status === 'CONF'
+                                item.status === 'CONF'
                                   ? paid
                                   : item.status === 'PEN'
                                   ? processing
@@ -342,26 +282,25 @@ export default function Orders() {
                           gridColumnEnd: 'one',
                         }}
                       />
-                    )
-                  ) : null}
-                </StyledTable>
-              </TableWrapper>
-              {data && data.gateGetOrders && data.gateGetOrders.pagination && (
-                <Row>
-                  <Col
-                    md={12}
-                    style={{ display: 'flex', justifyContent: 'center' }}
-                  >
-                    <Pagination
-                      fetchMore={fetchNextPage}
-                      hasPrevPage={hasPrevPage}
-                      hasNextPage={hasNextPage}
-                      currentPage={page}
-                    />
-                  </Col>
-                </Row>
-              )}
-            </Wrapper>
+                    )}
+                  </StyledTable>
+                </TableWrapper>
+                {data?.storeActiveOrders?.pagination && (
+                  <Row>
+                    <Col
+                      md={12}
+                      style={{ display: 'flex', justifyContent: 'center' }}
+                    >
+                      <Pagination
+                        fetchMore={fetchNextPage}
+                        hasPrevPage={hasPrevPage}
+                        hasNextPage={hasNextPage}
+                        currentPage={page}
+                      />
+                    </Col>
+                  </Row>
+                )}
+              </Wrapper>
             )}
           </Col>
         </Row>
