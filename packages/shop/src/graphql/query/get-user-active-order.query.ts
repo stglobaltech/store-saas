@@ -34,6 +34,9 @@ export const Q_GET_USER_ACTIVE_ORDERS = gql`
       tripStatus
       storeStatus
       driverStatus
+      event{
+        description
+      }
     }
   }
 `;

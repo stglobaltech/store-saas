@@ -125,13 +125,13 @@ export default function Categories({
 
   useEffect(() => {
     let isMounted = true;
-    if (isMounted && authState.isAuthenticated) {
+    if (isMounted && authState?.isAuthenticated) {
       runGetCartQuery();
     }
     return () => {
       isMounted = false;
     };
-  }, [authState.isAuthenticated]);
+  }, [authState?.isAuthenticated]);
 
   if (
     !workFlowPolicyData ||

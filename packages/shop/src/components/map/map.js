@@ -148,7 +148,6 @@ function Map(props) {
       mapContainerStyle={{
         height: "400px",
         width: "100%",
-        zIndex: "100000 !important",
       }}
       center={mapLocation.center}
     >

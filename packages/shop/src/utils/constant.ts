@@ -23,47 +23,51 @@ export const ERROR_FETCHING_ACTIVE_ORDERS =
 export const ERROR_FETCHING_ORDER_HISTORY =
   "Error fetching your order history :( . Try refreshing the page or try after sometime.";
 
-//active orders tracking status
-export const PENDING = { label: "PEN", value: "Pending" };
-export const STORE_ACCEPTED = {
-  label: "StoreAcceptedOrder",
-  value: "Store Accepted Order",
-};
-export const STORE_ORDER_READY = {
-  label: "StoreOrderReady",
-  value: "Your Order Is Ready To Be Picked By One Of Our Delivery Executive",
-};
-export const STORE_CANCELLED_ORDER = {
-  label: "StoreCanceledOrder",
-  value: "Store Cancelled Your Order",
-};
-export const STORE_REJECTED_ORDER = {
-  label: "StoreDeclineOrder",
-  value: "Store Rejected Order",
-};
-export const DRIVER_ON_THE_WAY_TO_STORE = {
-  label: "Pickup",
-  value: "Driver On The Way To Store",
-};
-export const REACHED_STORE = {
-  label: "ReachedStore",
-  value: "Driver Reached Store",
-};
-export const OUT_FOR_DELIVERY = {
-  label: "OutForDelivery",
-  value: "Out For Delivery",
-};
-export const DELIVERED = { label: "Delivered", value: "Delivered" };
-//order history tracking status
-export const OH_PENDING = { label: "PEN", value: "Pending" };
-export const OH_CONF = { label: "CONF", value: "order Confirmed" };
-export const OH_EXP = { label: "EXP", value: "Order Expired" };
-export const OH_FINISHED = { label: "FIN", value: "Order Finished" };
-export const OH_CANCELLED = { label: "CAN", value: "Order Cancelled" };
-export const OH_REJECTED = { label: "REJ", value: "Order Rejected" };
 export const NO_ACTIVE_ORDERS_FOUND =
   "No Active Orders Found. Place An Order :)";
 export const NO_ORDERS_MADE =
   "No More Orders Found. Place An Order And Here You Can Fetch Your Order History :)";
 export const CURRENT_ACTIVE_ORDER_NOT_FOUND =
   "We couldn't retrieve your current active order.Did you place an order? If yes try refreshing the page or contact our support";
+
+//active orders tracking status
+export const USER_PLACED_ORDER = {
+  label: "Order Placed. Waiting For Chef To Accept",
+  description: "User placed the order",
+};
+export const CHEF_ACCEPTED_ORDER = {
+  label: "Chef Accepted Order",
+  description: "Chef accepted the order",
+};
+export const CHEF_DECLINED_THE_ORDER = {
+  label: "Chef Declined Order",
+  description: "Chef declined the order",
+};
+export const CHEF_CANCELLED_THE_ORDER = {
+  label: "Chef Cancelled Order",
+  description: "Chef cancelled the order",
+};
+export const DRIVER_ACCEPTED_ORDER = {
+  label: "Delivery Executive Found",
+  description: "Driver accepted the order",
+};
+export const ORDER_READY_BY_CHEF = {
+  label: "Your Order Is Ready To Be Picked Up",
+  description: "Order Ready by chef",
+};
+export const DRIVER_REACHED_STORE = {
+  label: "Delivery Executive Reached Store",
+  description: "Trip,ReachedStore",
+};
+export const DRIVER_COLLECTED_ORDER = {
+  label: "Our Delivery Executive Picked Your Order",
+  description: "Trip,Collected",
+};
+export const DRIVER_STARTED_JOURNEY = {
+  label: "Your Order Is Out For Delivery",
+  description: "Trip,Delivered",
+};
+export const ORDER_DELIVERED = {
+  label: "Your Order Was Delivered",
+  description: "Trip,Delivered",
+};

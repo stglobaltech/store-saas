@@ -24,27 +24,7 @@ import OrderCardMobile from "./order-card/order-card-mobile";
 import useComponentSize from "utils/useComponentSize";
 import { FormattedMessage } from "react-intl";
 import { useAppState } from "contexts/app/app.provider";
-
-import {
-  DELIVERED,
-  ERROR_FETCHING_ORDER_HISTORY,
-  NO_ORDERS_MADE,
-  OUT_FOR_DELIVERY,
-  PENDING,
-  REACHED_STORE,
-  STORE_ACCEPTED,
-  STORE_ORDER_READY,
-} from "utils/constant";
 import { Paginate } from "components/pagination/pagination";
-
-const progressData = [
-  PENDING,
-  STORE_ACCEPTED,
-  STORE_ORDER_READY,
-  REACHED_STORE,
-  OUT_FOR_DELIVERY,
-  DELIVERED,
-];
 
 const orderTableColumns = [
   {
@@ -173,8 +153,7 @@ const OrdersContent: React.FC<{
           </Title>
           {order && order._id && (
             <OrderDetails
-              // progressStatus={order.storeStatus}
-              // progressData={progressData}
+              event={order.event}
               orderStatus={order.status}
               address={order.orderCart.address}
               subtotal={order.orderCart.totalQuotedPrice}

@@ -184,7 +184,9 @@ const OrderReceived: React.FunctionComponent<OrderReceivedProps> = ({
               </Text>
             </ListTitle>
             <ListDes>
-              <Text>{orderDetails.orderCart.totalQuotedPrice}</Text>
+              <Text>
+                {Number(orderDetails.orderCart.totalQuotedPrice).toFixed(2)}
+              </Text>
             </ListDes>
           </ListItem>
           {/* 
@@ -223,7 +225,9 @@ const OrderReceived: React.FunctionComponent<OrderReceivedProps> = ({
               </Text>
             </ListTitle>
             <ListDes>
-              <Text>{orderDetails.orderCart.totalQuotedPrice}</Text>
+              <Text>
+                {Number(orderDetails.orderCart.totalQuotedPrice).toFixed(2)}
+              </Text>
             </ListDes>
           </ListItem>
         </TotalAmount>

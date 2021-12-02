@@ -26,7 +26,7 @@ export const Q_USER_ORDER_HISTORY = gql`
             quotedPrice
             productId
           }
-          address{
+          address {
             name
             address
             buildingNo
@@ -37,6 +37,9 @@ export const Q_USER_ORDER_HISTORY = gql`
         orderPayType
         paymentGateWay
         createdAt
+        event {
+          description
+        }
       }
       pagination {
         hasNextPage

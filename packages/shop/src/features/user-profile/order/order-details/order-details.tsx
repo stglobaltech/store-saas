@@ -19,54 +19,7 @@ import {
   S_ORDER_STATUS_SUBSCRIPTION,
 } from "graphql/subscriptions/order-status.subscription";
 import { getUserId } from "utils/localStorage";
-import {
-  DELIVERED,
-  DRIVER_ON_THE_WAY_TO_STORE,
-  OUT_FOR_DELIVERY,
-  PENDING,
-  REACHED_STORE,
-  STORE_ACCEPTED,
-  STORE_CANCELLED_ORDER,
-  STORE_ORDER_READY,
-  STORE_REJECTED_ORDER,
-} from "utils/constant";
-
-const progressStoreAcceptedData = [
-  PENDING,
-  STORE_ACCEPTED,
-  STORE_ORDER_READY,
-  DRIVER_ON_THE_WAY_TO_STORE,
-  REACHED_STORE,
-  OUT_FOR_DELIVERY,
-  DELIVERED,
-];
-
-const progressStoreRejectedData = [
-  PENDING,
-  STORE_REJECTED_ORDER,
-  STORE_ORDER_READY,
-  DRIVER_ON_THE_WAY_TO_STORE,
-  OUT_FOR_DELIVERY,
-  DELIVERED,
-];
-
-const progressStoreCancelledData = [
-  PENDING,
-  STORE_ACCEPTED,
-  STORE_CANCELLED_ORDER,
-  DRIVER_ON_THE_WAY_TO_STORE,
-  OUT_FOR_DELIVERY,
-  DELIVERED,
-];
-
-const progressStoreReadyOrderData = [
-  PENDING,
-  STORE_ACCEPTED,
-  STORE_ORDER_READY,
-  DRIVER_ON_THE_WAY_TO_STORE,
-  OUT_FOR_DELIVERY,
-  DELIVERED,
-];
+import { constructEventOrder } from "utils/refactor-product-before-adding-to-cart";
 
 type OrderDetailsProps = {
   tableData?: any;
@@ -78,7 +31,7 @@ type OrderDetailsProps = {
   deliveryFee?: number;
   grandTotal?: number;
   orderId?: string;
-  storeProgressStatus?: any;
+  event?: any;
   refetch?: () => void;
 };
 
@@ -95,7 +48,7 @@ const OrderDetails: React.FC<OrderDetailsProps> = ({
   deliveryFee,
   grandTotal,
   orderId,
-  storeProgressStatus,
+  event,
   refetch,
 }) => {
   const storeId = process.env.NEXT_PUBLIC_STG_CLIENT_ID;
@@ -122,41 +75,15 @@ const OrderDetails: React.FC<OrderDetailsProps> = ({
     }
   );
 
-  console.log('driver events',orderStatusData);
-
-  let progressData = progressStoreAcceptedData;
-  let progressStatus = storeProgressStatus ?? PENDING;
+  let constructedEvents = constructEventOrder(event);
+  let progressStatusData = constructedEvents[0];
+  let progressStatus = constructedEvents[1];
 
   if (
     chefEventsData &&
     chefEventsData.chefOrderSubscribeForUser &&
     chefEventsData.chefOrderSubscribeForUser.payload
   ) {
-    if (
-      chefEventsData.chefOrderSubscribeForUser.payload?.eventType ===
-      STORE_ACCEPTED.label
-    ) {
-      progressData = progressStoreAcceptedData;
-      progressStatus = STORE_ACCEPTED;
-    } else if (
-      chefEventsData.chefOrderSubscribeForUser.payload?.eventType ===
-      STORE_REJECTED_ORDER.label
-    ) {
-      progressData = progressStoreRejectedData;
-      progressStatus = STORE_REJECTED_ORDER;
-    } else if (
-      chefEventsData.chefOrderSubscribeForUser.payload?.eventType ===
-      STORE_CANCELLED_ORDER.label
-    ) {
-      progressData = progressStoreCancelledData;
-      progressStatus = STORE_CANCELLED_ORDER;
-    } else if (
-      chefEventsData.chefOrderSubscribeForUser.payload?.eventType ===
-      STORE_ORDER_READY.label
-    ) {
-      progressData = progressStoreReadyOrderData;
-      progressStatus = STORE_ORDER_READY;
-    }
     refetch();
   }
 
@@ -165,31 +92,8 @@ const OrderDetails: React.FC<OrderDetailsProps> = ({
     orderStatusData.orderStatusUpdateSubscribe &&
     orderStatusData.orderStatusUpdateSubscribe.tripStatus
   ) {
-    if (
-      orderStatusData.orderStatusUpdateSubscribe.tripStatus ===
-      DRIVER_ON_THE_WAY_TO_STORE.label
-    ) {
-      progressData = progressStoreAcceptedData;
-      progressStatus = DRIVER_ON_THE_WAY_TO_STORE;
-    } else if (
-      orderStatusData.orderStatusUpdateSubscribe.tripStatus ===
-      REACHED_STORE.label
-    ) {
-      progressData = progressStoreAcceptedData;
-      progressStatus = REACHED_STORE;
-    } else if (
-      orderStatusData.orderStatusUpdateSubscribe.tripStatus ===
-      OUT_FOR_DELIVERY.label
-    ) {
-      progressData = progressStoreAcceptedData;
-      progressStatus = OUT_FOR_DELIVERY;
-    }else if(orderStatusData.orderStatusUpdateSubscribe.tripStatus===DELIVERED.label){
-      progressData=progressStoreAcceptedData;
-      progressStatus=DELIVERED;
-    }
+    refetch();
   }
-
-
 
   return (
     <>
@@ -233,7 +137,7 @@ const OrderDetails: React.FC<OrderDetailsProps> = ({
       </DeliveryInfo>
 
       <ProgressWrapper>
-        <Progress data={progressData} status={progressStatus} />
+        <Progress data={progressStatusData} status={progressStatus} />
       </ProgressWrapper>
 
       <OrderTableWrapper>

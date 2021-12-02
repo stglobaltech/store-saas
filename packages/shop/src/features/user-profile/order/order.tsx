@@ -29,7 +29,6 @@ import { Q_GET_USERID } from "graphql/query/loggedIn-queries.query";
 import { Q_GET_USER_ACTIVE_ORDERS } from "graphql/query/get-user-active-order.query";
 import ErrorMessage from "components/error-message/error-message";
 import { ERROR_FETCHING_ACTIVE_ORDERS } from "utils/constant";
-import { refactorStoreStatus } from "utils/refactor-product-before-adding-to-cart";
 
 const orderTableColumns = [
   {
@@ -189,7 +188,7 @@ const OrdersContent: React.FC<{
           </Title>
           {order && order._id && (
             <OrderDetails
-              storeProgressStatus={refactorStoreStatus(order.storeStatus)}
+              event={order.event}
               address={order.orderCart.address}
               subtotal={order.orderCart.totalQuotedPrice}
               discount={order.discount}
@@ -207,7 +206,6 @@ const OrdersContent: React.FC<{
       <MobileView>
         <OrderList>
           <OrderCardMobile
-            storeProgressStatus={refactorStoreStatus(order?.storeStatus)}
             orders={data.userActiveOrders}
             className={order && order._id === active ? "active" : ""}
             columns={orderTableColumns}

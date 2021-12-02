@@ -1,15 +1,14 @@
 import {
-  OH_CANCELLED,
-  OH_CONF,
-  OH_EXP,
-  OH_FINISHED,
-  OH_PENDING,
-  OH_REJECTED,
-  PENDING,
-  STORE_ACCEPTED,
-  STORE_CANCELLED_ORDER,
-  STORE_ORDER_READY,
-  STORE_REJECTED_ORDER,
+  CHEF_ACCEPTED_ORDER,
+  CHEF_CANCELLED_THE_ORDER,
+  CHEF_DECLINED_THE_ORDER,
+  DRIVER_ACCEPTED_ORDER,
+  DRIVER_COLLECTED_ORDER,
+  DRIVER_REACHED_STORE,
+  DRIVER_STARTED_JOURNEY,
+  ORDER_DELIVERED,
+  ORDER_READY_BY_CHEF,
+  USER_PLACED_ORDER,
 } from "./constant";
 
 export function refactorProductbeforeAddingToCart(product) {
@@ -54,37 +53,49 @@ export function refactorGetCartDataBeforeAddingToCart(product) {
   };
 }
 
-export function refactorStoreStatus(storeStatus) {
-  switch (storeStatus) {
-    case "PEN":
-      return PENDING;
-    case "ACC":
-      return STORE_ACCEPTED;
-    case "DEC":
-      return STORE_REJECTED_ORDER;
-    case "READY":
-      return STORE_ORDER_READY;
-    case "CAN":
-      return STORE_CANCELLED_ORDER;
-    default:
-      return PENDING;
-  }
-}
+export function constructEventOrder(event: any) {
+  let statusProgressData = [];
 
-//for order history
-export function refactorOrderHistoryStatus(status) {
-  switch (status) {
-    case "PEN":
-      return OH_PENDING;
-    case "CONF":
-      return OH_CONF;
-    case "EXP":
-      return OH_EXP;
-    case "FIN":
-      return OH_FINISHED;
-    case "CAN":
-      return OH_CANCELLED;
-    case "REJ":
-      return OH_REJECTED;
+  function isInArray(event) {
+    return statusProgressData.some((s) => s.description === event.description);
   }
+
+  for (let i = 0; i < event.length; i++) {
+    if (event[i].description === USER_PLACED_ORDER.description) {
+      !isInArray(event[i]) ? statusProgressData.push(USER_PLACED_ORDER) : {};
+    } else if (event[i].description === CHEF_ACCEPTED_ORDER.description) {
+      !isInArray(event[i]) ? statusProgressData.push(CHEF_ACCEPTED_ORDER) : {};
+    } else if (event[i].description === CHEF_DECLINED_THE_ORDER.description) {
+      !isInArray(event[i])
+        ? statusProgressData.push(CHEF_DECLINED_THE_ORDER)
+        : {};
+    } else if (event[i].description === DRIVER_ACCEPTED_ORDER.description) {
+      !isInArray(event[i])
+        ? statusProgressData.push(DRIVER_ACCEPTED_ORDER)
+        : {};
+    } else if (event[i].description === ORDER_READY_BY_CHEF.description) {
+      !isInArray(event[i]) ? statusProgressData.push(ORDER_READY_BY_CHEF) : {};
+    } else if (event[i].description === CHEF_CANCELLED_THE_ORDER.description) {
+      !isInArray(event[i])
+        ? statusProgressData.push(CHEF_CANCELLED_THE_ORDER)
+        : {};
+    } else if (event[i].description === DRIVER_REACHED_STORE.description) {
+      !isInArray(event[i]) ? statusProgressData.push(DRIVER_REACHED_STORE) : {};
+    } else if (event[i].description === DRIVER_COLLECTED_ORDER.description) {
+      !isInArray(event[i])
+        ? statusProgressData.push(DRIVER_COLLECTED_ORDER)
+        : {};
+    } else if (event[i].description === DRIVER_STARTED_JOURNEY.description) {
+      !isInArray(event[i])
+        ? statusProgressData.push(DRIVER_STARTED_JOURNEY)
+        : {};
+    } else if (event[i].description === ORDER_DELIVERED.description) {
+      !isInArray(event[i]) ? statusProgressData.push(ORDER_DELIVERED) : {};
+    }
+  }
+
+  return [
+    statusProgressData,
+    statusProgressData[statusProgressData.length - 1],
+  ];
 }
