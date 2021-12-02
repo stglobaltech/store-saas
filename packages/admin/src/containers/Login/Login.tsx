@@ -8,10 +8,9 @@ import {
   FormTitle,
   Error,
 } from 'components/FormFields/FormFields';
-import { Wrapper, FormWrapper, LogoImage, LogoWrapper } from './Login.style';
+import { Wrapper, FormWrapper } from './Login.style';
 import Input from 'components/Input/Input';
 import Button from 'components/Button/Button';
-import Logoimage from 'assets/image/PickBazar.png';
 import { useQuery, useMutation, useApolloClient, useLazyQuery } from '@apollo/client';
 import {
   M_LOGIN,
@@ -140,10 +139,7 @@ export default function Login() {
           render={({ errors, status, touched }) => (
             <Form>
               <FormFields>
-                <LogoWrapper>
-                  <LogoImage src={Logoimage} alt="pickbazar-admin" />
-                </LogoWrapper>
-                <FormTitle>Log in to admin</FormTitle>
+                <FormTitle><strong>Login to admin</strong></FormTitle>
               </FormFields>
 
               <FormFields>
