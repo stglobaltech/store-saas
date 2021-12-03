@@ -32,7 +32,7 @@ export const CURRENT_ACTIVE_ORDER_NOT_FOUND =
 
 //active orders tracking status
 export const USER_PLACED_ORDER = {
-  label: "Order Placed. Waiting For Chef To Accept",
+  label: "Order Placed",
   description: "User placed the order",
 };
 export const CHEF_ACCEPTED_ORDER = {
@@ -48,23 +48,23 @@ export const CHEF_CANCELLED_THE_ORDER = {
   description: "Chef cancelled the order",
 };
 export const DRIVER_ACCEPTED_ORDER = {
-  label: "Delivery Executive Found",
+  label: "Driver Found",
   description: "Driver accepted the order",
 };
 export const ORDER_READY_BY_CHEF = {
-  label: "Your Order Is Ready To Be Picked Up",
+  label: "Your Order Is Ready",
   description: "Order Ready by chef",
 };
 export const DRIVER_REACHED_STORE = {
-  label: "Delivery Executive Reached Store",
+  label: "Driver Reached Store",
   description: "Trip,ReachedStore",
 };
 export const DRIVER_COLLECTED_ORDER = {
-  label: "Our Delivery Executive Picked Your Order",
+  label: "Driver Picked Your Order",
   description: "Trip,Collected",
 };
 export const DRIVER_STARTED_JOURNEY = {
-  label: "Your Order Is Out For Delivery",
+  label: "Order Out For Delivery",
   description: "Trip,Delivered",
 };
 export const ORDER_DELIVERED = {

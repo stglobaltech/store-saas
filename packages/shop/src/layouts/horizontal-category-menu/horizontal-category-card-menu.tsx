@@ -17,6 +17,7 @@ import {
   Title,
   SliderNav,
 } from "./horizontal-category-card-menu.style";
+import noImage from "assets/images/no_image.jpg";
 
 SwiperCore.use([Navigation]);
 
@@ -52,7 +53,7 @@ export const HorizontalCategoryCardMenu = ({
               active={selectedQueries === category.slug}
             >
               <ImageWrapper>
-                <Image url={category.imageUrl} alt={category.title} />
+                <Image url={category.imageUrl?.length?category.imageUrl:noImage} alt={category.title} />
               </ImageWrapper>
               <Title>{category.name.en}</Title>
             </ItemCard>

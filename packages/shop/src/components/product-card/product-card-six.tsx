@@ -4,6 +4,7 @@ import { AddItemToCart } from "components/add-item-to-cart";
 import styled from "styled-components";
 import css from "@styled-system/css";
 import { Box } from "components/box";
+import noImage from "assets/images/no_image.jpg";
 
 const Card = styled.div({
   backgroundColor: "#fff",
@@ -135,7 +136,10 @@ export const ProductCard = ({ data, currency }: Props) => {
             <AddItemToCart data={data} />
           </CounterWrapper>
           <ImageWrapper>
-            <img src={picture} alt={productName.en} />
+            <img
+              src={picture?.length ? picture : noImage}
+              alt={productName.en}
+            />
           </ImageWrapper>
           {/* {discountInPercent ? <Discount>{discountInPercent}%</Discount> : null} */}
         </Box>

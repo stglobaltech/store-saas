@@ -23,7 +23,7 @@ import {
   DrawerMenuItem,
   UserOptionMenu,
 } from './header.style';
-import UserImage from 'assets/images/user.jpg';
+import UserImage from 'assets/images/dummy-profile-pic.png';
 import {
   MOBILE_DRAWER_MENU,
   PROFILE_PAGE,
