@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from "react";
 import { styled, withStyle, createThemedUseStyletron } from "baseui";
 import { Grid, Row as Rows, Col as Column } from "components/FlexBox/FlexBox";
-import { useQuery, useSubscription } from "@apollo/client";
+import { useQuery } from "@apollo/client";
 import { Wrapper, Header, Heading } from "components/Wrapper.style";
 import {
   TableWrapper,
@@ -10,7 +10,7 @@ import {
   StyledCell,
 } from "./OrdersReport.style";
 import NoResult from "components/NoResult/NoResult";
-import { Q_GET_STORE_ID, Q_GET_ORDERS, S_CHEF_ORDER_PUSH } from "services/GQL";
+import { Q_GET_STORE_ID, Q_GET_ORDERS } from "services/GQL";
 import Pagination from "components/Pagination/Pagination";
 import { useDrawerDispatch } from "context/DrawerContext";
 import { useForm } from "react-hook-form";
@@ -130,20 +130,8 @@ export default function OrdersReport() {
     paginate: { page: 1, perPage: 10 },
   });
 
-  const { data, loading, error, refetch } = useQuery(Q_GET_ORDERS, {
+  const { data, loading, error } = useQuery(Q_GET_ORDERS, {
     variables: { ordersFindInputDto },
-  });
-
-  useSubscription(S_CHEF_ORDER_PUSH, {
-    variables: {
-      input: {
-        storeId: storeId,
-        type: "SINGLE",
-      },
-    },
-    onSubscriptionData: () => {
-      refetch();
-    },
   });
 
   const fetchNextPage = (page) => {
