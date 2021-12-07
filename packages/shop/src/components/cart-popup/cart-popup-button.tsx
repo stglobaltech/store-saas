@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import {
   CartPopupButtonStyled,
   ButtonImgBox,
@@ -7,8 +7,8 @@ import {
   CartPopupBoxButton,
   PriceBoxAlt,
   TotalItems,
-} from './cart-popup.style';
-import { ShoppingBag } from 'assets/icons/ShoppingBag';
+} from "./cart-popup.style";
+import { ShoppingBag } from "assets/icons/ShoppingBag";
 
 type CartButtonProps = {
   style?: React.CSSProperties;
@@ -22,9 +22,9 @@ type CartButtonProps = {
 
 const CartPopupButton: React.FC<CartButtonProps> = ({
   itemCount,
-  itemPostfix = 'items',
+  itemPostfix = "items",
   price,
-  pricePrefix = '$',
+  pricePrefix = "$",
   style,
   onClick,
   className,
@@ -46,9 +46,9 @@ const CartPopupButton: React.FC<CartButtonProps> = ({
 
 export const BoxedCartButton: React.FC<CartButtonProps> = ({
   itemCount,
-  itemPostfix = 'items',
+  itemPostfix = "items",
   price,
-  pricePrefix = '$',
+  pricePrefix = "",
   style,
   onClick,
   className,
@@ -59,7 +59,7 @@ export const BoxedCartButton: React.FC<CartButtonProps> = ({
       {itemCount} {itemPostfix}
     </TotalItems>
     <PriceBoxAlt>
-      {pricePrefix}
+      {pricePrefix + " "}
       {parseFloat(`${price}`).toFixed(2)}
     </PriceBoxAlt>
   </CartPopupBoxButton>

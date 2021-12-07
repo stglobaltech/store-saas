@@ -92,7 +92,6 @@ const ProductDetails: React.FunctionComponent<ProductDetailsProps> = ({
             inCartProductId: resData.addProductToCart.productId,
           });
         } else {
-          //todo: handle failure case (might be session expiry or server error)
           notify(
             <DangerNotification message={ADD_PRODUCT_TO_CART_FAILED} dismiss />
           );
@@ -273,13 +272,13 @@ const ProductDetails: React.FunctionComponent<ProductDetailsProps> = ({
             <ProductPriceWrapper>
               {product.discountInPercent ? (
                 <SalePrice>
-                  {workFlowPolicy.currency}
+                  {workFlowPolicy.currency+" "}
                   {product.price.price}
                 </SalePrice>
               ) : null}
 
               <ProductPrice>
-                {workFlowPolicy.currency}
+                {workFlowPolicy.currency+" "}
                 {product.price.price}
               </ProductPrice>
             </ProductPriceWrapper>

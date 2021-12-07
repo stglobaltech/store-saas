@@ -13,18 +13,39 @@ import { isCategoryPage } from "../is-home-page";
 import Search from "features/search/search";
 import { removeToken } from "utils/localStorage";
 import { useCart } from "contexts/cart/use-cart";
+import { useQuery } from "@apollo/client";
+import { Q_GET_STORE } from "graphql/query/getstore.query";
 
 type Props = {
   className?: string;
 };
 
 const Header: React.FC<Props> = ({ className }) => {
+  let logo=LogoImage;
+  let isStoreLogo=false;
   const {
     authState: { isAuthenticated },
     authDispatch,
   } = React.useContext<any>(AuthContext);
   const { clearCart } = useCart();
   const { pathname, query } = useRouter();
+
+  const {data:storeData}=useQuery(Q_GET_STORE,{
+    variables:{
+      input:{
+        _id:process.env.NEXT_PUBLIC_STG_CLIENT_ID,
+        paginate:{
+          page:1,
+          perPage:10
+        }
+      }
+    },
+    fetchPolicy:"cache-and-network"
+  })
+  if(storeData && storeData.getStoresForUser && storeData.getStoresForUser.stores && storeData.getStoresForUser.stores[0]?.logo){
+    logo=storeData.getStoresForUser.stores[0].logo
+    isStoreLogo=true;
+  }
 
   const handleLogout = () => {
     if (typeof window !== "undefined") {
@@ -58,7 +79,7 @@ const Header: React.FC<Props> = ({ className }) => {
   const showSearch = pathname.includes("/store/");
   return (
     <HeaderWrapper className={className} id="layout-header">
-      <LeftMenu logo={LogoImage} />
+      <LeftMenu logo={logo} isStoreLogo={isStoreLogo}/>
       {showSearch ? (
         <SearchWrapper>
           {" "}

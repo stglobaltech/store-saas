@@ -71,7 +71,7 @@ type CartItemProps = {
   currency: string;
 };
 
-const OrderItem: React.FC<CartItemProps> = ({ product }) => {
+const OrderItem: React.FC<CartItemProps> = ({ product, currency }) => {
   const { _id, quantity, title, productName, unit, price, salePrice } = product;
   const displayPrice = salePrice ? salePrice : price;
   return (
@@ -109,7 +109,7 @@ const CheckoutWithSidebar: React.FC<MyFormProps> = ({
     toggleRestaurant,
   } = useCart();
 
-  const storeId=process.env.NEXT_PUBLIC_STG_CLIENT_ID
+  const storeId = process.env.NEXT_PUBLIC_STG_CLIENT_ID;
 
   const size = useWindowSize();
   const CURRENCY = (useAppState("workFlowPolicy") as any).currency;
@@ -181,16 +181,14 @@ const CheckoutWithSidebar: React.FC<MyFormProps> = ({
       "//" +
       window.location.host +
       "/order-received";
-    const cancelUrl=      window.location.protocol +
-    "//" +
-    window.location.host +
-    "/checkout";
+    const cancelUrl =
+      window.location.protocol + "//" + window.location.host + "/";
     placeOrder({
       variables: {
         createOrderInput: {
           cartId,
           successUrl,
-          cancelUrl
+          cancelUrl,
         },
       },
     });
@@ -370,7 +368,7 @@ const CheckoutWithSidebar: React.FC<MyFormProps> = ({
                         <OrderItem
                           key={`cartItem-${item._id}`}
                           product={item}
-                          currency={CURRENCY}
+                          currency={CURRENCY+" "}
                         />
                       ))
                     ) : (

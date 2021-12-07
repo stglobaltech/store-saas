@@ -18,6 +18,12 @@ export const LogoImage = styled.img({
   display: "block",
   backfaceVisibility: "hidden",
   maxWidth: 150,
-  width: "150px",
+  width: "100px",
   height: "50px",
+});
+
+export const DefaultLogoImage = styled.img({
+  display: 'block',
+  backfaceVisibility: 'hidden',
+  maxWidth: 150,
 });

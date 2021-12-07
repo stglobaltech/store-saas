@@ -146,7 +146,7 @@ export const ProductCard = ({ data, currency }: Props) => {
         <Box padding={20}>
           <PriceWrapper>
             <Price>
-              {currency} {price}
+              {currency+" "+price}
             </Price>
             {/* <SalePrice>{basePrice}</SalePrice> */}
           </PriceWrapper>

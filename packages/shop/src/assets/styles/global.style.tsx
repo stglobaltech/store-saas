@@ -15,10 +15,11 @@ export const GlobalStyle = createGlobalStyle(({ theme }) =>
     "*, *::before, *::after": {
       boxSizing: "border-box",
     },
-    // ".pac-container": {
-    //   zIndex: 30000,
-    //   cursor:"none"
-    // },
+    ".pac-container": {
+      zIndex: 30000,
+      cursor: "not-allowed",
+      pointerEvents: "none",
+    },
     body: {
       margin: 0,
       fontFamily: "body",
