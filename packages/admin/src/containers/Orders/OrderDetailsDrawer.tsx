@@ -7,18 +7,31 @@ import { Row, Col } from 'components/FlexBox/FlexBox';
 import {
   DrawerTitleWrapper,
   DrawerTitle,
-      ButtonGroup,
+  ButtonGroup,
+  Form,
 } from '../DrawerItems/DrawerItems.style';
 import { Box } from 'components/Box/Box';
+import { M_CANCEL_ORDER } from 'services/GQL';
+import { useMutation } from '@apollo/client';
+import SuccessNotification from 'components/Notification/SuccessNotification';
+import DangerNotification from 'components/Notification/DangerNotification';
+import { useNotifier } from 'react-headless-notifier';
+import { FormFields, FormLabel } from 'components/FormFields/FormFields';
+import Input from 'components/Input/Input';
+import { useForm } from 'react-hook-form';
 
 type Props = any;
 
 const OrderDetail: React.FC<Props> = (props) => {
   const dispatch = useDrawerDispatch();
+
   const data = useDrawerState('data');
+
   const closeDrawer = useCallback(() => dispatch({ type: 'CLOSE_DRAWER' }), [
     dispatch,
   ]);
+
+  const { register, handleSubmit } = useForm();
 
   const statusLabels = (status) => {
     switch (status) {
@@ -38,6 +51,38 @@ const OrderDetail: React.FC<Props> = (props) => {
       default:
         break;
     }
+  };
+
+  const { notify } = useNotifier();
+
+  const [cancelOrder] = useMutation(M_CANCEL_ORDER, {
+    onCompleted: (data) => {
+      if (data.storeCancelOrder.success) {
+        notify(
+          <SuccessNotification
+            message={data.storeCancelOrder.message.en}
+            dismiss
+          />
+        );
+      } else
+        notify(
+          <DangerNotification
+            message={data.storeCancelOrder.message.en}
+            dismiss
+          />
+        );
+    },
+  });
+
+  const onCancelOrderSubmit = (values) => {
+    cancelOrder({
+      variables: {
+        chefInputDto: {
+          orderId: data._id,
+          cancelReason: { en: values.cancelReason, ar: values.cancelReason },
+        },
+      },
+    });
   };
 
   return (
@@ -155,6 +200,78 @@ const OrderDetail: React.FC<Props> = (props) => {
                       {new Date(data.createdAt).toLocaleString()}
                     </Col>
                   </Row>
+                  <Row>
+                    <Col md={5}>
+                      <strong>Actions:</strong>
+                    </Col>
+                    <Col md={7}>
+                      <Button
+                        type='button'
+                        overrides={{
+                          BaseButton: {
+                            style: ({ $theme, $size, $shape }) => {
+                              return {
+                                borderTopLeftRadius: '3px',
+                                borderTopRightRadius: '3px',
+                                borderBottomLeftRadius: '3px',
+                                borderBottomRightRadius: '3px',
+                                paddingTop: '4px',
+                                paddingBottom: '4px',
+                              };
+                            },
+                          },
+                        }}
+                      >
+                        Finish
+                      </Button>
+                      <Button
+                        type='button'
+                        kind={KIND.minimal}
+                        // onClick={doCancelOrder}
+                        disabled={
+                          data.status === 'FIN' || data.status === 'CAN'
+                        }
+                        overrides={{
+                          BaseButton: {
+                            style: ({ $theme, $size, $shape }) => {
+                              return {
+                                borderTopLeftRadius: '3px',
+                                borderTopRightRadius: '3px',
+                                borderBottomLeftRadius: '3px',
+                                borderBottomRightRadius: '3px',
+                                paddingTop: '4px',
+                                paddingBottom: '4px',
+                                color: $theme.colors.red400,
+                              };
+                            },
+                          },
+                        }}
+                      >
+                        Cancel
+                      </Button>
+                    </Col>
+                  </Row>
+                  {
+                    <Form onSubmit={handleSubmit(onCancelOrderSubmit)}>
+                      <Row>
+                        <Col>
+                          <FormFields>
+                            <FormLabel>Cancel Reason</FormLabel>
+                            <Input
+                              type='text-area'
+                              name='cancelReason'
+                              inputRef={register}
+                            />
+                          </FormFields>
+                        </Col>
+                      </Row>
+                      <Row>
+                        <Col>
+                          <Button type='submit'>Submit</Button>
+                        </Col>
+                      </Row>
+                    </Form>
+                  }
                   {/* <Uploader onChange={handleUploader} /> */}
                 </DrawerBox>
               </Col>
