@@ -39,7 +39,11 @@ const OrderDetail: React.FC<Props> = (props) => {
     dispatch,
   ]);
 
-  const { register, handleSubmit } = useForm();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
 
   const statusLabels = (status) => {
     switch (status) {
@@ -353,8 +357,22 @@ const OrderDetail: React.FC<Props> = (props) => {
                             <Input
                               type='text-area'
                               name='cancelReason'
-                              inputRef={register}
+                              inputRef={register({ required: true })}
                             />
+                            {errors.cancelReason && (
+                              <div
+                                style={{
+                                  margin: '5px 0 0 auto',
+                                  fontFamily: 'Lato, sans-serif',
+                                  fontSize: '12px',
+                                  fontWeight: 'bold',
+                                  color: 'rgb(252, 92, 99)',
+                                }}
+                              >
+                                {errors.cancelReason.type === 'required' &&
+                                  'Required'}
+                              </div>
+                            )}
                           </FormFields>
                           <Button
                             type='submit'
