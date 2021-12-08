@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useDrawerDispatch, useDrawerState } from 'context/DrawerContext';
 import { Scrollbars } from 'react-custom-scrollbars';
 import Button, { KIND } from 'components/Button/Button';
@@ -7,18 +7,43 @@ import { Row, Col } from 'components/FlexBox/FlexBox';
 import {
   DrawerTitleWrapper,
   DrawerTitle,
-      ButtonGroup,
+  ButtonGroup,
+  Form,
 } from '../DrawerItems/DrawerItems.style';
 import { Box } from 'components/Box/Box';
+import {
+  M_CANCEL_ORDER,
+  M_FINISH_ORDER_WITHOUT_FLEET,
+  M_FINISH_ORDER_WITH_FLEET,
+  Q_GET_STORE_ID,
+  Q_STORE_PLAN_FOR_USER_WEB_ADMIN,
+} from 'services/GQL';
+import { useMutation, useQuery } from '@apollo/client';
+import SuccessNotification from 'components/Notification/SuccessNotification';
+import DangerNotification from 'components/Notification/DangerNotification';
+import { useNotifier } from 'react-headless-notifier';
+import { FormFields, FormLabel } from 'components/FormFields/FormFields';
+import Input from 'components/Input/Input';
+import { useForm } from 'react-hook-form';
 
 type Props = any;
 
 const OrderDetail: React.FC<Props> = (props) => {
+  const [cancelReason, setCancelReason] = useState(false);
+
   const dispatch = useDrawerDispatch();
+
   const data = useDrawerState('data');
+
   const closeDrawer = useCallback(() => dispatch({ type: 'CLOSE_DRAWER' }), [
     dispatch,
   ]);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
 
   const statusLabels = (status) => {
     switch (status) {
@@ -38,6 +63,114 @@ const OrderDetail: React.FC<Props> = (props) => {
       default:
         break;
     }
+  };
+
+  const { notify } = useNotifier();
+
+  const {
+    data: { storeId },
+  } = useQuery(Q_GET_STORE_ID);
+
+  const { data: planData } = useQuery(Q_STORE_PLAN_FOR_USER_WEB_ADMIN, {
+    variables: {
+      storeId,
+    },
+  });
+
+  const [cancelOrder] = useMutation(M_CANCEL_ORDER, {
+    onCompleted: (data) => {
+      closeDrawer();
+      if (data.storeCancelOrder.success) {
+        notify(
+          <SuccessNotification
+            message={data.storeCancelOrder.message.en}
+            dismiss
+          />
+        );
+      } else {
+        notify(
+          <DangerNotification
+            message={data.storeCancelOrder.message.en}
+            dismiss
+          />
+        );
+      }
+    },
+  });
+
+  const [finishOrderWithoutFleet] = useMutation(M_FINISH_ORDER_WITHOUT_FLEET, {
+    onCompleted: (data) => {
+      if (data.userRecievedOrder.success) {
+        notify(
+          <SuccessNotification
+            message={data.userRecievedOrder.message.en}
+            dismiss
+          />
+        );
+      } else {
+        notify(
+          <DangerNotification
+            message={data.userRecievedOrder.message.en}
+            dismiss
+          />
+        );
+      }
+      closeDrawer();
+    },
+  });
+
+  const [finishOrderWithFleet] = useMutation(M_FINISH_ORDER_WITH_FLEET, {
+    onCompleted: (data) => {
+      if (data.storeFinishOrder.success) {
+        notify(
+          <SuccessNotification
+            message={data.storeFinishOrder.message.en}
+            dismiss
+          />
+        );
+      } else {
+        notify(
+          <DangerNotification
+            message={data.storeFinishOrder.message.en}
+            dismiss
+          />
+        );
+      }
+      closeDrawer();
+    },
+  });
+
+  const onFinishOrderWithoutFleet = () => {
+    finishOrderWithoutFleet({
+      variables: {
+        userReceivedOrder: { orderId: data._id },
+      },
+    });
+  };
+
+  const onFinishOrderWithFleet = () => {
+    finishOrderWithFleet({
+      variables: {
+        finishOrder: {
+          orderId: data._id,
+        },
+      },
+    });
+  };
+
+  const onCancelOrderSubmit = (values) => {
+    cancelOrder({
+      variables: {
+        chefInputDto: {
+          orderId: data._id,
+          cancelReason: { en: values.cancelReason, ar: values.cancelReason },
+        },
+      },
+    });
+  };
+
+  const toggleCancelReason = () => {
+    setCancelReason(!cancelReason);
   };
 
   return (
@@ -155,7 +288,116 @@ const OrderDetail: React.FC<Props> = (props) => {
                       {new Date(data.createdAt).toLocaleString()}
                     </Col>
                   </Row>
-                  {/* <Uploader onChange={handleUploader} /> */}
+                  <Row>
+                    <Col md={5}>
+                      <strong>Actions:</strong>
+                    </Col>
+                    <Col md={7}>
+                      <Button
+                        type='button'
+                        onClick={
+                          planData?.getParticularStorePlanForGate?.data?.plan[0]
+                            .isFleetRequired
+                            ? onFinishOrderWithFleet
+                            : onFinishOrderWithoutFleet
+                        }
+                        disabled={data.status !== 'CONF'}
+                        overrides={{
+                          BaseButton: {
+                            style: ({ $theme, $size, $shape }) => {
+                              return {
+                                borderTopLeftRadius: '3px',
+                                borderTopRightRadius: '3px',
+                                borderBottomLeftRadius: '3px',
+                                borderBottomRightRadius: '3px',
+                                paddingTop: '4px',
+                                paddingBottom: '4px',
+                              };
+                            },
+                          },
+                        }}
+                      >
+                        Finish
+                      </Button>
+                      <Button
+                        type='button'
+                        kind={KIND.minimal}
+                        onClick={toggleCancelReason}
+                        disabled={
+                          data.status === 'FIN' ||
+                          data.status === 'CAN' ||
+                          data.status === 'EXP'
+                        }
+                        overrides={{
+                          BaseButton: {
+                            style: ({ $theme, $size, $shape }) => {
+                              return {
+                                borderTopLeftRadius: '3px',
+                                borderTopRightRadius: '3px',
+                                borderBottomLeftRadius: '3px',
+                                borderBottomRightRadius: '3px',
+                                paddingTop: '4px',
+                                paddingBottom: '4px',
+                                color: $theme.colors.red400,
+                              };
+                            },
+                          },
+                        }}
+                      >
+                        Cancel
+                      </Button>
+                    </Col>
+                  </Row>
+                  {cancelReason && (
+                    <Form onSubmit={handleSubmit(onCancelOrderSubmit)}>
+                      <Row>
+                        <Col>
+                          <FormFields>
+                            <FormLabel>Cancel Reason</FormLabel>
+                            <Input
+                              type='text-area'
+                              name='cancelReason'
+                              inputRef={register({ required: true })}
+                            />
+                            {errors.cancelReason && (
+                              <div
+                                style={{
+                                  margin: '5px 0 0 auto',
+                                  fontFamily: 'Lato, sans-serif',
+                                  fontSize: '12px',
+                                  fontWeight: 'bold',
+                                  color: 'rgb(252, 92, 99)',
+                                }}
+                              >
+                                {errors.cancelReason.type === 'required' &&
+                                  'Required'}
+                              </div>
+                            )}
+                          </FormFields>
+                          <Button
+                            type='submit'
+                            overrides={{
+                              BaseButton: {
+                                style: ({ $theme, $size, $shape }) => {
+                                  return {
+                                    borderTopLeftRadius: '3px',
+                                    borderTopRightRadius: '3px',
+                                    borderBottomLeftRadius: '3px',
+                                    borderBottomRightRadius: '3px',
+                                    paddingTop: '4px',
+                                    paddingBottom: '4px',
+                                    float: 'right',
+                                  };
+                                },
+                              },
+                            }}
+                          >
+                            Submit
+                          </Button>
+                        </Col>
+                      </Row>
+                    </Form>
+                  )}
                 </DrawerBox>
               </Col>
             </Row>
