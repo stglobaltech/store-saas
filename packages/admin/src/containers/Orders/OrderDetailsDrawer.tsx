@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useDrawerDispatch, useDrawerState } from 'context/DrawerContext';
 import { Scrollbars } from 'react-custom-scrollbars';
 import Button, { KIND } from 'components/Button/Button';
@@ -11,8 +11,14 @@ import {
   Form,
 } from '../DrawerItems/DrawerItems.style';
 import { Box } from 'components/Box/Box';
-import { M_CANCEL_ORDER } from 'services/GQL';
-import { useMutation } from '@apollo/client';
+import {
+  M_CANCEL_ORDER,
+  M_FINISH_ORDER_WITHOUT_FLEET,
+  M_FINISH_ORDER_WITH_FLEET,
+  Q_GET_STORE_ID,
+  Q_STORE_PLAN_FOR_USER_WEB_ADMIN,
+} from 'services/GQL';
+import { useMutation, useQuery } from '@apollo/client';
 import SuccessNotification from 'components/Notification/SuccessNotification';
 import DangerNotification from 'components/Notification/DangerNotification';
 import { useNotifier } from 'react-headless-notifier';
@@ -23,6 +29,8 @@ import { useForm } from 'react-hook-form';
 type Props = any;
 
 const OrderDetail: React.FC<Props> = (props) => {
+  const [cancelReason, setCancelReason] = useState(false);
+
   const dispatch = useDrawerDispatch();
 
   const data = useDrawerState('data');
@@ -55,8 +63,19 @@ const OrderDetail: React.FC<Props> = (props) => {
 
   const { notify } = useNotifier();
 
+  const {
+    data: { storeId },
+  } = useQuery(Q_GET_STORE_ID);
+
+  const { data: planData } = useQuery(Q_STORE_PLAN_FOR_USER_WEB_ADMIN, {
+    variables: {
+      storeId,
+    },
+  });
+
   const [cancelOrder] = useMutation(M_CANCEL_ORDER, {
     onCompleted: (data) => {
+      closeDrawer();
       if (data.storeCancelOrder.success) {
         notify(
           <SuccessNotification
@@ -64,15 +83,76 @@ const OrderDetail: React.FC<Props> = (props) => {
             dismiss
           />
         );
-      } else
+      } else {
         notify(
           <DangerNotification
             message={data.storeCancelOrder.message.en}
             dismiss
           />
         );
+      }
     },
   });
+
+  const [finishOrderWithoutFleet] = useMutation(M_FINISH_ORDER_WITHOUT_FLEET, {
+    onCompleted: (data) => {
+      if (data.userRecievedOrder.success) {
+        notify(
+          <SuccessNotification
+            message={data.userRecievedOrder.message.en}
+            dismiss
+          />
+        );
+      } else {
+        notify(
+          <DangerNotification
+            message={data.userRecievedOrder.message.en}
+            dismiss
+          />
+        );
+      }
+      closeDrawer();
+    },
+  });
+
+  const [finishOrderWithFleet] = useMutation(M_FINISH_ORDER_WITH_FLEET, {
+    onCompleted: (data) => {
+      if (data.storeFinishOrder.success) {
+        notify(
+          <SuccessNotification
+            message={data.storeFinishOrder.message.en}
+            dismiss
+          />
+        );
+      } else {
+        notify(
+          <DangerNotification
+            message={data.storeFinishOrder.message.en}
+            dismiss
+          />
+        );
+      }
+      closeDrawer();
+    },
+  });
+
+  const onFinishOrderWithoutFleet = () => {
+    finishOrderWithoutFleet({
+      variables: {
+        userReceivedOrder: { orderId: data._id },
+      },
+    });
+  };
+
+  const onFinishOrderWithFleet = () => {
+    finishOrderWithFleet({
+      variables: {
+        finishOrder: {
+          orderId: data._id,
+        },
+      },
+    });
+  };
 
   const onCancelOrderSubmit = (values) => {
     cancelOrder({
@@ -83,6 +163,10 @@ const OrderDetail: React.FC<Props> = (props) => {
         },
       },
     });
+  };
+
+  const toggleCancelReason = () => {
+    setCancelReason(!cancelReason);
   };
 
   return (
@@ -207,6 +291,13 @@ const OrderDetail: React.FC<Props> = (props) => {
                     <Col md={7}>
                       <Button
                         type='button'
+                        onClick={
+                          planData?.getParticularStorePlanForGate?.data?.plan[0]
+                            .isFleetRequired
+                            ? onFinishOrderWithFleet
+                            : onFinishOrderWithoutFleet
+                        }
+                        disabled={data.status !== 'CONF'}
                         overrides={{
                           BaseButton: {
                             style: ({ $theme, $size, $shape }) => {
@@ -227,9 +318,11 @@ const OrderDetail: React.FC<Props> = (props) => {
                       <Button
                         type='button'
                         kind={KIND.minimal}
-                        // onClick={doCancelOrder}
+                        onClick={toggleCancelReason}
                         disabled={
-                          data.status === 'FIN' || data.status === 'CAN'
+                          data.status === 'FIN' ||
+                          data.status === 'CAN' ||
+                          data.status === 'EXP'
                         }
                         overrides={{
                           BaseButton: {
@@ -251,7 +344,7 @@ const OrderDetail: React.FC<Props> = (props) => {
                       </Button>
                     </Col>
                   </Row>
-                  {
+                  {cancelReason && (
                     <Form onSubmit={handleSubmit(onCancelOrderSubmit)}>
                       <Row>
                         <Col>
@@ -263,16 +356,30 @@ const OrderDetail: React.FC<Props> = (props) => {
                               inputRef={register}
                             />
                           </FormFields>
-                        </Col>
-                      </Row>
-                      <Row>
-                        <Col>
-                          <Button type='submit'>Submit</Button>
+                          <Button
+                            type='submit'
+                            overrides={{
+                              BaseButton: {
+                                style: ({ $theme, $size, $shape }) => {
+                                  return {
+                                    borderTopLeftRadius: '3px',
+                                    borderTopRightRadius: '3px',
+                                    borderBottomLeftRadius: '3px',
+                                    borderBottomRightRadius: '3px',
+                                    paddingTop: '4px',
+                                    paddingBottom: '4px',
+                                    float: 'right',
+                                  };
+                                },
+                              },
+                            }}
+                          >
+                            Submit
+                          </Button>
                         </Col>
                       </Row>
                     </Form>
-                  }
-                  {/* <Uploader onChange={handleUploader} /> */}
+                  )}
                 </DrawerBox>
               </Col>
             </Row>

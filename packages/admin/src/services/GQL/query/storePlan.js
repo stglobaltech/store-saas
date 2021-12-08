@@ -1,4 +1,4 @@
-import { gql } from "@apollo/client";
+import { gql } from '@apollo/client';
 
 export const Q_STORE_PLAN_FOR_USER_WEB_ADMIN = gql`
   query getStorePlanForUserWebAdmin($storeId: String!) {
@@ -6,6 +6,7 @@ export const Q_STORE_PLAN_FOR_USER_WEB_ADMIN = gql`
       data {
         plan {
           vat
+          isFleetRequired
         }
         globalVat
       }
