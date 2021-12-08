@@ -1,12 +1,9 @@
 import React, { useState } from 'react';
-import dayjs from 'dayjs';
-import { styled, withStyle } from 'baseui';
+import { withStyle } from 'baseui';
 import { Grid, Row as Rows, Col as Column } from 'components/FlexBox/FlexBox';
 import Input from 'components/Input/Input';
-import Select from 'components/Select/Select';
-import { useQuery, gql } from '@apollo/client';
+import { useQuery } from '@apollo/client';
 import { Wrapper, Header, Heading } from 'components/Wrapper.style';
-
 import {
   TableWrapper,
   StyledTable,
@@ -14,24 +11,12 @@ import {
   StyledBodyCell,
 } from './Customers.style';
 import NoResult from 'components/NoResult/NoResult';
-
-const GET_CUSTOMERS = gql`
-  query getCustomers($searchBy: String, $sortBy: String) {
-    customers(searchBy: $searchBy, sortBy: $sortBy) {
-      id
-      image
-      name
-      contacts {
-        id
-        type
-        number
-      }
-      total_order
-      total_order_amount
-      creation_date
-    }
-  }
-`;
+import { Q_GET_CUSTOMERS_FOR_STORE, Q_GET_STORE_ID } from 'services/GQL';
+import Pagination from 'components/Pagination/Pagination';
+import { Form } from 'containers/DrawerItems/DrawerItems.style';
+import { FormFields } from 'components/FormFields/FormFields';
+import Button from 'components/Button/Button';
+import { useForm } from 'react-hook-form';
 
 const Col = withStyle(Column, () => ({
   '@media only screen and (max-width: 767px)': {
@@ -49,145 +34,204 @@ const Row = withStyle(Rows, () => ({
   },
 }));
 
-const ImageWrapper = styled('div', ({ $theme }) => ({
-  width: '38px',
-  height: '38px',
-  overflow: 'hidden',
-  display: 'inline-block',
-  borderTopLeftRadius: '20px',
-  borderTopRightRadius: '20px',
-  borderBottomRightRadius: '20px',
-  borderBottomLeftRadius: '20px',
-  backgroundColor: $theme.colors.backgroundF7,
-}));
-
-const Image = styled('img', () => ({
-  width: '100%',
-  height: 'auto',
-}));
-
-const sortByOptions = [
-  { value: 'highestToLowest', label: 'Highest To Lowest' },
-  { value: 'lowestToHighest', label: 'Lowest To Highest' },
-];
-
 export default function Customers() {
-  const { data, error, refetch } = useQuery(GET_CUSTOMERS);
-  const [stock, setStock] = useState([]);
-  const [search, setSearch] = useState([]);
+  const {
+    data: { storeId },
+  } = useQuery(Q_GET_STORE_ID);
+
+  const [userFindInputDto, setUserFindInputDto] = useState({
+    storeId,
+    paginate: { page: 1, perPage: 10 },
+  });
+
+  const { data, error, fetchMore } = useQuery(Q_GET_CUSTOMERS_FOR_STORE, {
+    variables: { userFindInputDto },
+  });
+
+  const { handleSubmit, register, setValue } = useForm();
 
   if (error) {
     return <div>Error! {error.message}</div>;
   }
 
-  function handleSort({ value }) {
-    setStock(value);
-    if (value.length) {
-      refetch({
-        sortBy: value[0].value,
-      });
-    } else {
-      refetch({
-        sortBy: null,
-      });
-    }
-  }
-  function handleSearch(event) {
-    const value = event.currentTarget.value;
-    console.log(value, 'cus val');
+  const clearFilters = () => {
+    setValue('mobile', '');
+    setUserFindInputDto({ storeId, paginate: { page: 1, perPage: 10 } });
+  };
 
-    setSearch(value);
-    refetch({ searchBy: value });
+  const onSubmit = (values) => {
+    console.log(values);
+
+    setUserFindInputDto({
+      storeId,
+      paginate: { page: 1, perPage: 10 },
+      ...values,
+    });
+  };
+
+  let hasNextPage = false,
+    hasPrevPage = false,
+    page;
+
+  if (data) {
+    const {
+      getCustomersForStore: { pagination },
+    } = data;
+    hasNextPage = pagination.hasNextPage;
+    hasPrevPage = pagination.hasPrevPage;
+    page = pagination.page;
   }
-  console.log(data, 'data');
+
+  const fetchNextPage = (page) => {
+    setUserFindInputDto({ storeId, paginate: { page, perPage: 10 } });
+
+    return fetchMore({
+      variables: {
+        userFindInputDto: {
+          storeId,
+          paginate: { page, perPage: 10 },
+        },
+      },
+      updateQuery: (prev, { fetchMoreResult }) => {
+        return fetchMoreResult;
+      },
+    });
+  };
 
   return (
     <Grid fluid={true}>
-      <Row>
-        <Col md={12}>
-          <Header
-            style={{
-              marginBottom: 30,
-              boxShadow: '0 0 5px rgba(0, 0 ,0, 0.05)',
-            }}
-          >
-            <Col md={3}>
-              <Heading>Customers</Heading>
-            </Col>
-
-            <Col md={9}>
-              <Row>
-                <Col md={9}>
-                  <Input
-                    value={search}
-                    placeholder="Ex: Search By Name"
-                    onChange={handleSearch}
-                    clearable
-                  />
-                </Col>
-
-                <Col md={3}>
-                  <Select
-                    options={sortByOptions}
-                    labelKey="label"
-                    valueKey="value"
-                    placeholder="Order Amount"
-                    value={stock}
-                    searchable={false}
-                    onChange={handleSort}
-                  />
-                </Col>
-              </Row>
-            </Col>
-          </Header>
-
-          <Wrapper style={{ boxShadow: '0 0 5px rgba(0, 0 , 0, 0.05)' }}>
-            <TableWrapper>
-              <StyledTable $gridTemplateColumns="minmax(70px, 70px) minmax(70px, 70px) minmax(200px, auto) minmax(150px, auto) minmax(150px, max-content) minmax(150px, auto) minmax(150px, auto)">
-                <StyledHeadCell>ID</StyledHeadCell>
-                <StyledHeadCell>Image</StyledHeadCell>
-                <StyledHeadCell>Name</StyledHeadCell>
-                <StyledHeadCell>Contacts</StyledHeadCell>
-                <StyledHeadCell>Total Order</StyledHeadCell>
-                <StyledHeadCell>Total Amount</StyledHeadCell>
-                <StyledHeadCell>Joining Date</StyledHeadCell>
-
-                {data ? (
-                  data.customers.length ? (
-                    data.customers
-                      .map((item) => Object.values(item))
-                      .map((row, index) => (
+      {error ? (
+        <div>Error Fetching Data</div>
+      ) : (
+        <Row>
+          <Col md={12}>
+            <Header
+              style={{
+                marginBottom: 30,
+                boxShadow: '0 0 5px rgba(0, 0 ,0, 0.05)',
+              }}
+            >
+              <Col md={3}>
+                <Heading>Customers</Heading>
+              </Col>
+            </Header>
+            <Row>
+              <Col xs={12} md={12}>
+                <Form
+                  onSubmit={handleSubmit(onSubmit)}
+                  style={{ paddingBottom: 0, backgroundColor: 'transparent' }}
+                >
+                  <Row style={{ justifyContent: 'flex-end' }}>
+                    <Col md={3} xs={12}>
+                      <FormFields>
+                        <Input
+                          type='number'
+                          name='mobile'
+                          inputRef={register}
+                          placeholder='Mobile number'
+                        />{' '}
+                      </FormFields>
+                    </Col>
+                    <Col md={1} style={{ alignSelf: 'end' }}>
+                      <Button
+                        type='submit'
+                        overrides={{
+                          BaseButton: {
+                            style: ({ $theme, $size, $shape }) => {
+                              return {
+                                borderTopLeftRadius: '3px',
+                                borderTopRightRadius: '3px',
+                                borderBottomLeftRadius: '3px',
+                                borderBottomRightRadius: '3px',
+                                paddingTop: '12px',
+                                paddingBottom: '12px',
+                              };
+                            },
+                          },
+                        }}
+                      >
+                        Search
+                      </Button>
+                    </Col>
+                    <Col md={1} style={{ alignSelf: 'end' }}>
+                      <Button
+                        type='button'
+                        onClick={clearFilters}
+                        overrides={{
+                          BaseButton: {
+                            style: ({ $theme, $size, $shape }) => {
+                              return {
+                                borderTopLeftRadius: '3px',
+                                borderTopRightRadius: '3px',
+                                borderBottomLeftRadius: '3px',
+                                borderBottomRightRadius: '3px',
+                                paddingTop: '12px',
+                                paddingBottom: '12px',
+                              };
+                            },
+                          },
+                        }}
+                      >
+                        Clear
+                      </Button>
+                    </Col>
+                  </Row>
+                </Form>
+              </Col>
+            </Row>
+            <Wrapper style={{ boxShadow: '0 0 5px rgba(0, 0 , 0, 0.05)' }}>
+              <TableWrapper>
+                <StyledTable
+                  style={{ borderBottom: '0px' }}
+                  $gridTemplateColumns='minmax(100px, max-content) minmax(100px, auto) minmax(150px, max-content) minmax(150px, auto) minmax(140px, auto)'
+                >
+                  <StyledHeadCell>ID</StyledHeadCell>
+                  <StyledHeadCell>Name</StyledHeadCell>
+                  <StyledHeadCell>Mobile</StyledHeadCell>
+                  <StyledHeadCell>Email</StyledHeadCell>
+                  <StyledHeadCell>Wallet Balance</StyledHeadCell>
+                  {data ? (
+                    data?.getCustomersForStore?.users?.length ? (
+                      data.getCustomersForStore.users.map((item, index) => (
                         <React.Fragment key={index}>
-                          <StyledBodyCell>{row[1]}</StyledBodyCell>
-                          <StyledBodyCell>
-                            <ImageWrapper>
-                              <Image src={row[2]} alt={row[3]} />
-                            </ImageWrapper>
-                          </StyledBodyCell>
-                          <StyledBodyCell>{row[3]}</StyledBodyCell>
-                          <StyledBodyCell>{row[4][1].number}</StyledBodyCell>
-                          <StyledBodyCell>{row[5]}</StyledBodyCell>
-                          <StyledBodyCell>${row[6]}</StyledBodyCell>
-                          <StyledBodyCell>
-                            {dayjs(row[6]).format('DD MMM YYYY')}
-                          </StyledBodyCell>
+                          <StyledBodyCell>{item._id}</StyledBodyCell>
+                          <StyledBodyCell>{item.name}</StyledBodyCell>
+                          <StyledBodyCell>{item.mobile}</StyledBodyCell>
+                          <StyledBodyCell>{item.email}</StyledBodyCell>
+                          <StyledBodyCell>{item.wallet.balance}</StyledBodyCell>
                         </React.Fragment>
                       ))
-                  ) : (
-                    <NoResult
-                      hideButton={false}
-                      style={{
-                        gridColumnStart: '1',
-                        gridColumnEnd: 'one',
-                      }}
+                    ) : (
+                      <NoResult
+                        hideButton={false}
+                        style={{
+                          gridColumnStart: '1',
+                          gridColumnEnd: 'one',
+                        }}
+                      />
+                    )
+                  ) : null}
+                </StyledTable>
+              </TableWrapper>
+              {data?.getCustomersForStore?.pagination && (
+                <Row>
+                  <Col
+                    md={12}
+                    style={{ display: 'flex', justifyContent: 'center' }}
+                  >
+                    <Pagination
+                      fetchMore={fetchNextPage}
+                      hasPrevPage={hasPrevPage}
+                      hasNextPage={hasNextPage}
+                      currentPage={page}
                     />
-                  )
-                ) : null}
-              </StyledTable>
-            </TableWrapper>
-          </Wrapper>
-        </Col>
-      </Row>
+                  </Col>
+                </Row>
+              )}
+            </Wrapper>
+          </Col>
+        </Row>
+      )}
     </Grid>
   );
 }
