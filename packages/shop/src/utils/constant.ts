@@ -27,9 +27,14 @@ export const NO_ACTIVE_ORDERS_FOUND =
   "No Active Orders Found. Place An Order :)";
 export const NO_ORDERS_MADE =
   "No More Orders Found. Place An Order And Here You Can Fetch Your Order History :)";
+export const PREV_ORDER_INCOMPLETE =
+  "Your Previous Order Is InComplete. Please wait for it to finish or expire :(";
 export const CURRENT_ACTIVE_ORDER_NOT_FOUND =
-  "We couldn't retrieve your current active order.Did you place an order? If yes try refreshing the page or contact our support";
-
+  "We couldn't retrieve your current active order.Did you place an order? If yes try refreshing the page and wait for the summary to reflect or contact our support";
+export const PAYMENT_STATUS_PENDING =
+  "We are yet to confirm your payment. Please wait for your order summary to reflect,try refreshing your page. You can't place another order meanwhile";
+export const USER_TRANSACTIONS_ERROR =
+  "Error getting your transactions :(. Please try after some time";
 //active orders tracking status
 export const USER_PLACED_ORDER = {
   label: "Order Placed",
@@ -70,4 +75,9 @@ export const DRIVER_STARTED_JOURNEY = {
 export const ORDER_DELIVERED = {
   label: "Your Order Was Delivered",
   description: "Trip,Delivered",
+};
+export const PAYMENT_REFUND_INITIATED = {
+  label:
+    "Something went wrong :(. We have initiated your refund to your wallet",
+  description: "refundInitiated",
 };

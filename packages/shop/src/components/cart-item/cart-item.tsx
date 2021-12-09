@@ -22,6 +22,8 @@ import { ERROR_CART_DELETED } from "../../utils/constant";
 import Loader from "components/loader/loader";
 import { M_REMOVE_PRODUCT_FROM_CART } from "graphql/mutation/remove-product-from-cart.mutation";
 import { useAppState } from "contexts/app/app.provider";
+import { getCartId } from "utils/localStorage";
+import { handlePrevOrderPending } from "components/prev-order-pending/handleprevorderpending";
 
 interface Props {
   data: any;
@@ -66,6 +68,9 @@ export const CartItem: React.FC<Props> = ({
   async function addItemHandler() {
     const itemCountInCart = getParticularItemCount(data._id);
     const currentItem = getItem(data._id);
+    if(getCartId()){
+      return handlePrevOrderPending();
+    }
     try {
       if (currentItem.maxQuantity < itemCountInCart + 1)
         throw new Error(

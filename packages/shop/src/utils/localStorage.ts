@@ -66,3 +66,15 @@ export const getCartId = () => {
     return localStorage.getItem("cartId");
   } catch {}
 };
+
+export const removeCartId = () => {
+  try {
+    localStorage.removeItem("cartId");
+  } catch {}
+};
+
+export const setCartId = (cartId) => {
+  try {
+    localStorage.setItem("cartId", cartId);
+  } catch {}
+};

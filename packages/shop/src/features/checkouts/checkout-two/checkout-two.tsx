@@ -57,6 +57,7 @@ import DangerNotification from "../../../components/Notification/DangerNotificat
 import TopupWallet from "features/topup-wallet/topup-wallet";
 import { Q_GET_STORE_ID } from "graphql/query/loggedIn-queries.query";
 import { useAppState } from "contexts/app/app.provider";
+import { setCartId } from "utils/localStorage";
 
 // The type of props Checkout Form receives
 interface MyFormProps {
@@ -175,7 +176,7 @@ const CheckoutWithSidebar: React.FC<MyFormProps> = ({
   }
 
   function placeOrderHandler() {
-    localStorage.setItem("cartId", cartId);
+    setCartId(cartId);
     const successUrl =
       window.location.protocol +
       "//" +
@@ -368,7 +369,7 @@ const CheckoutWithSidebar: React.FC<MyFormProps> = ({
                         <OrderItem
                           key={`cartItem-${item._id}`}
                           product={item}
-                          currency={CURRENCY+" "}
+                          currency={CURRENCY + " "}
                         />
                       ))
                     ) : (

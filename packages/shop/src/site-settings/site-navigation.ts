@@ -17,6 +17,7 @@ export const PROFILE_PAGE = "/profile";
 export const YOUR_ORDER_PAGE = "/order";
 export const ORDER_RECEIVED_PAGE = "/order-received";
 export const ORDER_HISTORY_PAGE = "/order-history";
+export const USER_TRANSACTIONS_PAGE = "/transactions";
 export const OFFER_PAGE = "/offer";
 export const HELP_PAGE = "/help";
 export const TERMS_AND_SERVICES_PAGE = "/terms";
@@ -49,6 +50,11 @@ export const ORDER_HISTORY_ITEM = {
   href: ORDER_HISTORY_PAGE,
   defaultMessage: "Order History",
 };
+export const USER_TRANSACTIONS = {
+  id: "nav.user-transactions",
+  href: USER_TRANSACTIONS_PAGE,
+  defaultMessage: "Your Transactions",
+};
 export const REQUEST_MEDICINE_MENU_ITEM = {
   id: "nav.request_medicine",
   defaultMessage: "Request Medicine",
@@ -73,6 +79,7 @@ export const AUTHORIZED_MENU_ITEMS = [
   // },
   ORDER_MENU_ITEM,
   ORDER_HISTORY_ITEM,
+  USER_TRANSACTIONS,
   {
     id: "nav.order_received",
     href: ORDER_RECEIVED_PAGE,

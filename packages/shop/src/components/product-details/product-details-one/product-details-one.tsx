@@ -45,6 +45,8 @@ import {
   ERROR_CART_DELETED,
 } from "../../../utils/constant";
 import { useAppState } from "contexts/app/app.provider";
+import { getCartId } from "utils/localStorage";
+import { handlePrevOrderPending } from "components/prev-order-pending/handleprevorderpending";
 
 type ProductDetailsProps = {
   product: any;
@@ -74,7 +76,7 @@ const ProductDetails: React.FunctionComponent<ProductDetailsProps> = ({
     getParticularItemCount,
   } = useCart();
 
-  const workFlowPolicy=useAppState("workFlowPolicy") as any;
+  const workFlowPolicy = useAppState("workFlowPolicy") as any;
 
   const { notify } = useNotifier();
 
@@ -152,6 +154,9 @@ const ProductDetails: React.FunctionComponent<ProductDetailsProps> = ({
       },
     };
     const itemCountInCart = getParticularItemCount(data._id);
+    if (getCartId()) {
+      return handlePrevOrderPending();
+    }
     if (itemCountInCart === 0) {
       addProductToCart({ variables: { addProductInput } });
     } else {
@@ -272,13 +277,13 @@ const ProductDetails: React.FunctionComponent<ProductDetailsProps> = ({
             <ProductPriceWrapper>
               {product.discountInPercent ? (
                 <SalePrice>
-                  {workFlowPolicy.currency+" "}
+                  {workFlowPolicy.currency + " "}
                   {product.price.price}
                 </SalePrice>
               ) : null}
 
               <ProductPrice>
-                {workFlowPolicy.currency+" "}
+                {workFlowPolicy.currency + " "}
                 {product.price.price}
               </ProductPrice>
             </ProductPriceWrapper>

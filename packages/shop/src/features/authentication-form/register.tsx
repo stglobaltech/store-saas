@@ -180,6 +180,7 @@ function SignUp({ mobile,countryCode }: SignUpProps) {
           osVersion: "WEB",
           deviceModel: "WEB",
           versionCode: "WEB",
+          storeId:process.env.NEXT_PUBLIC_STG_CLIENT_ID
         },
       },
     });

@@ -99,3 +99,8 @@ export function constructEventOrder(event: any) {
     statusProgressData[statusProgressData.length - 1],
   ];
 }
+
+
+export const ifPaymentNotConfirmed=(status)=>{
+  
+}

@@ -17,43 +17,44 @@ import {
   CURRENT_ACTIVE_ORDER_NOT_FOUND,
   ERROR_FETCHING_YOUR_LAST_ORDER,
   GENERAL_ERROR_MSG,
+  PAYMENT_STATUS_PENDING,
   UNAUTHORIZED,
   UNAUTHORIZED_MSG,
 } from "utils/constant";
 import { useAppState } from "contexts/app/app.provider";
 import { FormattedMessage } from "react-intl";
-import { getCartId, getUserId } from "utils/localStorage";
-
-// const PaymentSubscriptionWrapper = (userId, cartId) => {
-//   const res = useSubscription(S_ORDER_STATUS_SUBSCRIPTION, {
-//     variables: {
-//       input: {
-//         userId,
-//         cartId,
-//       },
-//     }
-//   });
-//   return <div></div>;
-// };
+import { getCartId, getUserId, removeCartId } from "utils/localStorage";
 
 const OrderReceivedPage = () => {
   const cartId = getCartId();
   const userId = getUserId();
 
-  const {data:paymentStatusData} = useSubscription(S_ORDER_PAYMENT_SUBSCRIPTION, {
-    variables: {
-      input: {
-        userId,
-        cartId,
+  const { data: paymentStatusData } = useSubscription(
+    S_ORDER_PAYMENT_SUBSCRIPTION,
+    {
+      variables: {
+        input: {
+          userId,
+          cartId,
+        },
       },
-    },
-  });
+    }
+  );
 
   const { data, error, loading } = useQuery(Q_GET_USER_ACTIVE_ORDERS);
   const currency = (useAppState("workFlowPolicy") as any).currency;
 
-  if(paymentStatusData){
-    
+  if (data?.userActiveOrders[0]?.cartId !== cartId && getCartId()) {
+    if (!paymentStatusData) {
+      return (
+        <ErrorMessage>
+          <FormattedMessage
+            id="paymentPending"
+            defaultMessage={PAYMENT_STATUS_PENDING}
+          />
+        </ErrorMessage>
+      );
+    }
   }
 
   if (loading) return <Loader />;
@@ -69,7 +70,7 @@ const OrderReceivedPage = () => {
 
   const currentOrder = data?.userActiveOrders[0];
 
-  if (!currentOrder)
+  if (!currentOrder){
     return (
       <ErrorMessage>
         <FormattedMessage
@@ -78,6 +79,9 @@ const OrderReceivedPage = () => {
         />
       </ErrorMessage>
     );
+  }else{
+    removeCartId();
+  }
 
   return (
     <>
