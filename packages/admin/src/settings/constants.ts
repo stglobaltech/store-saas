@@ -14,6 +14,7 @@ export const STORE_SETTINGS = '/store-settings';
 export const CONTACT_DETAILS = '/contact-details';
 export const REPORTS = '/reports/ordersreport';
 export const TRANSACTIONS = '/transactions';
+export const REGISTER = '/register';
 // **************** ROUTE CONSTANT END **************************
 
 export const CURRENCY = '$';
