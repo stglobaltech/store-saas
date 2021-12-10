@@ -65,10 +65,20 @@ export default function OrdersReport() {
     { value: "DEBIT", label: "DEBIT" },
   ];
 
+  const purposeTypes = [
+    "From card to wallet for order",
+    "Card or wallet order from user to driver",
+    "Cash order from the user to driver",
+    "Dicount Cashback",
+    "Refferal",
+    "From card to wallet for Topup"
+  ];
+
   const { data: { storeId } } = useQuery(Q_GET_STORE_ID);
 
   const { register, handleSubmit, setValue } = useForm();
   const [operationType, setOperationType] = useState([]);
+  const [purposeType, setPurposeType] = useState([]);
   const [getTransactionsInputDto, setGetTransactionsInputDto] = useState({
     userId: storeId,
     paginate: { page: 1, perPage: 10 }
@@ -94,6 +104,9 @@ export default function OrdersReport() {
     if (operationType.length)
       formValues = { ...formValues, operation: operationType[0].value };
 
+    if (purposeType.length)
+      formValues = { ...formValues, purpose: purposeType[0].value };
+
     setGetTransactionsInputDto({
       userId: storeId,
       paginate: { page: 1, perPage: 10 },
@@ -106,6 +119,7 @@ export default function OrdersReport() {
     setValue("startDate", "");
     setValue("endDate", "");
     setOperationType([]);
+    setPurposeType([]);
 
     setGetTransactionsInputDto({
       userId: storeId,
@@ -199,7 +213,23 @@ export default function OrdersReport() {
                   </Row>
 
                   <Row>
-                    <Col md={2}>
+                    <Col md={3}>
+                      <FormFields>
+                        <FormLabel>Purpose Type</FormLabel>
+                        <Select
+                          options={purposeTypes.map((purposeType) => {
+                            return { label: purposeType, value: purposeType }
+                          })}
+                          labelKey="label"
+                          valueKey="value"
+                          placeholder="Purpose Type"
+                          value={purposeType}
+                          searchable={false}
+                          onChange={({ value }) => setPurposeType(value)}
+                        />
+                      </FormFields>
+                    </Col>
+                    <Col md={2} style={{ alignSelf: "end" }}>
                       <Button
                         type="submit"
                         overrides={{
@@ -211,8 +241,8 @@ export default function OrdersReport() {
                                 borderTopRightRadius: "3px",
                                 borderBottomLeftRadius: "3px",
                                 borderBottomRightRadius: "3px",
-                                paddingTop: "8px",
-                                paddingBottom: "8px",
+                                paddingTop: "12px",
+                                paddingBottom: "12px",
                               };
                             },
                           },
@@ -222,7 +252,7 @@ export default function OrdersReport() {
                       </Button>
                     </Col>
 
-                    <Col md={2}>
+                    <Col md={2} style={{ alignSelf: "end" }}>
                       <Button
                         type="button"
                         onClick={clearFilters}
@@ -235,8 +265,8 @@ export default function OrdersReport() {
                                 borderTopRightRadius: "3px",
                                 borderBottomLeftRadius: "3px",
                                 borderBottomRightRadius: "3px",
-                                paddingTop: "8px",
-                                paddingBottom: "8px",
+                                paddingTop: "12px",
+                                paddingBottom: "12px",
                               };
                             },
                           },
