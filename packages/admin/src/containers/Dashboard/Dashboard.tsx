@@ -1,20 +1,10 @@
 import React from 'react';
 import { withStyle, useStyletron } from 'baseui';
 import { Grid, Row, Col as Column } from 'components/FlexBox/FlexBox';
-import RadialBarChart from 'components/Widgets/RadialBarChart/RadialBarChart';
-import LineChart from 'components/Widgets/LineChart/LineChart';
-import ColumnChart from 'components/Widgets/ColumnChart/ColumnChart';
-import DonutChart from 'components/Widgets/DonutChart/DonutChart';
-import GraphChart from 'components/Widgets/GraphChart/GraphChart';
-import GradiantGraphChart from 'components/Widgets/GradiantGraphChart/GradiantGraphChart';
-import MapWidget from 'components/Widgets/MapWidget/MapWidget';
+import LineChart from 'components/Widgets/LineChart/LineChart'
 import StickerCard from 'components/Widgets/StickerCard/StickerCard';
-
-import { Revenue } from 'assets/icons/Revenue';
-import { Refund } from 'assets/icons/Refund';
 import { CoinIcon } from 'assets/icons/CoinIcon';
 import { CartIconBig } from 'assets/icons/CartIconBig';
-
 import { useQuery } from "@apollo/client";
 import {
   Q_GET_STORE_ID,
@@ -139,14 +129,14 @@ const Dashboard = () => {
         <Col lg={3} sm={6} xs={12} className={mb30}>
           <StickerCard
             title="Today's Orders"
-            subtitle="(Last 30 Days)"
+            subtitle="(Last 24 Hours)"
             icon={<CartIconBig />}
             price={todaysOrders}
-            indicator="down"
-            indicatorText="Order down"
-            note="(previous 30 days)"
-            link="#"
-            linkText="Full Details"
+            // indicator="down"
+            // indicatorText="Order down"
+            // note="(previous 30 days)"
+            // link="#"
+            // linkText="Full Details"
           />
         </Col>
         <Col lg={3} sm={6} xs={12} className={mb30}>
@@ -155,24 +145,24 @@ const Dashboard = () => {
             subtitle="(Last 30 Days)"
             icon={<CartIconBig />}
             price={monthlyOrders}
-            indicator="down"
-            indicatorText="Order down"
-            note="(previous 30 days)"
-            link="#"
-            linkText="Full Details"
+            // indicator="down"
+            // indicatorText="Order down"
+            // note="(previous 30 days)"
+            // link="#"
+            // linkText="Full Details"
           />
         </Col>
         <Col lg={3} sm={6} xs={12} className={mb30}>
           <StickerCard
             title="Today's Earning"
-            subtitle="(Last 30 Days)"
+            subtitle="(Last 24 Hours)"
             icon={<CoinIcon />}
             price={`$${todaysEarning}`}
-            indicator="up"
-            indicatorText="Revenue up"
-            note="(previous 30 days)"
-            link="#"
-            linkText="Full Details"
+            // indicator="up"
+            // indicatorText="Revenue up"
+            // note="(previous 30 days)"
+            // link="#"
+            // linkText="Full Details"
           />
         </Col>
         <Col lg={3} sm={6} xs={12} className={mb30}>
@@ -181,11 +171,11 @@ const Dashboard = () => {
             subtitle="(Last 30 Days)"
             icon={<CoinIcon />}
             price={`$${monthlyEarning}`}
-            indicator="up"
-            indicatorText="Revenue up"
-            note="(previous 30 days)"
-            link="#"
-            linkText="Full Details"
+            // indicator="up"
+            // indicatorText="Revenue up"
+            // note="(previous 30 days)"
+            // link="#"
+            // linkText="Full Details"
           />
         </Col>
       </Row>
@@ -203,7 +193,7 @@ const Dashboard = () => {
       </Row>
       )}
 
-      <Row>
+      {/* <Row>
         <Col md={7} lg={8}>
           <GraphChart
             widgetTitle="Sales From Social Media"
@@ -233,8 +223,8 @@ const Dashboard = () => {
           />
         </Col>
       </Row>
-
-      <Row>
+ */}
+      {/* <Row>
         <Col md={5} lg={4} sm={6}>
           <RadialBarChart
             widgetTitle="Target"
@@ -330,7 +320,7 @@ const Dashboard = () => {
             totalText="Total Client"
           />
         </Col>
-      </Row>
+      </Row> */}
     </Grid>
   );
 };

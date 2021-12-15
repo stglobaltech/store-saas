@@ -12,12 +12,14 @@ import {
   CONTACT_DETAILS,
   STORE_SETTINGS,
   REPORTS,
-  TRANSACTIONS
+  TRANSACTIONS,
+  REGISTER,
 } from 'settings/constants';
 import AuthProvider from 'context/auth';
 import { InLineLoader } from 'components/InlineLoader/InlineLoader';
 import { useQuery } from '@apollo/client';
 import { Q_IS_LOGGED_IN } from 'services/GQL';
+import Register from 'containers/Signup/Signup';
 
 const Products = lazy(() => import('containers/Products/Products'));
 const AdminLayout = lazy(() => import('containers/Layout/Layout'));
@@ -25,10 +27,12 @@ const Dashboard = lazy(() => import('containers/Dashboard/Dashboard'));
 const Category = lazy(() => import('containers/Category/Category'));
 const Orders = lazy(() => import('containers/Orders/Orders'));
 const Settings = lazy(() => import('containers/Settings/Settings'));
-const StoreSettingForm = lazy(() =>
-  import('containers/StoreSettingForm/StoreSettingForm')
+const StoreSettingForm = lazy(
+  () => import('containers/StoreSettingForm/StoreSettingForm')
 );
-const ContactDetails = lazy(() => import('containers/ContactDetails/ContactDetails'));
+const ContactDetails = lazy(
+  () => import('containers/ContactDetails/ContactDetails')
+);
 const Customers = lazy(() => import('containers/Customers/Customers'));
 const Coupons = lazy(() => import('containers/Coupons/Coupons'));
 const Login = lazy(() => import('containers/Login/Login'));
@@ -44,7 +48,9 @@ const Transactions = lazy(() => import('containers/Transactions/Transactions'));
  */
 
 function PrivateRoute({ children, ...rest }) {
-  const { data: { isLoggedIn = false } } = useQuery(Q_IS_LOGGED_IN);
+  const {
+    data: { isLoggedIn = false },
+  } = useQuery(Q_IS_LOGGED_IN);
 
   return (
     <Route
@@ -149,6 +155,9 @@ const Routes = () => {
           </PrivateRoute>
           <Route path={LOGIN}>
             <Login />
+          </Route>
+          <Route path={REGISTER}>
+            <Register />
           </Route>
           <Route component={NotFound} />
         </Switch>
