@@ -2,14 +2,14 @@ import Button, { KIND, SIZE } from 'components/Button/Button';
 import { FormFields, FormTitle, Error } from 'components/FormFields/FormFields';
 import { Field, Formik, Form } from 'formik';
 import React, { useState } from 'react';
-import { FormWrapper, Wrapper } from './Signup.style';
+import { FormWrapper, MobileCol, Wrapper } from './Signup.style';
 import * as Yup from 'yup';
 import Input from 'components/Input/Input';
 import { M_REGISTER } from 'services/GQL';
 import { useMutation } from '@apollo/client';
 import { Select } from 'baseui/select';
 import { Col, Row } from 'components/FlexBox/FlexBox';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import { useNotifier } from 'react-headless-notifier';
 import SuccessNotification from 'components/Notification/SuccessNotification';
 import DangerNotification from 'components/Notification/DangerNotification';
@@ -28,6 +28,7 @@ export default function Register() {
   };
 
   const { notify } = useNotifier();
+  const history = useHistory();
 
   const getLoginValidationSchema = () => {
     return Yup.object({
@@ -38,11 +39,10 @@ export default function Register() {
       mobileNumber: Yup.string().required('Required!'),
       domain: Yup.string()
         .required('Required!')
-        .matches(
-          /^(?:https?:\/\/)[a-z]*.orderznow.com/i,
-          'Eg:https://yourstorename.orderznow.com'
-        ),
-      password: Yup.string().required('Required!'),
+        .matches(/^[a-z0-9]*$/, 'cannot have special characters'),
+      password: Yup.string()
+        .required('Required!')
+        .matches(/^.{7,}$/, 'minimum 7 characters'),
       repeatPassword: Yup.string()
         .oneOf([Yup.ref('password'), ''], 'Passwords doesnot match')
         .required('Required!'),
@@ -63,6 +63,7 @@ export default function Register() {
             dismiss
           />
         );
+        history.push('/login');
       } else
         notify(
           <DangerNotification message={data.gateSignup.message.en} dismiss />
@@ -70,11 +71,12 @@ export default function Register() {
     },
   });
 
-  const handleRegister = (formValues) => {
+  const handleRegister = (formValues, { resetForm }) => {
     const { repeatPassword, ...user } = formValues;
     user.restuarantName = { en: user.storeName, ar: '' };
     user.appType = 'GATE';
     user.deviceType = 'WEB';
+    user.domain = `https://${user.domain}.orderznow.com`;
     Object.keys(countryCodes).forEach((key) => {
       if (countryCodes[key] === user.countryCode) {
         user.countryCode = key;
@@ -83,6 +85,8 @@ export default function Register() {
     delete user.storeName;
 
     doRegister({ variables: { gateSignUpDto: user } });
+
+    data?.gateSignup?.success && resetForm();
   };
 
   const countryCodes = {
@@ -156,7 +160,7 @@ export default function Register() {
                 />
                 {errors.email && touched.email && <Error>{errors.email}</Error>}
               </FormFields>
-              <Row style={{ marginBottom: '0px' }}>
+              <Row style={{ marginBottom: '20px' }}>
                 <Col md={4}>
                   <FormFields>
                     <Field
@@ -180,7 +184,7 @@ export default function Register() {
                     )}
                   </FormFields>
                 </Col>
-                <Col md={8}>
+                <MobileCol md={8}>
                   <FormFields>
                     <Field
                       type='text'
@@ -192,19 +196,26 @@ export default function Register() {
                       <Error>{errors.mobileNumber}</Error>
                     )}
                   </FormFields>
+                </MobileCol>
+              </Row>
+              <Row style={{ marginBottom: '-15px' }}>
+                <Col xs={7} style={{ marginRight: '0px' }}>
+                  <FormFields>
+                    <Field
+                      type='text'
+                      name='domain'
+                      component={MyInput}
+                      placeholder='Domain Name'
+                    />
+                    {errors.domain && touched.domain && (
+                      <Error>{errors.domain}</Error>
+                    )}
+                  </FormFields>
+                </Col>
+                <Col xs={5} style={{ paddingLeft: '0px' }}>
+                  <p>.orderznow.com</p>
                 </Col>
               </Row>
-              <FormFields>
-                <Field
-                  type='text'
-                  name='domain'
-                  component={MyInput}
-                  placeholder='Domain URL'
-                />
-                {errors.domain && touched.domain && (
-                  <Error>{errors.domain}</Error>
-                )}
-              </FormFields>
               <FormFields>
                 <Field
                   type='password'
