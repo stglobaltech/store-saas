@@ -274,7 +274,7 @@ export default function OrdersReport() {
                   <TableWrapper>
                     <StyledTable
                       style={{ borderBottom: '0px' }}
-                      $gridTemplateColumns='minmax(220px, auto) minmax(120px, auto) minmax(120px, auto) minmax(100px, auto) minmax(150px, auto) minmax(150px, auto)'
+                      $gridTemplateColumns='minmax(max-content, auto) minmax(max-content, auto) minmax(max-content, auto) minmax(max-content, auto) minmax(max-content, auto) minmax(max-content, auto)'
                     >
                       <StyledHeadCellCenter>Order Id</StyledHeadCellCenter>
                       <StyledHeadCellCenter>Operation</StyledHeadCellCenter>
