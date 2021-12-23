@@ -1,5 +1,4 @@
-import React, { useCallback, useState } from 'react';
-import { useDrawerDispatch } from 'context/DrawerContext';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Button, { KIND } from 'components/Button/Button';
 import Popover, { PLACEMENT } from 'components/Popover/Popover';
@@ -39,12 +38,6 @@ const data = [
   },
 ];
 const Topbar = ({ refs, onLogout }: any) => {
-  const dispatch = useDrawerDispatch();
-  const openQrForm = useCallback(
-    () => dispatch({ type: 'OPEN_DRAWER', drawerComponent: 'QR_CODE_FORM' }),
-    [dispatch]
-  );
-
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   const [storeUrl, setStoreUrl] = useState('');
@@ -56,7 +49,7 @@ const Topbar = ({ refs, onLogout }: any) => {
     context: { clientName: 'CONTENT_SERVER' },
     variables: { ownerId: userId },
     onCompleted: ({ getStore }) => {
-      setStoreUrl(getStore.url);
+      setStoreUrl(getStore.domain);
     },
   });
 
@@ -115,7 +108,7 @@ const Topbar = ({ refs, onLogout }: any) => {
       </DrawerWrapper>
 
       <TopbarRightSide>
-        {storeUrl ? (
+        {storeUrl && (
           <Link
             to={{ pathname: storeUrl }}
             target='_blank'
@@ -143,29 +136,6 @@ const Topbar = ({ refs, onLogout }: any) => {
               Visit Store
             </Button>
           </Link>
-        ) : (
-          <Button
-            type='button'
-            kind={KIND.minimal}
-            onClick={openQrForm}
-            overrides={{
-              BaseButton: {
-                style: ({ $theme }) => ({
-                  borderTopLeftRadius: '3px',
-                  borderTopRightRadius: '3px',
-                  borderBottomRightRadius: '3px',
-                  borderBottomLeftRadius: '3px',
-                  paddingTop: '8px',
-                  paddingRight: '12px',
-                  paddingBottom: '8px',
-                  paddingLeft: '12px',
-                  outline: '1px solid',
-                }),
-              },
-            }}
-          >
-            QR Code
-          </Button>
         )}
 
         <Popover
