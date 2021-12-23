@@ -123,7 +123,9 @@ export default function Register() {
                   ) : (
                     data &&
                     (data.gateSignup.success === 'error' ||
-                      !data.gateSignup.success) && (
+                      !data.gateSignup.success) &&
+                    data.gateSignup.message.en !=
+                      'Domain name already exists' && (
                       <>{data.gateSignup.message.en}</>
                     )
                   )}
@@ -209,6 +211,10 @@ export default function Register() {
                     />
                     {errors.domain && touched.domain && (
                       <Error>{errors.domain}</Error>
+                    )}
+                    {data?.gateSignup?.message?.en ===
+                      'Domain name already exists' && (
+                      <Error>{data.gateSignup.message.en}</Error>
                     )}
                   </FormFields>
                 </Col>
