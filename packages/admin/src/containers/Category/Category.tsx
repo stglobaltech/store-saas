@@ -1,5 +1,6 @@
 import React, { useCallback } from 'react';
 import { withStyle } from 'baseui';
+import { StatefulTooltip } from 'baseui/tooltip';
 import { Grid, Row as Rows, Col as Cols } from 'components/FlexBox/FlexBox';
 import { useDrawerDispatch } from 'context/DrawerContext';
 import Button from 'components/Button/Button';
@@ -15,8 +16,8 @@ import { Plus } from 'assets/icons/Plus';
 import NoResult from 'components/NoResult/NoResult';
 import { GET_PRODUCT_CATEGORIES, Q_GET_STORE_ID } from 'services/GQL';
 import { PencilIcon } from 'assets/icons/PencilIcon';
-import { CloseIcon } from 'assets/icons/CloseIcon';
 import no_image from 'assets/image/no_image.jpg';
+import { TrashIcon } from 'assets/icons/TrashIcon';
 
 const Col = withStyle(Cols, () => ({
   '@media only screen and (max-width: 767px)': {
@@ -35,6 +36,7 @@ const Row = withStyle(Rows, () => ({
 }));
 
 export default function Category() {
+
   const {
     data: { storeId },
   } = useQuery(Q_GET_STORE_ID);
@@ -88,31 +90,26 @@ export default function Category() {
             <Col md={2}>
               <Heading>Category</Heading>
             </Col>
-
-            <Col md={10}>
-              <Row>
-                <Col md={8} lg={9}></Col>
-                <Col md={4} lg={3}>
-                  <Button
-                    onClick={openDrawer}
-                    startEnhancer={() => <Plus />}
-                    overrides={{
-                      BaseButton: {
-                        style: () => ({
-                          float: 'right',
-                          width: '75%',
-                          borderTopLeftRadius: '3px',
-                          borderTopRightRadius: '3px',
-                          borderBottomLeftRadius: '3px',
-                          borderBottomRightRadius: '3px',
-                        }),
-                      },
-                    }}
-                  >
-                    Add Category
-                  </Button>
-                </Col>
-              </Row>
+            <Col md={6}></Col>
+            <Col md={4}>
+              <Button
+                onClick={openDrawer}
+                startEnhancer={() => <Plus />}
+                overrides={{
+                  BaseButton: {
+                    style: () => ({
+                      float: 'right',
+                      width: '75%',
+                      borderTopLeftRadius: '3px',
+                      borderTopRightRadius: '3px',
+                      borderBottomLeftRadius: '3px',
+                      borderBottomRightRadius: '3px',
+                    }),
+                  },
+                }}
+              >
+                Add Category
+              </Button>
             </Col>
           </Header>
 
@@ -141,14 +138,100 @@ export default function Category() {
                             ></img>
                           </StyledCell>
                           <StyledCell>
-                            <PencilIcon
-                              className='icon-lg pointer'
-                              onClick={() => OpenEditDrawer(item)}
-                            />
-                            <CloseIcon
-                              className='icon-lg icon-danger pointer'
-                              onClick={() => OpenDeleteConfirmDrawer(item)}
-                            />
+                            <StatefulTooltip
+                              showArrow
+                              overrides={{
+                                Arrow: {
+                                  style: ({ $theme }) => ({
+                                    backgroundColor: $theme.colors.primary,
+                                  }),
+                                },
+                                Body: {
+                                  style: ({ $theme }) => ({
+                                    backgroundColor: $theme.colors.primary,
+                                    borderTopLeftRadius:
+                                      $theme.borders.radius300,
+                                    borderTopRightRadius:
+                                      $theme.borders.radius300,
+                                    borderBottomRightRadius:
+                                      $theme.borders.radius300,
+                                    borderBottomLeftRadius:
+                                      $theme.borders.radius300,
+                                  }),
+                                },
+                                Inner: {
+                                  style: ({ $theme }) => ({
+                                    backgroundColor: $theme.colors.primary,
+                                    borderTopLeftRadius:
+                                      $theme.borders.radius300,
+                                    borderTopRightRadius:
+                                      $theme.borders.radius300,
+                                    borderBottomRightRadius:
+                                      $theme.borders.radius300,
+                                    borderBottomLeftRadius:
+                                      $theme.borders.radius300,
+                                    color: $theme.colors.white,
+                                  }),
+                                },
+                              }}
+                              accessibilityType={'tooltip'}
+                              content='Edit'
+                            >
+                              <span>
+                                <PencilIcon
+                                  className='icon-lg pointer'
+                                  onClick={() => OpenEditDrawer(item)}
+                                />
+                              </span>
+                            </StatefulTooltip>
+                            <StatefulTooltip
+                              showArrow
+                              overrides={{
+                                Arrow: {
+                                  style: ({ $theme }) => ({
+                                    backgroundColor: 'rgb(200, 200, 200)',
+                                  }),
+                                },
+                                Body: {
+                                  style: ({ $theme }) => ({
+                                    backgroundColor: 'rgb(200, 200, 200)',
+                                    borderTopLeftRadius:
+                                      $theme.borders.radius300,
+                                    borderTopRightRadius:
+                                      $theme.borders.radius300,
+                                    borderBottomRightRadius:
+                                      $theme.borders.radius300,
+                                    borderBottomLeftRadius:
+                                      $theme.borders.radius300,
+                                  }),
+                                },
+                                Inner: {
+                                  style: ({ $theme }) => ({
+                                    backgroundColor: $theme.colors.secondary,
+                                    borderTopLeftRadius:
+                                      $theme.borders.radius300,
+                                    borderTopRightRadius:
+                                      $theme.borders.radius300,
+                                    borderBottomRightRadius:
+                                      $theme.borders.radius300,
+                                    borderBottomLeftRadius:
+                                      $theme.borders.radius300,
+                                    color: $theme.colors.black,
+                                  }),
+                                },
+                              }}
+                              accessibilityType={'tooltip'}
+                              content='Delete'
+                              placement={'right'}
+                            >
+                              <span>
+                                <TrashIcon
+                                  style={{ marginRight: '0px' }}
+                                  className='icon-lg icon-danger pointer'
+                                  onClick={() => OpenDeleteConfirmDrawer(item)}
+                                />
+                              </span>
+                            </StatefulTooltip>
                           </StyledCell>
                         </React.Fragment>
                       )

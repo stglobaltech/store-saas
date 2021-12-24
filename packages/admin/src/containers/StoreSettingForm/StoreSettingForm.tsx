@@ -210,7 +210,7 @@ const StoreSettingsForm: React.FC<Props> = () => {
                       },
                     }}
                   >
-                    Add QR Code
+                    QR Code
                   </Button>
                 </Col>
                 <Col md={6}>
