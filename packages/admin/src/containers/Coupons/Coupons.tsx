@@ -2,28 +2,25 @@ import React, { useCallback, useState } from 'react';
 import { withStyle } from 'baseui';
 import { Grid, Row as Rows, Col as Column } from 'components/FlexBox/FlexBox';
 import { useDrawerDispatch } from 'context/DrawerContext';
-
 import Select from 'components/Select/Select';
 import Input from 'components/Input/Input';
 import Button from 'components/Button/Button';
-
 import { Plus } from 'assets/icons/PlusMinus';
 import { useQuery } from '@apollo/client';
 import { Wrapper, Header, Heading } from 'components/Wrapper.style';
-
 import { Q_GET_STORE_ID, Q_GET_DISCOUNTS } from 'services/GQL';
-
 import {
   TableWrapper,
   StyledTable,
   StyledHeadCell,
-  StyledBodyCell
+  StyledBodyCell,
 } from './Coupon.style';
 import NoResult from 'components/NoResult/NoResult';
 import { PencilIcon } from 'assets/icons/PencilIcon';
 import { TrashIcon } from 'assets/icons/TrashIcon';
 import Pagination from 'components/Pagination/Pagination';
 import { InLineLoader } from '../../components/InlineLoader/InlineLoader';
+import { StatefulTooltip } from 'baseui/tooltip';
 
 const Col = withStyle(Column, () => ({
   '@media only screen and (max-width: 767px)': {
@@ -42,36 +39,52 @@ const Row = withStyle(Rows, () => ({
 }));
 
 export default function Coupons() {
+
   const dispatch = useDrawerDispatch();
 
   const openDrawer = useCallback(
-    (data) => dispatch({ type: 'OPEN_DRAWER', drawerComponent: 'COUPON_FORM', data }),
+    (data) =>
+      dispatch({ type: 'OPEN_DRAWER', drawerComponent: 'COUPON_FORM', data }),
     [dispatch]
   );
 
   const openEditDrawer = useCallback(
-    (data) => dispatch({ type: 'OPEN_DRAWER', drawerComponent: 'EDIT_COUPON_FORM', data }),
+    (data) =>
+      dispatch({
+        type: 'OPEN_DRAWER',
+        drawerComponent: 'EDIT_COUPON_FORM',
+        data,
+      }),
     [dispatch]
   );
 
   const openDeleteDrawer = useCallback(
-    (data) => dispatch({ type: 'OPEN_DRAWER', drawerComponent: 'DELETE_COUPON_FORM', data }),
+    (data) =>
+      dispatch({
+        type: 'OPEN_DRAWER',
+        drawerComponent: 'DELETE_COUPON_FORM',
+        data,
+      }),
     [dispatch]
   );
 
-  const { data: { storeId } } = useQuery(Q_GET_STORE_ID);
+  const {
+    data: { storeId },
+  } = useQuery(Q_GET_STORE_ID);
 
-  let hasPrevPage = false, hasNextPage = false, page;
+  let hasPrevPage = false,
+    hasNextPage = false,
+    page;
   const [getDiscountsInputDto, setGetDiscountsInputDto] = useState({
     storeId,
     paginate: {
       page: 1,
-      perPage: 10
-    }
+      perPage: 10,
+    },
   });
 
   const { loading, data, error, refetch } = useQuery(Q_GET_DISCOUNTS, {
-    variables: { getDiscountsInputDto }
+    variables: { getDiscountsInputDto },
   });
 
   const fetchMore = (page) => {
@@ -79,17 +92,17 @@ export default function Coupons() {
       ...getDiscountsInputDto,
       paginate: {
         page,
-        perPage: 10
-      }
+        perPage: 10,
+      },
     });
   };
 
-  if(loading)
-    return <InLineLoader />;
-  else if(error)
-    return <div>Error! {error.message}</div>;
+  if (loading) return <InLineLoader />;
+  else if (error) return <div>Error! {error.message}</div>;
   else {
-    const { getDiscounts: { pagination } } = data;
+    const {
+      getDiscounts: { pagination },
+    } = data;
     hasNextPage = pagination.hasNextPage;
     hasPrevPage = pagination.hasPrevPage;
     page = pagination.page;
@@ -114,24 +127,21 @@ export default function Coupons() {
                 <Col md={3}>
                   <Select
                     options={[]}
-                    labelKey="label"
-                    valueKey="value"
-                    placeholder="Status"
+                    labelKey='label'
+                    valueKey='value'
+                    placeholder='Status'
                     value={[]}
                     searchable={false}
                   />
                 </Col>
 
                 <Col md={5}>
-                  <Input
-                    placeholder="Ex: Search By Name"
-                    clearable
-                  />
+                  <Input placeholder='Ex: Search By Name' clearable />
                 </Col>
 
                 <Col md={4}>
                   <Button
-                    type="button"
+                    type='button'
                     onClick={() => openDrawer(refetch)}
                     startEnhancer={() => <Plus />}
                     overrides={{
@@ -159,7 +169,7 @@ export default function Coupons() {
             <TableWrapper style={{ height: 'auto' }}>
               <StyledTable
                 style={{ borderBottom: '0px' }}
-                $gridTemplateColumns="minmax(150px, auto) minmax(150px, auto) minmax(120px, 120px) minmax(120px, 120px) minmax(150px, max-content) minmax(150px, max-content) minmax(120px, 120px)"
+                $gridTemplateColumns='minmax(150px, auto) minmax(150px, auto) minmax(120px, 120px) minmax(120px, 120px) minmax(150px, max-content) minmax(150px, max-content) minmax(120px, 120px)'
               >
                 <StyledHeadCell>Name</StyledHeadCell>
                 <StyledHeadCell>Category</StyledHeadCell>
@@ -171,29 +181,121 @@ export default function Coupons() {
 
                 {data ? (
                   data.getDiscounts && data.getDiscounts.discounts.length ? (
-                    data.getDiscounts.discounts
-                      .map((item, index) => {
-                        return (
-                          <React.Fragment key={index}>
-                            <StyledBodyCell>{`${item.name} / ${item.arName}`}</StyledBodyCell>
-                            <StyledBodyCell>{item.category}</StyledBodyCell>
-                            <StyledBodyCell>{item.startsOn}</StyledBodyCell>
-                            <StyledBodyCell>{item.endsOn}</StyledBodyCell>
-                            <StyledBodyCell>{item.discountFor}</StyledBodyCell>
-                            <StyledBodyCell>{item.discountType}</StyledBodyCell>
-                            <StyledBodyCell>
-                              <PencilIcon
-                                className='icon-lg pointer'
-                                onClick={() => openEditDrawer({item, refetch})}
-                              />
-                              <TrashIcon
-                                className='icon-lg icon-danger pointer'
-                                onClick={() => openDeleteDrawer({discountID: item._id, refetch})}
-                              />
-                            </StyledBodyCell>
-                          </React.Fragment>
-                        );
-                      })
+                    data.getDiscounts.discounts.map((item, index) => {
+                      return (
+                        <React.Fragment key={index}>
+                          <StyledBodyCell>{`${item.name} / ${item.arName}`}</StyledBodyCell>
+                          <StyledBodyCell>{item.category}</StyledBodyCell>
+                          <StyledBodyCell>{item.startsOn}</StyledBodyCell>
+                          <StyledBodyCell>{item.endsOn}</StyledBodyCell>
+                          <StyledBodyCell>{item.discountFor}</StyledBodyCell>
+                          <StyledBodyCell>{item.discountType}</StyledBodyCell>
+                          <StyledBodyCell>
+                            <StatefulTooltip
+                              showArrow
+                              overrides={{
+                                Arrow: {
+                                  style: ({ $theme }) => ({
+                                    backgroundColor: $theme.colors.primary,
+                                  }),
+                                },
+                                Body: {
+                                  style: ({ $theme }) => ({
+                                    backgroundColor: $theme.colors.primary,
+                                    borderTopLeftRadius:
+                                      $theme.borders.radius300,
+                                    borderTopRightRadius:
+                                      $theme.borders.radius300,
+                                    borderBottomRightRadius:
+                                      $theme.borders.radius300,
+                                    borderBottomLeftRadius:
+                                      $theme.borders.radius300,
+                                  }),
+                                },
+                                Inner: {
+                                  style: ({ $theme }) => ({
+                                    backgroundColor: $theme.colors.primary,
+                                    borderTopLeftRadius:
+                                      $theme.borders.radius300,
+                                    borderTopRightRadius:
+                                      $theme.borders.radius300,
+                                    borderBottomRightRadius:
+                                      $theme.borders.radius300,
+                                    borderBottomLeftRadius:
+                                      $theme.borders.radius300,
+                                    color: $theme.colors.white,
+                                  }),
+                                },
+                              }}
+                              accessibilityType={'tooltip'}
+                              content='Edit'
+                            >
+                              <span>
+                                <PencilIcon
+                                  className='icon-lg pointer'
+                                  onClick={() =>
+                                    openEditDrawer({ item, refetch })
+                                  }
+                                />
+                              </span>
+                            </StatefulTooltip>
+                            <StatefulTooltip
+                              showArrow
+                              overrides={{
+                                Arrow: {
+                                  style: ({ $theme }) => ({
+                                    backgroundColor: 'rgb(200, 200, 200)',
+                                  }),
+                                },
+                                Body: {
+                                  style: ({ $theme }) => ({
+                                    backgroundColor: 'rgb(200, 200, 200)',
+                                    borderTopLeftRadius:
+                                      $theme.borders.radius300,
+                                    borderTopRightRadius:
+                                      $theme.borders.radius300,
+                                    borderBottomRightRadius:
+                                      $theme.borders.radius300,
+                                    borderBottomLeftRadius:
+                                      $theme.borders.radius300,
+                                  }),
+                                },
+                                Inner: {
+                                  style: ({ $theme }) => ({
+                                    backgroundColor: $theme.colors.secondary,
+                                    borderTopLeftRadius:
+                                      $theme.borders.radius300,
+                                    borderTopRightRadius:
+                                      $theme.borders.radius300,
+                                    borderBottomRightRadius:
+                                      $theme.borders.radius300,
+                                    borderBottomLeftRadius:
+                                      $theme.borders.radius300,
+                                    color: $theme.colors.black,
+                                  }),
+                                },
+                              }}
+                              accessibilityType={'tooltip'}
+                              content='Delete'
+                              placement={'topLeft'}
+                            >
+                              <span>
+                                <TrashIcon
+                                  style={{ marginRight: '0px' }}
+                                  className='icon-lg icon-danger pointer'
+                                  onClick={() =>
+                                    openDeleteDrawer({
+                                      discountID: item._id,
+                                      refetch,
+                                    })
+                                  }
+                                />
+                              </span>
+                            </StatefulTooltip>
+                          </StyledBodyCell>
+                        </React.Fragment>
+                      );
+                    })
                   ) : (
                     <NoResult
                       hideButton={false}
@@ -207,7 +309,7 @@ export default function Coupons() {
               </StyledTable>
             </TableWrapper>
             {data && data.getDiscounts && data.getDiscounts.pagination && (
-              <Row style={{marginTop: '8px'}}>
+              <Row style={{ marginTop: '8px' }}>
                 <Col
                   md={12}
                   style={{ display: 'flex', justifyContent: 'center' }}

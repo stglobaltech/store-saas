@@ -183,7 +183,7 @@ export default function Customers() {
               <TableWrapper>
                 <StyledTable
                   style={{ borderBottom: '0px' }}
-                  $gridTemplateColumns='minmax(100px, max-content) minmax(100px, auto) minmax(150px, max-content) minmax(150px, auto) minmax(140px, auto)'
+                  $gridTemplateColumns='minmax(max-content, auto) minmax(max-content, auto) minmax(max-content, auto) minmax(max-content, auto) minmax(max-content, auto)'
                 >
                   <StyledHeadCell>ID</StyledHeadCell>
                   <StyledHeadCell>Name</StyledHeadCell>
