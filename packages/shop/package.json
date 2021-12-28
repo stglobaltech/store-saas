@@ -8,7 +8,7 @@
     "start": "next start",
     "shop-start": "next start",
     "shop-dev": "next",
-    "export":"rm -rf out && next export"
+    "export":"rm -rf out && next build && next export"
   },
   "dependencies": {
     "@apollo/client": "^3.3.15",
