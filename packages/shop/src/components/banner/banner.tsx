@@ -40,7 +40,7 @@ export const Banner: React.FC<Props> = ({
   };
   return (
     <Box display={['none', 'none', 'flex']} style={style}>
-      <Image backgroundImage={`url(${imageUrl})`} />
+      {/* <Image backgroundImage={`url(${imageUrl})`} />
       <Content>
         <Title>
           <FormattedMessage
@@ -55,18 +55,18 @@ export const Banner: React.FC<Props> = ({
             defaultMessage="Set Your Description Through Language File"
           />
         </Description>
-        {/* <SearchWrapper>
+        <SearchWrapper>
           <Search
             className="banner-search"
             shadow="0 21px 36px rgba(0,0,0,0.05)"
           />
-        </SearchWrapper> */}
+        </SearchWrapper>
         <Waypoint
           onEnter={removeSticky}
           onLeave={setSticky}
           onPositionChange={onWaypointPositionChange}
         />
-      </Content>
+      </Content> */}
     </Box>
   );
 };

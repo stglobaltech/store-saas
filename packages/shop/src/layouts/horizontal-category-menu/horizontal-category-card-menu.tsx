@@ -1,11 +1,9 @@
 import React from "react";
-import { GET_CATEGORIES } from "graphql/query/category.query";
 import { useQuery } from "@apollo/client";
+import { GET_CATEGORIES } from "graphql/query/category.query";
 import { useRouter } from "next/router";
-import ErrorMessage from "components/error-message/error-message";
 import SwiperCore, { Navigation } from "swiper";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Text } from "components/text";
 import Image from "components/image/image";
 import { ArrowNext } from "assets/icons/ArrowNext";
 import { ArrowPrev } from "assets/icons/ArrowPrev";
@@ -17,21 +15,22 @@ import {
   Title,
   SliderNav,
 } from "./horizontal-category-card-menu.style";
-
+import noImage from "assets/images/no_image.jpg";
+import Loader from "components/loader/loader";
+import { FormattedMessage } from "react-intl";
+import ErrorMessage from "../../components/error-message/error-message";
 SwiperCore.use([Navigation]);
 
 interface Props {
   type: string;
-  storeId?: string;
-  productCategories?: Array<any>;
+  productCategoriesSSR?: Array<any>;
 }
 
-export const HorizontalCategoryCardMenu = ({
-  storeId,
-  productCategories,
-}: Props) => {
+export const HorizontalCategoryCardMenu = ({ productCategoriesSSR }: Props) => {
   const router = useRouter();
-  if (!productCategories) return null;
+
+  const { data, loading, error } = useQuery(GET_CATEGORIES);
+
   const { pathname, query } = router;
   const selectedQueries = query.category;
 
@@ -43,23 +42,40 @@ export const HorizontalCategoryCardMenu = ({
     });
   };
 
+  if (loading) return <Loader />;
+  if (error)
+    return (
+      <ErrorMessage>
+        <FormattedMessage id="error" defaultMessage="Something went wrong :(" />
+      </ErrorMessage>
+    );
+
   const sliderContent = () => {
     return (
       <>
-        {productCategories.map((category, idx) => (
-          <SwiperSlide key={idx}>
-            <ItemCard
-              role="button"
-              onClick={() => onCategoryClick(category._id)}
-              active={selectedQueries === category.slug}
-            >
-              <ImageWrapper>
-                <Image url={category.icon} alt={category.title} />
-              </ImageWrapper>
-              <Title>{category.name.en}</Title>
-            </ItemCard>
-          </SwiperSlide>
-        ))}
+        {data?.getCategoriesForUserBasedOnDomain?.productCategories?.map(
+          (category, idx) => {
+            return (
+              <SwiperSlide key={idx}>
+                <ItemCard
+                  role="button"
+                  onClick={() => onCategoryClick(category._id)}
+                  active={selectedQueries === category.slug}
+                >
+                  <ImageWrapper>
+                    <Image
+                      url={
+                        category.imageUrl?.length ? category.imageUrl : noImage
+                      }
+                      alt={category.title}
+                    />
+                  </ImageWrapper>
+                  <Title>{category.name.en}</Title>
+                </ItemCard>
+              </SwiperSlide>
+            );
+          }
+        )}
       </>
     );
   };

@@ -7,10 +7,15 @@
     "build": "next build",
     "start": "next start",
     "shop-start": "next start",
-    "shop-dev": "next"
+    "shop-dev": "next",
+    "export":"rm -rf out && next build && next export"
   },
   "dependencies": {
     "@apollo/client": "^3.3.15",
+    "@emotion/react": "^11.7.1",
+    "@emotion/styled": "^11.6.0",
+    "@mui/material": "^5.2.5",
+    "@react-google-maps/api": "^2.5.0",
     "@redq/reuse-modal": "1.2.4-beta.0.63",
     "@stripe/react-stripe-js": "^1.4.0",
     "@stripe/stripe-js": "^1.13.2",
@@ -29,6 +34,8 @@
     "next-compose-plugins": "^2.2.1",
     "next-cookies": "^2.0.3",
     "next-optimized-images": "^2.6.2",
+    "ngeohash": "^0.6.3",
+    "open-location-code": "^1.0.3",
     "overlayscrollbars": "^1.13.1",
     "overlayscrollbars-react": "^0.2.2",
     "rc-collapse": "^3.1.0",
@@ -59,6 +66,7 @@
     "styletron-engine-atomic": "^1.4.8",
     "styletron-react": "^6.0.2",
     "stylis-plugin-rtl": "1.1.0",
+    "subscriptions-transport-ws": "^0.11.0",
     "swiper": "^6.5.6",
     "typeface-lato": "^1.1.13",
     "typeface-poppins": "^1.1.13",

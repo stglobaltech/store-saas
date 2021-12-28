@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useRouter } from "next/router";
+import { useQuery } from "@apollo/client";
 import Link from "next/link";
 import {
   CartPopupBody,
@@ -20,7 +21,6 @@ import {
 import { CloseIcon } from "assets/icons/CloseIcon";
 import { ShoppingBagLarge } from "assets/icons/ShoppingBagLarge";
 import { NoCartBag } from "assets/icons/NoCartBag";
-import { CURRENCY } from "utils/constant";
 import { FormattedMessage } from "react-intl";
 import { useLocale } from "contexts/language/language.provider";
 import { AuthContext } from "contexts/auth/auth.context";
@@ -28,6 +28,8 @@ import { Scrollbar } from "components/scrollbar/scrollbar";
 import { useCart } from "contexts/cart/use-cart";
 import { CartItem } from "components/cart-item/cart-item";
 import Coupon from "features/coupon/coupon";
+import { refactorProductbeforeAddingToCart } from "utils/refactor-product-before-adding-to-cart";
+import { useAppState } from "contexts/app/app.provider";
 
 type CartPropsType = {
   style?: any;
@@ -56,6 +58,9 @@ const Cart: React.FC<CartPropsType> = ({
     authState: { isAuthenticated },
     authDispatch,
   } = React.useContext<any>(AuthContext);
+  const workFlowPolicy = useAppState("workFlowPolicy") as any;
+  const storeId = workFlowPolicy["StoreId"];
+  const entityId = storeId;
 
   const [hasCoupon, setCoupon] = useState(false);
   const { isRtl } = useLocale();
@@ -87,7 +92,9 @@ const Cart: React.FC<CartPropsType> = ({
             items.map((item) => (
               <CartItem
                 key={`cartItem-${item._id}`}
-                onIncrement={() => addItem(item)}
+                onIncrement={() =>
+                  addItem(refactorProductbeforeAddingToCart(item))
+                }
                 onDecrement={() => removeItem(item)}
                 onRemove={() => removeItemFromCart(item)}
                 data={item}
@@ -131,7 +138,7 @@ const Cart: React.FC<CartPropsType> = ({
                 </CouponBoxWrapper>
               )}
             </>
-          ) : (
+          ) : (Cart
             <CouponCode>
               <FormattedMessage
                 id="couponApplied"
@@ -153,7 +160,7 @@ const Cart: React.FC<CartPropsType> = ({
                   />
                 </Title>
                 <PriceBox>
-                  {CURRENCY}
+                  {workFlowPolicy.currency}
                   {calculatePrice()}
                 </PriceBox>
               </>
@@ -166,7 +173,7 @@ const Cart: React.FC<CartPropsType> = ({
                 <FormattedMessage id="nav.checkout" defaultMessage="Checkout" />
               </Title>
               <PriceBox>
-                {CURRENCY}
+                {workFlowPolicy.currency}
                 {calculatePrice()}
               </PriceBox>
             </>

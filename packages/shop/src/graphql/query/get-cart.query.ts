@@ -8,10 +8,20 @@ export const Q_GET_CART = gql`
       products {
         _id
         quantity
+        maxQuantity
         price
         quotedPrice
+        message
+        name{
+          en
+          ar
+        }
+        productId
       }
       deliveryCost
+      offer{
+        discountIn
+      }
     }
   }
 `;

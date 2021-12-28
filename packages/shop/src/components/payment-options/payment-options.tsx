@@ -122,12 +122,24 @@ const ActionButton = styled.span`
   }
 `;
 
+const Pills = styled.span`
+  display: flex;
+  max-width:70%;
+  margin:auto;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  border-radius: 10px;
+  font-weight: bold;
+`;
+
 type RadioCardProps = {
   id: string;
   title: string;
   content: string;
   disabled?: boolean;
   checked?: boolean;
+  walletBalance?: any;
   onChange: (option: any) => void;
 };
 const PaymentRadioCard: React.FC<RadioCardProps> = ({
@@ -137,6 +149,7 @@ const PaymentRadioCard: React.FC<RadioCardProps> = ({
   disabled,
   checked,
   onChange,
+  walletBalance,
 }) => {
   return (
     <CardWrapper
@@ -154,7 +167,14 @@ const PaymentRadioCard: React.FC<RadioCardProps> = ({
         onChange={onChange}
       />
       {title && <CardTitle>{title}</CardTitle>}
-      {content && <CardContent>{content}</CardContent>}
+      {content && walletBalance === undefined ? (
+        <CardContent>{content}</CardContent>
+      ) : (
+        <CardContent>
+          {content}
+          <Pills>Your Balance : {walletBalance}</Pills>
+        </CardContent>
+      )}
     </CardWrapper>
   );
 };

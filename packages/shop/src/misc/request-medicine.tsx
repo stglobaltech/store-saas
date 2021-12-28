@@ -1,13 +1,14 @@
-import React from 'react';
-import { NextPage } from 'next';
-import { useQuery } from '@apollo/client';
-import { Modal } from '@redq/reuse-modal';
-import { SEO } from 'components/seo';
-import RequestMedicine from 'features/request-product/request-product';
-import { GET_LOGGED_IN_CUSTOMER } from 'graphql/query/customer.query';
+import React from "react";
+import { NextPage } from "next";
+import { useQuery } from "@apollo/client";
+import { Modal } from "@redq/reuse-modal";
+import { SEO } from "components/seo";
+import RequestMedicine from "features/request-product/request-product";
+import { GET_LOGGED_IN_CUSTOMER } from "graphql/query/customer.query";
 
-import { ProfileProvider } from 'contexts/profile/profile.provider';
-import ErrorMessage from 'components/error-message/error-message';
+import { ProfileProvider } from "contexts/profile/profile.provider";
+import ErrorMessage from "components/error-message/error-message";
+import { FormattedMessage } from "react-intl";
 
 type Props = {
   deviceType: {
@@ -21,7 +22,12 @@ const RequestMedicinePage: NextPage<Props> = ({ deviceType }) => {
   if (loading) {
     return <div>loading...</div>;
   }
-  if (error) return <ErrorMessage message={error.message} />;
+  if (error)
+    return (
+      <ErrorMessage>
+        <FormattedMessage id="error" defaultMessage={error.message} />
+      </ErrorMessage>
+    );
   const token = true;
 
   return (

@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import {
   SingleOrderList,
   OrderListHeader,
@@ -6,10 +6,13 @@ import {
   Status,
   OrderMeta,
   Meta,
-} from './order-card.style';
-import { FormattedMessage } from 'react-intl';
-
-import { CURRENCY } from 'utils/constant';
+} from "./order-card.style";
+import { FormattedMessage } from "react-intl";
+import { useSubscription } from "@apollo/client";
+import {
+  S_CHEF_ORDER_SUBSCRIPTION,
+  S_ORDER_STATUS_SUBSCRIPTION,
+} from "graphql/subscriptions/order-status.subscription";
 
 type OrderCardProps = {
   orderId?: any;
@@ -19,6 +22,10 @@ type OrderCardProps = {
   date?: any;
   deliveryTime?: any;
   amount?: number;
+  currency?: string;
+  orderPayType?: string;
+  shortOrderId?: string;
+  key?: any;
 };
 
 const OrderCard: React.FC<OrderCardProps> = ({
@@ -27,21 +34,41 @@ const OrderCard: React.FC<OrderCardProps> = ({
   className,
   status,
   date,
-  deliveryTime,
   amount,
+  currency,
+  orderPayType,
+  shortOrderId,
+  key,
 }) => {
+  // const { data: orderStatusData, error: orderStatusError } = useSubscription(
+  //   S_ORDER_STATUS_SUBSCRIPTION,
+  //   {
+  //     variables: {
+  //       input: {
+  //         orderId,
+  //       },
+  //     },
+  //   }
+  // );
+
   return (
     <>
-      <SingleOrderList onClick={onClick} className={className}>
+      <SingleOrderList onClick={onClick} className={className} key={key}>
         <OrderListHeader>
           <TrackID>
             <FormattedMessage
               id="intlOrderCardTitleText"
               defaultMessage="Order"
             />
-            <span>#{orderId}</span>
+            <span>#{shortOrderId}</span>
           </TrackID>
-          <Status>{status}</Status>
+          {/* <Status>
+            {orderStatusData &&
+            orderStatusData.orderStatusUpdateSubscribe &&
+            orderStatusData.orderStatusUpdateSubscribe.event
+              ? orderStatusData?.orderStatusUpdateSubscribe?.event
+              : status}
+          </Status> */}
         </OrderListHeader>
 
         <OrderMeta>
@@ -50,14 +77,11 @@ const OrderCard: React.FC<OrderCardProps> = ({
               id="intlOrderCardDateText"
               defaultMessage="Order Date"
             />
-            : <span>{date}</span>
+            : <span>{new Date(date).toDateString()}</span>
           </Meta>
           <Meta>
-            <FormattedMessage
-              id="deliveryTimeText"
-              defaultMessage="Delivery Time"
-            />
-            : <span>{deliveryTime}</span>
+            <FormattedMessage id="sss" defaultMessage="Payment Method" />:{" "}
+            <span>{orderPayType}</span>
           </Meta>
           <Meta className="price">
             <FormattedMessage
@@ -66,7 +90,7 @@ const OrderCard: React.FC<OrderCardProps> = ({
             />
             :
             <span>
-              {CURRENCY}
+              {currency}
               {amount}
             </span>
           </Meta>

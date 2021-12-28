@@ -50,7 +50,44 @@ export const removeToken = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("roles");
     localStorage.removeItem("userId");
+    localStorage.removeItem("cartId");
+    localStorage.removeItem("storeId");
   } catch {
     // ignore write errors
   }
+};
+
+export const getUserId = () => {
+  try {
+    return localStorage.getItem("userId");
+  } catch {}
+};
+
+export const getCartId = () => {
+  try {
+    return localStorage.getItem("cartId");
+  } catch {}
+};
+
+export const removeCartId = () => {
+  try {
+    localStorage.removeItem("cartId");
+  } catch {}
+};
+
+export const setCartId = (cartId) => {
+  try {
+    localStorage.setItem("cartId", cartId);
+  } catch {}
+};
+
+export const setStoreId = (storeId) => {
+  try {
+    localStorage.setItem("storeId", storeId);
+  } catch {}
+};
+export const getStoreId = () => {
+  try {
+    return localStorage.getItem("storeId");
+  } catch {}
 };

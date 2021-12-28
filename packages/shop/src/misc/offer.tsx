@@ -15,6 +15,7 @@ import GiftCard from 'components/gift-card/gift-card';
 import Footer from 'layouts/footer';
 import { initializeApollo } from 'utils/apollo';
 import dynamic from 'next/dynamic';
+import { FormattedMessage } from 'react-intl';
 const ErrorMessage = dynamic(() =>
   import('components/error-message/error-message')
 );
@@ -39,7 +40,7 @@ type GiftCardProps = {
 
 const GiftCardPage: NextPage<GiftCardProps> = ({ deviceType }) => {
   const { data, error } = useQuery(GET_COUPON);
-  if (error) return <ErrorMessage message={error.message} />;
+  if (error) return <ErrorMessage><FormattedMessage id="error" defaultMessage={error.message}/></ErrorMessage>
 
   return (
     <Modal>

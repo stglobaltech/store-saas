@@ -53,3 +53,5 @@ dist/
 .docz
 .now
 .vercel
+.vercel*
+vercel-*.json

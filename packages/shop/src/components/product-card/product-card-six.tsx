@@ -1,105 +1,106 @@
-import React from 'react';
-import Link from 'next/link';
-import { AddItemToCart } from 'components/add-item-to-cart';
-import styled from 'styled-components';
-import css from '@styled-system/css';
-import { Box } from 'components/box';
+import React from "react";
+import Link from "next/link";
+import { AddItemToCart } from "components/add-item-to-cart";
+import styled from "styled-components";
+import css from "@styled-system/css";
+import { Box } from "components/box";
+import noImage from "assets/images/no_image.jpg";
 
 const Card = styled.div({
-  backgroundColor: '#fff',
-  position: 'relative',
-  overflow: 'hidden',
+  backgroundColor: "#fff",
+  position: "relative",
+  overflow: "hidden",
   borderRadius: 6,
-  display: 'flex',
-  flexDirection: 'column',
-  justifyContent: 'space-between',
-  border: '0',
-  cursor: 'pointer',
-  transition: '0.25s ease-in-out',
-  '&:hover': {
-    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.08)',
-    transform: 'translateY(-5px)',
+  display: "flex",
+  flexDirection: "column",
+  justifyContent: "space-between",
+  border: "0",
+  cursor: "pointer",
+  transition: "0.25s ease-in-out",
+  "&:hover": {
+    boxShadow: "0 2px 4px rgba(0, 0, 0, 0.08)",
+    transform: "translateY(-5px)",
   },
 });
 const ImageWrapper = styled.div(
   css({
-    position: 'relative',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    overflow: 'hidden',
-    height: ['190px', '210px'],
-
+    position: "relative",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    overflow: "hidden",
+    height: ["190px", "210px"],
+    backgroundPosition: "cover",
     img: {
-      display: 'block',
-      maxHeight: '100%',
-      maxWidth: '100%',
-      width: 'auto',
-      height: 'auto',
+      display: "block",
+      maxHeight: "100%",
+      maxWidth: "100%",
+      width: "auto",
+      height: "auto",
     },
   })
 );
 const Discount = styled.div<any>(
   css({
-    position: 'absolute',
+    position: "absolute",
     zIndex: 1,
-    top: '10px',
-    left: '10px',
-    backgroundColor: 'primary.regular',
-    color: '#fff',
-    overflow: 'hidden',
-    padding: '0.25rem 0.5rem',
+    top: "10px",
+    left: "10px",
+    backgroundColor: "primary.regular",
+    color: "#fff",
+    overflow: "hidden",
+    padding: "0.25rem 0.5rem",
     fontSize: 12,
     borderRadius: 6,
-    pointerEvents: 'none',
+    pointerEvents: "none",
   })
 );
 
 const CounterWrapper = styled.div<any>(
   css({
-    position: 'absolute',
+    position: "absolute",
     zIndex: 1,
-    top: '10px',
-    right: '10px',
+    top: "10px",
+    right: "10px",
   })
 );
 
 const PriceWrapper = styled.div({
-  display: 'flex',
-  alignItems: 'center',
+  display: "flex",
+  alignItems: "center",
   marginBottom: 10,
 });
 
 const Price = styled.span(
   css({
-    display: 'block',
-    color: 'text.bold',
+    display: "block",
+    color: "text.bold",
     fontSize: 16,
-    fontWeight: 'semiBold',
+    fontWeight: "semiBold",
   })
 );
 
 const SalePrice = styled.span(
   css({
-    color: 'text.regular',
+    color: "text.regular",
     fontSize: 13,
     lineHeight: 1,
-    fontWeight: 'regular',
-    padding: '0 5px',
-    overflow: 'hidden',
-    position: 'relative',
+    fontWeight: "regular",
+    padding: "0 5px",
+    overflow: "hidden",
+    position: "relative",
     marginLeft: 10,
-    display: 'flex',
-    alignItems: 'center',
+    display: "flex",
+    alignItems: "center",
 
-    ':before': {
+    ":before": {
       content: '""',
-      width: '100%',
+      width: "100%",
       height: 1,
-      display: 'inline-block',
-      backgroundColor: 'text.regular',
-      position: 'absolute',
-      top: '50%',
+      display: "inline-block",
+      backgroundColor: "text.regular",
+      position: "absolute",
+      top: "50%",
       left: 0,
     },
   })
@@ -107,34 +108,47 @@ const SalePrice = styled.span(
 
 const Title = styled.h2(
   css({
-    color: 'text.regular',
-    fontSize: 'sm',
-    fontWeight: 'regular',
+    color: "text.regular",
+    fontSize: "sm",
+    fontWeight: "regular",
   })
 );
 
 interface Props {
   data: any;
+  currency: string;
 }
 
-export const ProductCard = ({ data }: Props) => {
-  const { picture,price:{price},productName,description,_id } = data;
+export const ProductCard = ({ data, currency }: Props) => {
+  const {
+    picture,
+    price: { price, basePrice },
+    productName,
+    description,
+    _id,
+  } = data;
+
   return (
-    <Link href='/product/[slug]' as={`/product/${_id}`}>
+    <Link href="/product/[slug]" as={`/product/${_id}`}>
       <Card>
-        <Box position='relative'>
+        <Box position="relative">
           <CounterWrapper>
             <AddItemToCart data={data} />
           </CounterWrapper>
           <ImageWrapper>
-            <img src={picture} alt={productName.en} />
+            <img
+              src={picture?.length ? picture : noImage}
+              alt={productName.en}
+            />
           </ImageWrapper>
           {/* {discountInPercent ? <Discount>{discountInPercent}%</Discount> : null} */}
         </Box>
         <Box padding={20}>
           <PriceWrapper>
-            <Price>{price}</Price>
-            {/* {discountInPercent ? <SalePrice>${price}</SalePrice> : null} */}
+            <Price>
+              {currency+" "+price}
+            </Price>
+            {/* <SalePrice>{basePrice}</SalePrice> */}
           </PriceWrapper>
           <Title>{productName.en}</Title>
         </Box>

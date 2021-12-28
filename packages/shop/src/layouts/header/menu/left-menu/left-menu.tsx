@@ -48,9 +48,10 @@ const CategoryMenu = (props: any) => {
 
 type Props = {
   logo: string;
+  isStoreLogo:boolean;
 };
 
-export const LeftMenu: React.FC<Props> = ({ logo }) => {
+export const LeftMenu: React.FC<Props> = ({ logo,isStoreLogo }) => {
   const router = useRouter();
   const initialMenu = CATEGORY_MENU_ITEMS.find(
     (item) => item.href === router.asPath
@@ -63,7 +64,7 @@ export const LeftMenu: React.FC<Props> = ({ logo }) => {
     <LeftMenuBox>
       <Logo
         imageUrl={logo}
-        alt={'Shop Logo'}
+        alt={isStoreLogo?'Shop Logo':'Orderznow Logo'}
         onClick={() => setActiveMenu(CATEGORY_MENU_ITEMS[0])}
       />
 

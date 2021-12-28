@@ -1,5 +1,6 @@
 import React, { useContext } from "react";
 import { FormattedMessage } from "react-intl";
+import { useNotifier } from "react-headless-notifier";
 import { handleModal } from "features/checkouts/checkout-modal";
 import { ProfileContext } from "contexts/profile/profile.context";
 import PaymentGroup from "components/payment-group/payment-group";
@@ -9,16 +10,28 @@ import { useMutation } from "@apollo/client";
 import { DELETE_CARD } from "graphql/mutation/card";
 import { CardHeader } from "components/card-header/card-header";
 import PaymentRadioCard from "components/payment-options/payment-options";
-import PaymentOptions from "features/checkouts/data";
+import { M_UPDATE_CART_PAYMENT_TYPE } from "graphql/mutation/update-cart-payment-type.mutation";
+import SuccessNotification from "../../components/Notification/SuccessNotification";
+import DangerNotification from "../../components/Notification/DangerNotification";
 
 interface Props {
   deviceType: any;
   increment?: boolean;
+  storeId?: string;
+  cartId?: string;
+  walletBalance?: any;
 }
 
-const Payment = ({ deviceType, increment = false }: Props) => {
+const Payment = ({
+  deviceType,
+  increment = false,
+  storeId,
+  cartId,
+  walletBalance,
+}: Props) => {
   const [deletePaymentCardMutation] = useMutation(DELETE_CARD);
-  const { calculatePrice } = useCart();
+  const [updateOrderPayType] = useMutation(M_UPDATE_CART_PAYMENT_TYPE);
+  const { notify } = useNotifier();
 
   const { state, dispatch } = useContext(ProfileContext);
 
@@ -29,11 +42,41 @@ const Payment = ({ deviceType, increment = false }: Props) => {
     });
   };
 
-  function handlePaymentOptionChange(e) {
+  async function handlePaymentOptionChange(e) {
     const {
-      target: { id },
+      target: { id, value },
     } = e;
-    dispatch({ type: "SET_PRIMARY_PAYMENT_OPTION", payload: id });
+    const input = {
+      cartId,
+      orderPayType: value,
+    };
+    if (value === "card" || value === "wallet") {
+      input["paymentGateWay"] = state.storePolicies.gateWayName[0];
+    }
+    try {
+      const { data, error } = (await updateOrderPayType({
+        variables: {
+          input,
+        },
+      })) as any;
+      if (
+        data &&
+        data.updateOrderPaymentType &&
+        data.updateOrderPaymentType.success
+      ) {
+        notify(
+          <SuccessNotification
+            message={`${value} set as the payment method for this order`}
+            dismiss
+          />
+        );
+        dispatch({ type: "SET_PRIMARY_PAYMENT_OPTION", payload: parseInt(id) });
+      } else if (error) {
+        throw error;
+      }
+    } catch (error) {
+      notify(<DangerNotification message={`${error}`} dismiss />);
+    }
   }
 
   return (
@@ -63,16 +106,28 @@ const Payment = ({ deviceType, increment = false }: Props) => {
           );
         }}
       /> */}
-      {PaymentOptions.map((option, index) => (
-        <PaymentRadioCard
-          key={index}
-          id={option.id}
-          title={option.title}
-          onChange={handlePaymentOptionChange}
-          content={option.content}
-          checked={state?.selectedPaymentOption?.id === option.id}
-        />
-      ))}
+      {state.storePolicies.paymentType.map((option, index) =>
+        option.type !== "wallet" ? (
+          <PaymentRadioCard
+            key={index}
+            id={option.id}
+            title={option.type}
+            onChange={handlePaymentOptionChange}
+            content={option.description}
+            checked={state?.selectedPaymentOption?.id === option.id}
+          />
+        ) : (
+          <PaymentRadioCard
+            key={index}
+            id={option.id}
+            title={option.type}
+            onChange={handlePaymentOptionChange}
+            content={option.description}
+            checked={state?.selectedPaymentOption?.id === option.id}
+            walletBalance={walletBalance}
+          />
+        )
+      )}
     </>
   );
 };

@@ -7,9 +7,12 @@ import {
   ApolloLink,
   concat,
 } from "@apollo/client";
+import { WebSocketLink } from "@apollo/client/link/ws";
+import { getMainDefinition } from "@apollo/client/utilities";
 
 import { getToken } from "./localStorage";
 import customFetch from "./customFetch";
+
 
 let apolloClient: ApolloClient<NormalizedCacheObject> | undefined;
 
@@ -24,12 +27,37 @@ const authLink = createHttpLink({
   fetch: customFetch,
 });
 
+//instantiate websocket only in browser.
+const wsLink = process.browser
+  ? new WebSocketLink({
+      uri: process.env.NEXT_PUBLIC_CONTENT_SERVER_WEBSOCKET_URI,
+      options: {
+        reconnect: true,
+      },
+    })
+  : null;
+
+//split the server endpoints based on the environment.
+const splitLink = process.browser
+  ? ApolloLink.split(
+      ({ query }) => {
+        const definition = getMainDefinition(query);
+        return (
+          definition.kind === "OperationDefinition" &&
+          definition.operation === "subscription"
+        );
+      },
+      wsLink,
+      apiLink
+    )
+  : apiLink;
+
 const link = ApolloLink.split(
   (operation) => {
     return operation.getContext().linkName === "auth";
   },
   authLink,
-  apiLink
+  splitLink
 );
 
 const authMiddleware = new ApolloLink((operation, forward) => {

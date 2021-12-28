@@ -180,11 +180,11 @@ const RadioCard: React.FC<RadioCardProps> = ({
               {editIcon}
             </ActionButton>
           )} */}
-          {/* {hasDelete && (
+          {hasDelete && (
             <ActionButton onClick={onDelete} className='delete-btn'>
               {deleteIcon}
             </ActionButton>
-          )} */}
+          )}
         </CardButtons>
       )}
     </CardWrapper>
