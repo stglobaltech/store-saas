@@ -124,7 +124,7 @@ export default function Register() {
                     data &&
                     (data.gateSignup.success === 'error' ||
                       !data.gateSignup.success) &&
-                    data.gateSignup.message.en !=
+                    data.gateSignup.message.en !==
                       'Domain name already exists' && (
                       <>{data.gateSignup.message.en}</>
                     )
