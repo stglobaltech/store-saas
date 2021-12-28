@@ -109,11 +109,11 @@ const CheckoutWithSidebar: React.FC<MyFormProps> = ({
     isRestaurant,
     toggleRestaurant,
   } = useCart();
-
-  const storeId = process.env.NEXT_PUBLIC_STG_CLIENT_ID;
+  const workFlowPolicy = (useAppState("workFlowPolicy") as any)
+  const storeId = workFlowPolicy["storeId"]
 
   const size = useWindowSize();
-  const CURRENCY = (useAppState("workFlowPolicy") as any).currency;
+  const CURRENCY =workFlowPolicy["currency"];
 
   const [loading, setLoading] = useState(false);
   const [isValid, setIsValid] = useState(false);

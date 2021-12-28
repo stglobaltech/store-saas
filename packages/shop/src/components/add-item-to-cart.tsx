@@ -19,6 +19,7 @@ import { ERROR_CART_DELETED } from "../utils/constant";
 import { refactorProductbeforeAddingToCart } from "utils/refactor-product-before-adding-to-cart";
 import { getCartId } from "utils/localStorage";
 import { handlePrevOrderPending } from "./prev-order-pending/handleprevorderpending";
+import { useAppState } from "contexts/app/app.provider";
 
 const Icon = styled.span<any>(
   _variant({
@@ -92,8 +93,9 @@ export const AddItemToCart = ({ data, variant, buttonText }: Props) => {
   } = useCart();
 
   const { notify } = useNotifier();
+  const workFlowPolicy=useAppState("workFlowPolicy")
 
-  const storeId = process.env.NEXT_PUBLIC_STG_CLIENT_ID;
+  const storeId = workFlowPolicy["storeId"];
   const entityId = storeId;
 
   const [addProductToCart, { loading: addProductLoading }] = useMutation(
@@ -175,9 +177,9 @@ export const AddItemToCart = ({ data, variant, buttonText }: Props) => {
       },
     };
     const itemCountInCart = getParticularItemCount(data._id);
-    if(getCartId()){
-      return handlePrevOrderPending();
-    }
+    // if(getCartId()){
+    //   return handlePrevOrderPending();
+    // }
     if (itemCountInCart === 0) {
       addProductToCart({ variables: { addProductInput } });
     } else {

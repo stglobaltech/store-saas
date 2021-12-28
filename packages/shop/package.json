@@ -11,6 +11,9 @@
   },
   "dependencies": {
     "@apollo/client": "^3.3.15",
+    "@emotion/react": "^11.7.1",
+    "@emotion/styled": "^11.6.0",
+    "@mui/material": "^5.2.5",
     "@react-google-maps/api": "^2.5.0",
     "@redq/reuse-modal": "1.2.4-beta.0.63",
     "@stripe/react-stripe-js": "^1.4.0",

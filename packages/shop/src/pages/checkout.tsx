@@ -9,7 +9,7 @@ import { useCart } from "contexts/cart/use-cart";
 import { AuthContext } from "contexts/auth/auth.context";
 import { isTokenValidOrUndefined } from "utils/tokenValidation";
 import { ProfileProvider } from "contexts/profile/profile.provider";
-import { removeToken } from "utils/localStorage";
+import { getStoreId, removeToken } from "utils/localStorage";
 import { useRouter } from "next/router";
 import { Q_GET_CART } from "graphql/query/get-cart.query";
 import Loader from "components/loader/loader";
@@ -33,7 +33,7 @@ type Props = {
 };
 
 const CheckoutPage: NextPage<Props> = ({ deviceType }) => {
-  const storeId = process.env.NEXT_PUBLIC_STG_CLIENT_ID;
+  const storeId=getStoreId();
 
   const { cartItemsCount, clearCart } = useCart();
   const router = useRouter();

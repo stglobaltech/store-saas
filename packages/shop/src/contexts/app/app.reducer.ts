@@ -15,7 +15,7 @@ type ActionType =
   | { type: "REMOVE_SIDEBAR_STICKY" }
   | { type: "TOGGLE_DRAWER" }
   | { type: "TOGGLE_MODAL" }
-  | { type: "WORK_FLOW_POLICY"; payload: any };
+  | { type: "WORK_FLOW_POLICY"; payload: any }
 
 type StateType = typeof initialState;
 

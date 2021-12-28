@@ -20,6 +20,7 @@ import {
 } from "graphql/subscriptions/order-status.subscription";
 import { getUserId } from "utils/localStorage";
 import { constructEventOrder } from "utils/refactor-product-before-adding-to-cart";
+import { useAppState } from "contexts/app/app.provider";
 
 type OrderDetailsProps = {
   tableData?: any;
@@ -51,7 +52,8 @@ const OrderDetails: React.FC<OrderDetailsProps> = ({
   event,
   refetch,
 }) => {
-  const storeId = process.env.NEXT_PUBLIC_STG_CLIENT_ID;
+  const workFlowPolicy=useAppState("workFlowPolicy")
+  const storeId = workFlowPolicy["storeId"];
   const userId = getUserId();
 
   const { data: chefEventsData } = useSubscription(S_CHEF_ORDER_SUBSCRIPTION, {

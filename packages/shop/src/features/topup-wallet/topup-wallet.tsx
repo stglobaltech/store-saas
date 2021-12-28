@@ -5,9 +5,11 @@ import { Input } from "components/forms/input";
 import { FormattedMessage, useIntl } from "react-intl";
 import { M_WALLET_TOPUP } from "graphql/mutation/topup-wallet.mutation";
 import { useRouter } from "next/router";
+import { useAppState } from "contexts/app/app.provider";
 
 function TopupWallet() {
-  const storeId = process.env.NEXT_PUBLIC_STG_CLIENT_ID;
+  const workFlowPolicy=useAppState("workFlowPolicy")
+  const storeId = workFlowPolicy["storeId"];
 
   const [amount, setAmount] = useState(0);
   const intl = useIntl();

@@ -61,7 +61,8 @@ const ProductDetails: React.FunctionComponent<ProductDetailsProps> = ({
   product,
   deviceType,
 }) => {
-  const storeId = process.env.NEXT_PUBLIC_STG_CLIENT_ID;
+  const workFlowPolicy = useAppState("workFlowPolicy") as any;
+  const storeId =workFlowPolicy["storeId"] ;
   const entityId = storeId;
 
   const { isRtl } = useLocale();
@@ -75,8 +76,6 @@ const ProductDetails: React.FunctionComponent<ProductDetailsProps> = ({
     cartItemsCount,
     getParticularItemCount,
   } = useCart();
-
-  const workFlowPolicy = useAppState("workFlowPolicy") as any;
 
   const { notify } = useNotifier();
 
@@ -154,9 +153,9 @@ const ProductDetails: React.FunctionComponent<ProductDetailsProps> = ({
       },
     };
     const itemCountInCart = getParticularItemCount(data._id);
-    if (getCartId()) {
-      return handlePrevOrderPending();
-    }
+    // if (getCartId()) {
+    //   return handlePrevOrderPending();
+    // }
     if (itemCountInCart === 0) {
       addProductToCart({ variables: { addProductInput } });
     } else {

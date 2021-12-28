@@ -24,7 +24,8 @@ type OrderCardProps = {
   amount?: number;
   currency?: string;
   orderPayType?: string;
-  shortOrderId?:string;
+  shortOrderId?: string;
+  key?: any;
 };
 
 const OrderCard: React.FC<OrderCardProps> = ({
@@ -36,9 +37,9 @@ const OrderCard: React.FC<OrderCardProps> = ({
   amount,
   currency,
   orderPayType,
-  shortOrderId
+  shortOrderId,
+  key,
 }) => {
-
   // const { data: orderStatusData, error: orderStatusError } = useSubscription(
   //   S_ORDER_STATUS_SUBSCRIPTION,
   //   {
@@ -52,7 +53,7 @@ const OrderCard: React.FC<OrderCardProps> = ({
 
   return (
     <>
-      <SingleOrderList onClick={onClick} className={className}>
+      <SingleOrderList onClick={onClick} className={className} key={key}>
         <OrderListHeader>
           <TrackID>
             <FormattedMessage

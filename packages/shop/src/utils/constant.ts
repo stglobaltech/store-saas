@@ -10,6 +10,8 @@ export const ERROR_FETCHING_YOUR_LAST_ORDER = `
 Error fetching your lastest order summary :(
 Contact Customer Support
   `;
+export const WOK_FLOW_POLICY_NOT_CONFIGURED =
+  "Your Store's work flow policy is not configured. Please contact our support team :)";
 export const ERROR_CART_DELETED = "No products in the cart. Cart Deleted";
 export const CART_DOES_NOT_EXIST = "CART_DOES_NOT_EXISTS";
 export const CHEF_NOT_AVAILABLE = "Chef not available";

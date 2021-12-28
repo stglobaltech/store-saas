@@ -25,6 +25,7 @@ import { M_USER_SIGNUP } from "graphql/mutation/signup.mutation";
 import { countryCodes } from "../../utils/country-codes";
 import SuccessNotification from "../../components/Notification/SuccessNotification";
 import DangerNotification from "../../components/Notification/DangerNotification";
+import { useAppState } from "contexts/app/app.provider";
 
 //verify user by sending otp
 function VerifyUser({ handleSentOtp }) {
@@ -144,6 +145,7 @@ function SignUp({ mobile,countryCode }: SignUpProps) {
   const intl = useIntl();
   const { notify } = useNotifier();
   const { authDispatch } = useContext<any>(AuthContext);
+  const workFlowPolicy=useAppState("workFlowPolicy")
 
 
   const toggleSignInForm = () => {
@@ -180,7 +182,7 @@ function SignUp({ mobile,countryCode }: SignUpProps) {
           osVersion: "WEB",
           deviceModel: "WEB",
           versionCode: "WEB",
-          storeId:process.env.NEXT_PUBLIC_STG_CLIENT_ID
+          storeId:workFlowPolicy["storeId"]
         },
       },
     });

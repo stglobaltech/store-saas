@@ -58,11 +58,9 @@ const Cart: React.FC<CartPropsType> = ({
     authState: { isAuthenticated },
     authDispatch,
   } = React.useContext<any>(AuthContext);
-
-  const storeId = process.env.NEXT_PUBLIC_STG_CLIENT_ID;
-  const entityId = storeId;
-
   const workFlowPolicy = useAppState("workFlowPolicy") as any;
+  const storeId = workFlowPolicy["StoreId"];
+  const entityId = storeId;
 
   const [hasCoupon, setCoupon] = useState(false);
   const { isRtl } = useLocale();

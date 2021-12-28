@@ -17,6 +17,7 @@ import NoResultFound from "components/no-result/no-result";
 import { FormattedMessage } from "react-intl";
 import { Button } from "components/button/loadmore-button";
 import { GET_PRODUCTS } from "graphql/query/products.query";
+import { useAppState } from "contexts/app/app.provider";
 
 const ErrorMessage = dynamic(
   () => import("components/error-message/error-message")
@@ -43,13 +44,14 @@ export const Products: React.FC<ProductsProps> = ({
   type,
 }) => {
   const router = useRouter();
+  const workFlowPolicy=useAppState("workFlowPolicy")
   const { data, error, loading, fetchMore, networkStatus } = useQuery(
     GET_PRODUCTS,
     {
       // context: { linkName: 'auth' },
       variables: {
         userStoreProductsFindInputDto: {
-          storeId: process.env.NEXT_PUBLIC_STG_CLIENT_ID,
+          storeId: workFlowPolicy["storeId"],
           paginate: {
             page: 1,
             perPage: 10,

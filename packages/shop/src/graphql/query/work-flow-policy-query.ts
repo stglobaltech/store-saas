@@ -15,3 +15,21 @@ export const Q_WORK_FLOW_POLICY = gql`
     }
   }
 `;
+
+
+
+export const Q_WORK_FLOW_POLICY_BASED_ON_DOMAIN = gql`
+  query getWorkFlowPolicyOfStoreBasedOnDomain {
+    getWorkFlowPolicyOfStoreBasedOnDomain {
+      data {
+        plan {
+          storeId
+          storeName
+          paymentType
+          gateWayName
+          currency
+        }
+      }
+    }
+  }
+`;

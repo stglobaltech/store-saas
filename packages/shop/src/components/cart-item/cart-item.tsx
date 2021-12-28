@@ -38,7 +38,8 @@ export const CartItem: React.FC<Props> = ({
   onIncrement,
   onRemove,
 }) => {
-  const storeId = process.env.NEXT_PUBLIC_STG_CLIENT_ID;
+  const workFlowPolicy=useAppState("workFlowPolicy") as any;
+  const storeId =workFlowPolicy["storeId"]
   const entityId = storeId;
 
   const { productName, picture, price, salePrice, unit, quantity } = data;
@@ -53,8 +54,6 @@ export const CartItem: React.FC<Props> = ({
   } = useCart();
   const { notify } = useNotifier();
 
-  const workFlowPolicy=useAppState("workFlowPolicy") as any;
-
   const [
     updateProductQuantity,
     { loading: updateProductQuantityLoading },
@@ -68,9 +67,9 @@ export const CartItem: React.FC<Props> = ({
   async function addItemHandler() {
     const itemCountInCart = getParticularItemCount(data._id);
     const currentItem = getItem(data._id);
-    if(getCartId()){
-      return handlePrevOrderPending();
-    }
+    // if(getCartId()){
+    //   return handlePrevOrderPending();
+    // }
     try {
       if (currentItem.maxQuantity < itemCountInCart + 1)
         throw new Error(
