@@ -74,7 +74,7 @@ export default function Register() {
   const handleRegister = (formValues, { resetForm }) => {
     const { repeatPassword, ...user } = formValues;
     user.restuarantName = { en: user.storeName, ar: '' };
-    user.appType = 'GATE';
+    user.appType = 'STORE';
     user.deviceType = 'WEB';
     user.domain = `https://${user.domain}.orderznow.com`;
     Object.keys(countryCodes).forEach((key) => {
