@@ -137,7 +137,7 @@ export default function Login() {
 
   const login = (formValues) => {
     doLogin({
-      variables: { gateLoginDto: { ...formValues, deviceType: 'WEB' } },
+      variables: { gateLoginDto: { ...formValues, deviceType: 'WEB',appType:"STORE" } },
     });
   };
 
