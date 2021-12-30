@@ -93,7 +93,7 @@ export const ProductGrid = ({
         },
       },
     },
-    skip: category !== "all_products" || !!search,
+    skip: category !== undefined || !!search,
   });
 
   const {
@@ -111,7 +111,7 @@ export const ProductGrid = ({
         },
       },
     },
-    skip: category === "all_products" || !!search,
+    skip: category === undefined || !!search,
   });
 
   const {
