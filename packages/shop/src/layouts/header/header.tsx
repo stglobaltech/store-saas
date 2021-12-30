@@ -33,7 +33,6 @@ const Header: React.FC<Props> = ({ className }) => {
   const {data:storeData}=useQuery(Q_GET_STORE,{
     variables:{
       input:{
-        _id:process.env.NEXT_PUBLIC_STG_CLIENT_ID,
         paginate:{
           page:1,
           perPage:10
