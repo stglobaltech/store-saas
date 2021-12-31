@@ -43,6 +43,7 @@ const RouteGuard = ({ children }) => {
 
   useEffect(() => {
     isAuthenticated(router.asPath);
+    router.replace("/store/home");
   }, []);
 
   const { cartItemsCount } = useCart();
