@@ -53,7 +53,7 @@ const RouteGuard = ({ children }) => {
       (!isTokenValidOrUndefined() || !cartItemsCount) &&
       privatePaths.includes(path)
     ) {
-      router.push("/");
+      router.push("/store/home");
     }
   }
   return children;
