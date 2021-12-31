@@ -193,28 +193,8 @@ export const LANGUAGE_MENU = [
     icon: "SAFlag",
   },
   {
-    id: "zh",
-    defaultMessage: "Chinese",
-    icon: "CNFlag",
-  },
-  {
     id: "en",
     defaultMessage: "English",
     icon: "USFlag",
-  },
-  {
-    id: "de",
-    defaultMessage: "German",
-    icon: "DEFlag",
-  },
-  {
-    id: "he",
-    defaultMessage: "Hebrew",
-    icon: "ILFlag",
-  },
-  {
-    id: "es",
-    defaultMessage: "Spanish",
-    icon: "ESFlag",
   },
 ];
