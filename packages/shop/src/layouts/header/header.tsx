@@ -51,7 +51,7 @@ const Header: React.FC<Props> = ({ className }) => {
       removeToken();
       authDispatch({ type: "SIGN_OUT" });
       clearCart();
-      Router.push("/");
+      Router.push("/store/home");
     }
   };
 
