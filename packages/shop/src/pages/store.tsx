@@ -68,9 +68,10 @@ export default function Categories({
     error: "",
   });
 
-  console.log('items',items);
-
-  const { data, loading, error } = useQuery(Q_WORK_FLOW_POLICY_BASED_ON_DOMAIN);
+  const { data, loading, error } = useQuery(
+    Q_WORK_FLOW_POLICY_BASED_ON_DOMAIN,
+    { fetchPolicy: "cache-and-network" }
+  );
 
   //persist user cart on login
   const runGetCartQuery = async () => {
@@ -81,6 +82,7 @@ export default function Categories({
         variables: {
           entityId: getStoreId(),
         },
+        fetchPolicy: "no-cache",
       });
       if (getCartError)
         setGetCartState({
@@ -91,12 +93,10 @@ export default function Categories({
       if (getCartData && getCartData.getCart && getCartData.getCart.products) {
         clearCart();
         getCartData.getCart.products.forEach((product) => {
-          if (!isInCart(product.productId)) {
-            addItem(
-              refactorGetCartDataBeforeAddingToCart(product),
-              product.quantity
-            );
-          }
+          addItem(
+            refactorGetCartDataBeforeAddingToCart(product),
+            product.quantity
+          );
         });
       }
     } catch (error) {
@@ -110,15 +110,6 @@ export default function Categories({
         });
     }
   };
-  useEffect(() => {
-    let isMounted = true;
-    if (isMounted && authState?.isAuthenticated) {
-      runGetCartQuery();
-    }
-    return () => {
-      isMounted = false;
-    };
-  }, [authState?.isAuthenticated]);
 
   useEffect(() => {
     if (
@@ -135,8 +126,15 @@ export default function Categories({
       setStoreId(
         data.getWorkFlowPolicyOfStoreBasedOnDomain.data.plan[0].storeId
       );
+      let isMounted = true;
+      if (isMounted && authState?.isAuthenticated) {
+        runGetCartQuery();
+      }
+      return () => {
+        isMounted = false;
+      };
     }
-  }, [data]);
+  }, [data,authState?.isAuthenticated]);
 
   if (
     data &&

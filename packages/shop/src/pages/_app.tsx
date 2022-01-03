@@ -43,7 +43,7 @@ const RouteGuard = ({ children }) => {
 
   useEffect(() => {
     isAuthenticated(router.asPath);
-    router.replace("/store/home");
+    router.replace("/store");
   }, []);
 
   const { cartItemsCount } = useCart();
@@ -54,7 +54,7 @@ const RouteGuard = ({ children }) => {
       (!isTokenValidOrUndefined() || !cartItemsCount) &&
       privatePaths.includes(path)
     ) {
-      router.push("/store/home");
+      router.push("/store");
     }
   }
   return children;
