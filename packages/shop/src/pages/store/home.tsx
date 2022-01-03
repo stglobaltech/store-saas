@@ -68,6 +68,8 @@ export default function Categories({
     error: "",
   });
 
+  console.log('items',items);
+
   const { data, loading, error } = useQuery(Q_WORK_FLOW_POLICY_BASED_ON_DOMAIN);
 
   //persist user cart on login
@@ -87,6 +89,7 @@ export default function Categories({
           error: ERROR_FETCHING_CART,
         });
       if (getCartData && getCartData.getCart && getCartData.getCart.products) {
+        clearCart();
         getCartData.getCart.products.forEach((product) => {
           if (!isInCart(product.productId)) {
             addItem(
