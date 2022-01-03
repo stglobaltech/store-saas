@@ -15,9 +15,7 @@ import { useEffect } from "react";
 import { Q_GET_USER_ACTIVE_ORDERS } from "graphql/query/get-user-active-order.query";
 import {
   CURRENT_ACTIVE_ORDER_NOT_FOUND,
-  ERROR_FETCHING_YOUR_LAST_ORDER,
-  GENERAL_ERROR_MSG,
-  PAYMENT_STATUS_PENDING,
+  ERROR_FETCHING_ACTIVE_ORDERS,
   UNAUTHORIZED,
   UNAUTHORIZED_MSG,
 } from "utils/constant";
@@ -27,34 +25,19 @@ import { getCartId, getUserId, removeCartId } from "utils/localStorage";
 
 const OrderReceivedPage = () => {
   const cartId = getCartId();
-  const userId = getUserId();
-
-  const { data: paymentStatusData } = useSubscription(
-    S_ORDER_PAYMENT_SUBSCRIPTION,
-    {
-      variables: {
-        input: {
-          userId,
-          cartId,
-        },
-      },
-    }
-  );
 
   const { data, error, loading } = useQuery(Q_GET_USER_ACTIVE_ORDERS);
   const currency = (useAppState("workFlowPolicy") as any).currency;
 
   if (data?.userActiveOrders[0]?.cartId !== cartId && getCartId()) {
-    if (!paymentStatusData) {
-      return (
-        <ErrorMessage>
-          <FormattedMessage
-            id="paymentPending"
-            defaultMessage={PAYMENT_STATUS_PENDING}
-          />
-        </ErrorMessage>
-      );
-    }
+    return (
+      <ErrorMessage>
+        <FormattedMessage
+          id="error"
+          defaultMessage={CURRENT_ACTIVE_ORDER_NOT_FOUND}
+        />
+      </ErrorMessage>
+    );
   }
 
   if (loading) return <Loader />;
@@ -65,12 +48,21 @@ const OrderReceivedPage = () => {
           <FormattedMessage id="error" defaultMessage={UNAUTHORIZED_MSG} />
         </ErrorMessage>
       );
+    } else {
+      return (
+        <ErrorMessage>
+          <FormattedMessage
+            id="error"
+            defaultMessage={ERROR_FETCHING_ACTIVE_ORDERS}
+          />
+        </ErrorMessage>
+      );
     }
   }
 
   const currentOrder = data?.userActiveOrders[0];
 
-  if (!currentOrder){
+  if (!currentOrder) {
     return (
       <ErrorMessage>
         <FormattedMessage
@@ -79,7 +71,7 @@ const OrderReceivedPage = () => {
         />
       </ErrorMessage>
     );
-  }else{
+  } else {
     removeCartId();
   }
 

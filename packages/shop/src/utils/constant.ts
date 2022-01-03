@@ -32,7 +32,7 @@ export const NO_ORDERS_MADE =
 export const PREV_ORDER_INCOMPLETE =
   "Your Previous Order Is InComplete. Please wait for it to finish or expire :(";
 export const CURRENT_ACTIVE_ORDER_NOT_FOUND =
-  "We couldn't retrieve your current active order.Did you place an order? If yes try refreshing the page and wait for the summary to reflect or contact our support";
+  "We couldn't retrieve your current active order.Did you place an order? If yes try refreshing the page and wait for the summary to reflect or contact our support.Please wait for your order status to reflect. Do not place another order";
 export const PAYMENT_STATUS_PENDING =
   "We are yet to confirm your payment. Please wait for your order summary to reflect,try refreshing your page. You can't place another order meanwhile";
 export const USER_TRANSACTIONS_ERROR =
