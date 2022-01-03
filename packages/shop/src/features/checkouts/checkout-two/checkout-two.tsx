@@ -131,10 +131,8 @@ const CheckoutWithSidebar: React.FC<MyFormProps> = ({
         data.placeOrder.stripeCheckoutUrl &&
         data.placeOrder.stripeCheckoutUrl.length
       ) {
-        clearCart();
         router.push(data.placeOrder.stripeCheckoutUrl);
       } else if (data && data.placeOrder && data.placeOrder.success) {
-        clearCart();
         router.replace("/order-received");
       } else if (
         data &&

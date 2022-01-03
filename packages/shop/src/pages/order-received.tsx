@@ -63,8 +63,6 @@ const OrderReceivedPage = () => {
 
   const currentOrder = data?.userActiveOrders[0];
 
-  console.log("currentOrder", currentOrder);
-
   if (!currentOrder) {
     return (
       <ErrorMessage>
@@ -76,7 +74,6 @@ const OrderReceivedPage = () => {
     );
   } else {
     removeCartId();
-    clearCart();
   }
 
   return (
