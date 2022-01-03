@@ -30,19 +30,10 @@ const OrderReceivedPage = () => {
   const { data, error, loading } = useQuery(Q_GET_USER_ACTIVE_ORDERS);
   const currency = (useAppState("workFlowPolicy") as any).currency;
 
-  if (data?.userActiveOrders[0]?.cartId !== cartId && getCartId()) {
-    return (
-      <ErrorMessage>
-        <FormattedMessage
-          id="error"
-          defaultMessage={CURRENT_ACTIVE_ORDER_NOT_FOUND}
-        />
-      </ErrorMessage>
-    );
-  }
 
   if (loading) return <Loader />;
-  if (error) {
+
+  if (error && !loading && !data) {
     if (error.message === UNAUTHORIZED) {
       return (
         <ErrorMessage>
@@ -61,9 +52,22 @@ const OrderReceivedPage = () => {
     }
   }
 
+
+  if (data?.userActiveOrders[0]?.cartId !== cartId && getCartId()) {
+    return (
+      <ErrorMessage>
+        <FormattedMessage
+          id="error"
+          defaultMessage={CURRENT_ACTIVE_ORDER_NOT_FOUND}
+        />
+      </ErrorMessage>
+    );
+  }
+
+
   const currentOrder = data?.userActiveOrders[0];
 
-  if (!currentOrder) {
+  if (!currentOrder && !loading) {
     return (
       <ErrorMessage>
         <FormattedMessage

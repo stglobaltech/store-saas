@@ -8,11 +8,6 @@ import {
   Meta,
 } from "./order-card.style";
 import { FormattedMessage } from "react-intl";
-import { useSubscription } from "@apollo/client";
-import {
-  S_CHEF_ORDER_SUBSCRIPTION,
-  S_ORDER_STATUS_SUBSCRIPTION,
-} from "graphql/subscriptions/order-status.subscription";
 
 type OrderCardProps = {
   orderId?: any;
@@ -25,6 +20,7 @@ type OrderCardProps = {
   currency?: string;
   orderPayType?: string;
   shortOrderId?: string;
+  key?: string;
 };
 
 const OrderCard: React.FC<OrderCardProps> = ({
@@ -37,20 +33,11 @@ const OrderCard: React.FC<OrderCardProps> = ({
   currency,
   orderPayType,
   shortOrderId,
+  key,
 }) => {
-  // const { data: orderStatusData, error: orderStatusError } = useSubscription(
-  //   S_ORDER_STATUS_SUBSCRIPTION,
-  //   {
-  //     variables: {
-  //       input: {
-  //         orderId,
-  //       },
-  //     },
-  //   }
-  // );
 
   return (
-    <>
+    <div key={key}>
       <SingleOrderList onClick={onClick} className={className}>
         <OrderListHeader>
           <TrackID>
@@ -87,7 +74,7 @@ const OrderCard: React.FC<OrderCardProps> = ({
           </Meta>
         </OrderMeta>
       </SingleOrderList>
-    </>
+    </div>
   );
 };
 
