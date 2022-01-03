@@ -1,6 +1,6 @@
 import React from "react";
 import { NextPage } from "next";
-import { useQuery, useSubscription } from "@apollo/client";
+import { useQuery } from "@apollo/client";
 import { Modal } from "@redq/reuse-modal";
 import { SEO } from "components/seo";
 import Checkout from "features/checkouts/checkout-two/checkout-two";
@@ -23,6 +23,7 @@ import {
   GENERAL_ERROR_MSG,
 } from "utils/constant";
 import { FormattedMessage } from "react-intl";
+import { useAppState } from "contexts/app/app.provider";
 
 type Props = {
   deviceType: {
@@ -33,14 +34,15 @@ type Props = {
 };
 
 const CheckoutPage: NextPage<Props> = ({ deviceType }) => {
-  const storeId=getStoreId();
+  const storeId = getStoreId();
 
-  const { cartItemsCount, clearCart } = useCart();
+  const { clearCart } = useCart();
   const router = useRouter();
 
   const { data, loading, error } = useQuery(Q_GET_ALL_ADDRESSES);
 
   const { authDispatch } = React.useContext<any>(AuthContext);
+  const workFlowPolicyOfStore = useAppState("workFlowPolicy");
 
   if (!isTokenValidOrUndefined()) {
     removeToken();
@@ -65,24 +67,7 @@ const CheckoutPage: NextPage<Props> = ({ deviceType }) => {
     error: userProfileError,
   } = useQuery(Q_GET_USER_PROFILE);
 
-  const {
-    data: workFlowPolicyData,
-    loading: workFlowPolicyLoading,
-    error: workFlowPolicyError,
-  } = useQuery(Q_WORK_FLOW_POLICY, {
-    variables: {
-      storeId: storeId,
-    },
-  });
-
-  if (cartLoading || workFlowPolicyLoading || userProfileLoading || loading)
-    return <Loader />;
-  if (workFlowPolicyError)
-    return (
-      <ErrorMessage>
-        <FormattedMessage id="error" defaultMessage={GENERAL_ERROR_MSG} />
-      </ErrorMessage>
-    );
+  if (cartLoading || userProfileLoading || loading) return <Loader />;
   if (cartError)
     return (
       <ErrorMessage>
@@ -118,39 +103,13 @@ const CheckoutPage: NextPage<Props> = ({ deviceType }) => {
   }
 
   let policies = {};
-  if (
-    workFlowPolicyData &&
-    workFlowPolicyData.getWorkFlowpolicyPlanOfStoreForUserWeb &&
-    workFlowPolicyData.getWorkFlowpolicyPlanOfStoreForUserWeb.data &&
-    workFlowPolicyData.getWorkFlowpolicyPlanOfStoreForUserWeb.data.plan
-  ) {
-    if (
-      workFlowPolicyData.getWorkFlowpolicyPlanOfStoreForUserWeb.data.plan.length
-    ) {
-      const plan =
-        workFlowPolicyData.getWorkFlowpolicyPlanOfStoreForUserWeb.data.plan[0];
-      policies["gateWayName"] = plan.gateWayName;
-      policies["paymentType"] = plan.paymentType.map((type, index) => {
-        return {
-          type,
-          id: index,
-          description: paymentoptions.filter(
-            (option) => option.title === type
-          )[0].content,
-        };
-      });
-    } else {
-      policies["paymentType"] = [
-        {
-          type: "cash",
-          id: 1,
-          description: paymentoptions.filter(
-            (option) => option.title === "cash"
-          ),
-        },
-      ];
-    }
-  }
+  policies["paymentType"] = [
+    {
+      type: "cash",
+      id: 1,
+      description: paymentoptions.filter((option) => option.title === "cash"),
+    },
+  ];
 
   return (
     <>

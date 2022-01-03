@@ -124,8 +124,8 @@ const ActionButton = styled.span`
 
 const Pills = styled.span`
   display: flex;
-  max-width:70%;
-  margin:auto;
+  max-width: 70%;
+  margin: auto;
   align-items: center;
   justify-content: center;
   background: #fff;
@@ -168,7 +168,7 @@ const PaymentRadioCard: React.FC<RadioCardProps> = ({
       />
       {title && <CardTitle>{title}</CardTitle>}
       {content && walletBalance === undefined ? (
-        <CardContent>{content}</CardContent>
+        <CardContent>{content[0]["content"]}</CardContent>
       ) : (
         <CardContent>
           {content}
