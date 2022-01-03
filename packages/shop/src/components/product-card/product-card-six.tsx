@@ -5,6 +5,7 @@ import styled from "styled-components";
 import css from "@styled-system/css";
 import { Box } from "components/box";
 import noImage from "assets/images/no_image.jpg";
+import { useLocale } from "contexts/language/language.provider";
 
 const Card = styled.div({
   backgroundColor: "#fff",
@@ -128,6 +129,8 @@ export const ProductCard = ({ data, currency }: Props) => {
     _id,
   } = data;
 
+  const { isRtl } = useLocale();
+
   return (
     <Link href="/product/[slug]" as={`/product/${_id}`}>
       <Card>
@@ -145,12 +148,10 @@ export const ProductCard = ({ data, currency }: Props) => {
         </Box>
         <Box padding={20}>
           <PriceWrapper>
-            <Price>
-              {currency+" "+price}
-            </Price>
+            <Price>{currency + " " + price}</Price>
             {/* <SalePrice>{basePrice}</SalePrice> */}
           </PriceWrapper>
-          <Title>{productName.en}</Title>
+          <Title>{!isRtl ? productName.en : productName?.ar}</Title>
         </Box>
       </Card>
     </Link>

@@ -19,6 +19,7 @@ import noImage from "assets/images/no_image.jpg";
 import Loader from "components/loader/loader";
 import { FormattedMessage } from "react-intl";
 import ErrorMessage from "../../components/error-message/error-message";
+import { useLocale } from "contexts/language/language.provider";
 SwiperCore.use([Navigation]);
 
 interface Props {
@@ -28,6 +29,7 @@ interface Props {
 
 export const HorizontalCategoryCardMenu = ({ productCategoriesSSR }: Props) => {
   const router = useRouter();
+  const { isRtl } = useLocale();
 
   const { data, loading, error } = useQuery(GET_CATEGORIES);
 
@@ -70,7 +72,7 @@ export const HorizontalCategoryCardMenu = ({ productCategoriesSSR }: Props) => {
                       alt={category.title}
                     />
                   </ImageWrapper>
-                  <Title>{category.name.en}</Title>
+                  <Title>{!isRtl ? category.name.en : category.name.ar}</Title>
                 </ItemCard>
               </SwiperSlide>
             );
