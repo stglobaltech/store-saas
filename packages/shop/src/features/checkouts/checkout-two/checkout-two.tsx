@@ -124,6 +124,7 @@ const CheckoutWithSidebar: React.FC<MyFormProps> = ({
 
   const [placeOrder] = useMutation(M_PLACE_ORDER, {
     onCompleted: (data) => {
+      console.log('data',data);
       if (
         data &&
         data.placeOrder &&
