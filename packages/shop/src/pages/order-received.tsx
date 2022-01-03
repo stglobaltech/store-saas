@@ -25,9 +25,12 @@ import { getCartId, getUserId, removeCartId } from "utils/localStorage";
 
 const OrderReceivedPage = () => {
   const cartId = getCartId();
+  const { clearCart } = useCart();
 
   const { data, error, loading } = useQuery(Q_GET_USER_ACTIVE_ORDERS);
   const currency = (useAppState("workFlowPolicy") as any).currency;
+
+  console.log("data", data);
 
   if (data?.userActiveOrders[0]?.cartId !== cartId && getCartId()) {
     return (
@@ -62,6 +65,8 @@ const OrderReceivedPage = () => {
 
   const currentOrder = data?.userActiveOrders[0];
 
+  console.log("currentOrder", currentOrder);
+
   if (!currentOrder) {
     return (
       <ErrorMessage>
@@ -73,6 +78,7 @@ const OrderReceivedPage = () => {
     );
   } else {
     removeCartId();
+    clearCart();
   }
 
   return (

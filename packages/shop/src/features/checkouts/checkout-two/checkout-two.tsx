@@ -109,11 +109,11 @@ const CheckoutWithSidebar: React.FC<MyFormProps> = ({
     isRestaurant,
     toggleRestaurant,
   } = useCart();
-  const workFlowPolicy = (useAppState("workFlowPolicy") as any)
-  const storeId = workFlowPolicy["storeId"]
+  const workFlowPolicy = useAppState("workFlowPolicy") as any;
+  const storeId = workFlowPolicy["storeId"];
 
   const size = useWindowSize();
-  const CURRENCY =workFlowPolicy["currency"];
+  const CURRENCY = workFlowPolicy["currency"];
 
   const [loading, setLoading] = useState(false);
   const [isValid, setIsValid] = useState(false);
@@ -130,11 +130,11 @@ const CheckoutWithSidebar: React.FC<MyFormProps> = ({
         data.placeOrder.stripeCheckoutUrl &&
         data.placeOrder.stripeCheckoutUrl.length
       ) {
+        clearCart();
         router.push(data.placeOrder.stripeCheckoutUrl);
-        clearCart();
       } else if (data && data.placeOrder && data.placeOrder.success) {
-        router.replace("/order-received");
         clearCart();
+        router.replace("/order-received");
       } else if (
         data &&
         data.placeOrder &&
