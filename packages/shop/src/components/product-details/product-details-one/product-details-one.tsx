@@ -272,7 +272,7 @@ const ProductDetails: React.FunctionComponent<ProductDetailsProps> = ({
 
         <ProductInfo dir={isRtl ? "rtl" : "ltr"}>
           <ProductTitlePriceWrapper>
-            <ProductTitle>{product.productName.en}</ProductTitle>
+            <ProductTitle>{!isRtl?product.productName.en:product.productName?.ar}</ProductTitle>
             <ProductPriceWrapper>
               {product.discountInPercent ? (
                 <SalePrice>
@@ -292,7 +292,7 @@ const ProductDetails: React.FunctionComponent<ProductDetailsProps> = ({
             <b>maximum quantity</b> : {product.maxQuantity}
           </ProductWeight>
           <ProductDescription>
-            <ReadMore character={600}>{product.description.en}</ReadMore>
+            <ReadMore character={600}>{!isRtl?product.description.en:product.description?.ar}</ReadMore>
           </ProductDescription>
 
           <ProductCartWrapper>
