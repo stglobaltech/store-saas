@@ -27,9 +27,10 @@ const OrderReceivedPage = () => {
   const cartId = getCartId();
   const { clearCart } = useCart();
 
-  const { data, error, loading } = useQuery(Q_GET_USER_ACTIVE_ORDERS);
+  const { data, error, loading } = useQuery(Q_GET_USER_ACTIVE_ORDERS, {
+    fetchPolicy: "network-only",
+  });
   const currency = (useAppState("workFlowPolicy") as any).currency;
-
 
   if (loading) return <Loader />;
 
@@ -52,7 +53,6 @@ const OrderReceivedPage = () => {
     }
   }
 
-
   if (data?.userActiveOrders[0]?.cartId !== cartId && getCartId()) {
     return (
       <ErrorMessage>
@@ -63,7 +63,6 @@ const OrderReceivedPage = () => {
       </ErrorMessage>
     );
   }
-
 
   const currentOrder = data?.userActiveOrders[0];
 
