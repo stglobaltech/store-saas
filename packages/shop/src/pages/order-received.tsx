@@ -7,7 +7,6 @@ import { Q_GET_USER_ORDER } from "graphql/query/user-get-order.query";
 import Loader from "components/loader/loader";
 import ErrorMessage from "components/error-message/error-message";
 import {
-  S_CHEF_ORDER_SUBSCRIPTION,
   S_ORDER_STATUS_SUBSCRIPTION,
 } from "graphql/subscriptions/order-status.subscription";
 import { S_ORDER_PAYMENT_SUBSCRIPTION } from "graphql/subscriptions/stripe-payment.subscription";
