@@ -59,6 +59,7 @@ const AddProduct: React.FC<Props> = (props) => {
     uploading: false
   });
   const [description, setDescription] = useState('');
+  const [descriptionRegional,setDescriptionRegional]=useState('');
   const [priceSplit, setPriceSplit] = useState({
     price: "0",
     priceWithoutVat: "0",
@@ -136,19 +137,40 @@ const AddProduct: React.FC<Props> = (props) => {
     setDescription(value);
   };
 
+  const handleRegionalDescriptionChange=(e)=>{
+    const value=e.target.value;
+    setValue("descriptionRegional",value);
+    setDescriptionRegional(value);
+  }
+
   const vatPercentage = (storePlanData) => {
-    if(
-      storePlanData &&
-      storePlanData.plan &&
-      storePlanData.plan.length &&
-      storePlanData.plan[0].vat
-    )
-      return storePlanData.plan[0].vat;
-    else if(
-      storePlanData &&
-      storePlanData.globalVat
-    )
-      return storePlanData.globalVat;
+   const nullish = [null, undefined];
+  if (
+    storePlanData &&
+    !nullish.includes(storePlanData.globalVat) &&
+    storePlanData.plan &&
+    storePlanData.plan.length &&
+    !nullish.includes(storePlanData.plan[0].vat)
+  ) {
+    return storePlanData.plan[0].vat;
+  } else if (
+    storePlanData &&
+    !nullish.includes(storePlanData.globalVat) &&
+    (!storePlanData.plan ||
+      (storePlanData.plan &&
+        storePlanData.plan.length &&
+        nullish.includes(storePlanData.plan[0].vat)))
+  ) {
+    return storePlanData.globalVat;
+  } else if (
+    storePlanData &&
+    nullish.includes(storePlanData.globalVat) &&
+    storePlanData.plan &&
+    storePlanData.plan.length &&
+    !nullish.includes(storePlanData.plan[0].vat)
+  ) {
+    return storePlanData.plan[0].vat;
+  }
   };
 
   const handlePriceChange = (e) => {
@@ -187,7 +209,7 @@ const AddProduct: React.FC<Props> = (props) => {
     const productCreateInput = {
       productName: {
         en: values.productName,
-        ar: ""
+        ar: values.productNameRegional
       },
       price: {
         price: parseFloat(priceSplit.price),
@@ -198,7 +220,7 @@ const AddProduct: React.FC<Props> = (props) => {
       maxQuantity: parseFloat(values.quantity),
       description: {
         en: description,
-        ar: ""
+        ar: descriptionRegional
       },
       picture: productPicture.url ? productPicture.url : "https://restaurant-shafeer.s3.ap-south-1.amazonaws.com/store/product-pic/product-pic-1593153655693.png",
       categoryId: category[0].value,
@@ -299,10 +321,44 @@ const AddProduct: React.FC<Props> = (props) => {
                 </FormFields>
 
                 <FormFields>
+                  <FormLabel>Product Name (Regional Language)</FormLabel>
+                  <Input
+                    name="productNameRegional"
+                    inputRef={register({ required: true, minLength: 3, maxLength: 20 })}
+                  />
+                  {errors.productNameRegional && (
+                    <div
+                      style={{
+                        margin: "5px 0 0 auto",
+                        fontFamily: "Lato, sans-serif",
+                        fontSize: "12px",
+                        fontWeight: "bold",
+                        color: "rgb(252, 92, 99)",
+                      }}
+                    >
+                      {errors.productNameReginal.type === "required"
+                        ? "Required"
+                        : (errors.productNameRegional.type === "minLength" ||
+                            errors.productNameRegional.type === "maxLength") &&
+                          "Product Name must be 3-20 characters"}
+                    </div>
+                  )}
+                </FormFields>
+
+                <FormFields>
                   <FormLabel>Description</FormLabel>
                   <Textarea
                     value={description}
                     onChange={handleDescriptionChange}
+                  />
+                </FormFields>
+
+
+                <FormFields>
+                  <FormLabel>Description (Regional Language)</FormLabel>
+                  <Textarea
+                    value={descriptionRegional}
+                    onChange={handleRegionalDescriptionChange}
                   />
                 </FormFields>
 

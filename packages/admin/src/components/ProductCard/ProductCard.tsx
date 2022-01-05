@@ -73,13 +73,13 @@ const ProductCard: React.FC<ProductCardProps> = ({
         <ProductMeta>
           <ProductPriceWrapper>
             <ProductPrice>
-              {currency}
+              {currency}{" "}
               {salePrice && salePrice !== 0 ? salePrice : price}
             </ProductPrice>
 
             {discountInPercent && discountInPercent !== 0 ? (
               <DiscountedPrice>
-                {currency}
+                {currency}{" "}
                 {price}
               </DiscountedPrice>
             ) : null}

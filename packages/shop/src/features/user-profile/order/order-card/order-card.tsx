@@ -10,7 +10,6 @@ import {
 import { FormattedMessage } from "react-intl";
 import { useSubscription } from "@apollo/client";
 import {
-  S_CHEF_ORDER_SUBSCRIPTION,
   S_ORDER_STATUS_SUBSCRIPTION,
 } from "graphql/subscriptions/order-status.subscription";
 

@@ -2,6 +2,7 @@ import {
   CHEF_ACCEPTED_ORDER,
   CHEF_CANCELLED_THE_ORDER,
   CHEF_DECLINED_THE_ORDER,
+  DELIVERED,
   DRIVER_ACCEPTED_ORDER,
   DRIVER_COLLECTED_ORDER,
   DRIVER_REACHED_STORE,
@@ -91,6 +92,8 @@ export function constructEventOrder(event: any) {
         : {};
     } else if (event[i].description === ORDER_DELIVERED.description) {
       !isInArray(event[i]) ? statusProgressData.push(ORDER_DELIVERED) : {};
+    } else if (event[i].description === DELIVERED.description) {
+      !isInArray(event[i]) ? statusProgressData.push(DELIVERED) : {};
     }
   }
 
@@ -100,7 +103,4 @@ export function constructEventOrder(event: any) {
   ];
 }
 
-
-export const ifPaymentNotConfirmed=(status)=>{
-  
-}
+export const ifPaymentNotConfirmed = (status) => {};

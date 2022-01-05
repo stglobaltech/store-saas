@@ -398,7 +398,7 @@ const CheckoutWithSidebar: React.FC<MyFormProps> = ({
                       />
                     </Text>
                     <Text>
-                      {CURRENCY}
+                      {CURRENCY}{" "}
                       {calculateSubTotalPrice()}
                     </Text>
                   </TextWrapper>
@@ -411,7 +411,7 @@ const CheckoutWithSidebar: React.FC<MyFormProps> = ({
                       />
                     </Text>
                     <Text>
-                      {CURRENCY} {deliveryCost}
+                      {CURRENCY}{" "}{deliveryCost}
                     </Text>
                   </TextWrapper>
 
@@ -423,7 +423,7 @@ const CheckoutWithSidebar: React.FC<MyFormProps> = ({
                       />
                     </Text>
                     <Text>
-                      {CURRENCY}
+                      {CURRENCY}{" "}
                       {calculateDiscount()}
                     </Text>
                   </TextWrapper>
@@ -441,7 +441,7 @@ const CheckoutWithSidebar: React.FC<MyFormProps> = ({
                       </Small>
                     </Bold>
                     <Bold>
-                      {CURRENCY}
+                      {CURRENCY}{" "}
                       {(
                         Number(calculatePrice()) + Number(deliveryCost)
                       ).toFixed(2)}
