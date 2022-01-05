@@ -9,7 +9,6 @@ import { Header, Heading } from 'components/Wrapper.style';
 import Fade from 'react-reveal/Fade';
 import ProductCard from 'components/ProductCard/ProductCard';
 import NoResult from 'components/NoResult/NoResult';
-import { CURRENCY } from 'settings/constants';
 import Placeholder from 'components/Placeholder/Placeholder';
 import { useDrawerDispatch } from 'context/DrawerContext';
 import {
