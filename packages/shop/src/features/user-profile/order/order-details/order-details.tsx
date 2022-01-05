@@ -15,8 +15,9 @@ import Progress from "components/progress-box/progress-box";
 import { FormattedMessage } from "react-intl";
 import { useSubscription } from "@apollo/client";
 import {
-  S_CHEF_ORDER_SUBSCRIPTION,
-  S_ORDER_STATUS_SUBSCRIPTION,
+  S_STORE_CANCELLED_ORDER,
+  S_STORE_FINISHED_ORDER,
+  S_ORDER_STATUS_SUBSCRIPTION
 } from "graphql/subscriptions/order-status.subscription";
 import { getUserId } from "utils/localStorage";
 import { constructEventOrder } from "utils/refactor-product-before-adding-to-cart";
@@ -52,39 +53,54 @@ const OrderDetails: React.FC<OrderDetailsProps> = ({
   event,
   refetch,
 }) => {
-  const workFlowPolicy=useAppState("workFlowPolicy")
+  const workFlowPolicy = useAppState("workFlowPolicy");
   const storeId = workFlowPolicy["storeId"];
   const userId = getUserId();
 
-  const { data: chefEventsData } = useSubscription(S_CHEF_ORDER_SUBSCRIPTION, {
+  const { data: storeFinishedOrder } = useSubscription(S_STORE_FINISHED_ORDER, {
     variables: {
       input: {
-        orderId,
         storeId,
+        orderId,
         userId,
       },
     },
   });
 
-  const { data: orderStatusData } = useSubscription(
-    S_ORDER_STATUS_SUBSCRIPTION,
-    {
-      variables: {
-        input: {
-          orderId,
-        },
-      },
+  const {data:orderStatusData}=useSubscription(S_ORDER_STATUS_SUBSCRIPTION,{
+    variables:{
+      input:{
+        orderId
+      }
     }
-  );
+  })
+
+  const { data: storeCancelledOrder } = useSubscription(S_STORE_CANCELLED_ORDER, {
+    variables: {
+      input: {
+        storeId,
+        orderId,
+        userId,
+      },
+    },
+  });
 
   let constructedEvents = constructEventOrder(event);
   let progressStatusData = constructedEvents[0];
   let progressStatus = constructedEvents[1];
 
   if (
-    chefEventsData &&
-    chefEventsData.chefOrderSubscribeForUser &&
-    chefEventsData.chefOrderSubscribeForUser.payload
+    storeFinishedOrder &&
+    storeFinishedOrder.userReceivedOrderSubscription &&
+    storeFinishedOrder.userReceivedOrderSubscription.payload
+  ) {
+    refetch();
+  }
+
+  if (
+    storeCancelledOrder &&
+    storeCancelledOrder.storeCancelledOrderUserWeb &&
+    storeCancelledOrder.storeCancelledOrderUserWeb.payload
   ) {
     refetch();
   }
@@ -96,6 +112,7 @@ const OrderDetails: React.FC<OrderDetailsProps> = ({
   ) {
     refetch();
   }
+
 
   return (
     <>

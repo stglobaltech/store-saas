@@ -54,6 +54,10 @@ export const CHEF_CANCELLED_THE_ORDER = {
   label: "Chef Cancelled Order",
   description: "Chef cancelled the order",
 };
+export const DELIVERED={
+  label:"Delivered",
+  description:"User,RecievedOrder"
+}
 export const DRIVER_ACCEPTED_ORDER = {
   label: "Driver Found",
   description: "Driver accepted the order",

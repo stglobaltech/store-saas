@@ -7,6 +7,7 @@ export const Q_GET_CATEGORIES = gql`
         _id
         name {
           en
+          ar
         }
       }
     }

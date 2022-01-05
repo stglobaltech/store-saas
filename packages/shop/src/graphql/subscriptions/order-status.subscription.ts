@@ -22,11 +22,31 @@ export const S_ORDER_STATUS_SUBSCRIPTION = gql`
 `;
 
 
+export const S_STORE_FINISHED_ORDER=gql`
+subscription userReceivedOrderSubscription($input:UserWebOrderSubscriptionInputDto!){
+  userReceivedOrderSubscription(input:$input){
+    payload {
+      eventType
+      orderId
+    }
+    title {
+      en
+      ar
+    }
+    message {
+      en
+      ar
+    }
+    appType
+    topic
+  }
+}
+`;
 
-//for testing sockets connections.Do not use it.
-export const S_CHEF_ORDER_SUBSCRIPTION=gql`
-subscription($input: ChefOrderSubscriptionForUserInputDto!) {
-  chefOrderSubscribeForUser(input: $input) {
+
+export const S_STORE_CANCELLED_ORDER=gql`
+subscription storeCancelledOrderUserWeb($input:UserWebOrderSubscriptionInputDto!){
+  storeCancelledOrderUserWeb(input:$input){
     payload {
       eventType
       orderId

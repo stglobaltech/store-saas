@@ -7,6 +7,7 @@ export const Q_STORE_PLAN_FOR_USER_WEB_ADMIN = gql`
         plan {
           vat
           isFleetRequired
+          currency
         }
         globalVat
       }
