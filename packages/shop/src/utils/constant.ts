@@ -51,7 +51,7 @@ export const CHEF_DECLINED_THE_ORDER = {
   description: "Chef declined the order",
 };
 export const CHEF_CANCELLED_THE_ORDER = {
-  label: "Chef Cancelled Order",
+  label: "Store Cancelled Order",
   description: "Chef cancelled the order",
 };
 export const DELIVERED={
