@@ -145,7 +145,7 @@ export const CartItem: React.FC<Props> = ({
       <Information>
         <Name>{productName.en}</Name>
         <Price>
-          {workFlowPolicy.currency}
+          {workFlowPolicy.currency}{" "}
           {displayPrice}
         </Price>
         <Weight>
@@ -153,7 +153,7 @@ export const CartItem: React.FC<Props> = ({
         </Weight>
       </Information>
       <Total>
-        {workFlowPolicy.currency}
+        {workFlowPolicy.currency}{" "}
         {(quantity * displayPrice).toFixed(2)}
       </Total>
       {!removeProductFromCartLoading ? (

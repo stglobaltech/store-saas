@@ -160,7 +160,7 @@ const Cart: React.FC<CartPropsType> = ({
                   />
                 </Title>
                 <PriceBox>
-                  {workFlowPolicy.currency}
+                  {workFlowPolicy.currency}{" "}
                   {calculatePrice()}
                 </PriceBox>
               </>
@@ -173,7 +173,7 @@ const Cart: React.FC<CartPropsType> = ({
                 <FormattedMessage id="nav.checkout" defaultMessage="Checkout" />
               </Title>
               <PriceBox>
-                {workFlowPolicy.currency}
+                {workFlowPolicy.currency}{" "}
                 {calculatePrice()}
               </PriceBox>
             </>
