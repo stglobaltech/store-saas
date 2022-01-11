@@ -371,6 +371,7 @@ const AddProduct: React.FC<Props> = (props) => {
                     min="0"
                     inputRef={register}
                     onChange={handlePriceChange}
+                    step="any"
                   />
                 </FormFields>
 
@@ -381,6 +382,7 @@ const AddProduct: React.FC<Props> = (props) => {
                     name="priceWithoutVat"
                     value={priceSplit.priceWithoutVat.toString()}
                     min="0"
+                    step="any"
                     inputRef={register}
                     onChange={handlePriceChange}
                   />

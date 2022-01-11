@@ -48,7 +48,13 @@ const RouteGuard = ({ children }) => {
 
   const { cartItemsCount } = useCart();
   function isAuthenticated(url) {
-    const privatePaths = ["/checkout","/transactions","/order-history","/order-received","/order"];
+    const privatePaths = [
+      "/checkout",
+      "/transactions",
+      "/order-history",
+      "/order-received",
+      "/order",
+    ];
     const path = url.split("?")[0];
     if (
       (!isTokenValidOrUndefined() || !cartItemsCount) &&
