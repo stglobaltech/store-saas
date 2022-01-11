@@ -18,7 +18,9 @@ export const GlobalStyle = createGlobalStyle(({ theme }) =>
     ".pac-container": {
       zIndex: 30000,
       cursor: "not-allowed",
-      pointerEvents: "none",
+    },
+    ".react-headless-notifier-fixed":{
+      zIndex:3000000
     },
     body: {
       margin: 0,

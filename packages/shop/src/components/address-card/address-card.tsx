@@ -84,6 +84,7 @@ const UpdateAddress = (props: FormikProps<FormValues> & MyFormProps) => {
 
   const [addressMutation, { data }] = useMutation(M_ADD_ADDRESS, {
     onCompleted: (data) => {
+      console.log("data", data);
       if (data && data.saveAddress && data.saveAddress.id) {
         const { saveAddress } = data;
         const newAddress = {
@@ -93,10 +94,7 @@ const UpdateAddress = (props: FormikProps<FormValues> & MyFormProps) => {
           buildingNo: saveAddress.buildingNo,
         };
         notify(
-          <SuccessNotification
-            message={"address added successfully"}
-            dismiss
-          />
+          <SuccessNotification message={"address added successfully"} dismiss />
         );
         dispatch({ type: "ADD_OR_UPDATE_ADDRESS", payload: newAddress });
         closeModal();
@@ -121,9 +119,13 @@ const UpdateAddress = (props: FormikProps<FormValues> & MyFormProps) => {
           type: "Point",
         },
       };
-      const response = await addressMutation({
-        variables: { addressInput },
-      });
+      try {
+        const response = await addressMutation({
+          variables: { addressInput },
+        });
+      } catch (error) {
+        notify(<DangerNotification message={error.message} dismiss={true} />);
+      }
     }
   };
 
@@ -138,17 +140,17 @@ const UpdateAddress = (props: FormikProps<FormValues> & MyFormProps) => {
   }, []);
 
   const handleStoreLocChange = useCallback((e) => {
-    console.log("storeLoc change", e);
+    e.preventPropogation();
   }, []);
 
   return (
     <>
       <Heading>{item && item.id ? "Edit Address" : "Add New Address"}</Heading>
-      <AddressMap
-        handleAddress={handleAddressChange}
-        storeLoc={handleStoreLocChange}
-      />
       <form>
+        <AddressMap
+          handleAddress={handleAddressChange}
+          storeLoc={handleStoreLocChange}
+        />
         <FieldWrapper>
           <TextField
             id="name"

@@ -181,7 +181,7 @@ const CheckoutWithSidebar: React.FC<MyFormProps> = ({
       window.location.protocol +
       "//" +
       window.location.host +
-      "/order-received";
+      `/order-received`;
     const cancelUrl =
       window.location.protocol + "//" + window.location.host + "/";
     placeOrder({

@@ -15,7 +15,7 @@ export const handleModal = (
       disableDragging: true,
       className: className,
     },
-    closeOnClickOutside: true,
+    closeOnClickOutside: false,
     component: modalComponent,
     componentProps: { item: modalProps },
   });

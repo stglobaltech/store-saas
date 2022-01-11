@@ -26,7 +26,7 @@ import {
   CART_DOES_NOT_EXIST,
   ERROR_FETCHING_CART,
   GENERAL_ERROR_MSG,
-  WOK_FLOW_POLICY_NOT_CONFIGURED,
+  WORK_FLOW_POLICY_NOT_CONFIGURED,
 } from "utils/constant";
 import { refactorGetCartDataBeforeAddingToCart } from "utils/refactor-product-before-adding-to-cart";
 import { useEffect, useState, useContext } from "react";
@@ -68,7 +68,7 @@ export default function Categories({
     error: "",
   });
 
-  const { data, loading, error } = useQuery(
+  const { data, loading,  error } = useQuery(
     Q_WORK_FLOW_POLICY_BASED_ON_DOMAIN,
     { fetchPolicy: "cache-and-network" }
   );
@@ -141,7 +141,6 @@ export default function Categories({
     data.getWorkFlowPolicyOfStoreBasedOnDomain &&
     data.getWorkFlowPolicyOfStoreBasedOnDomain.data &&
     !data.getWorkFlowPolicyOfStoreBasedOnDomain.data.plan &&
-    !data.getWorkFlowPolicyOfStoreBasedOnDomain.data.plan.length &&
     !error &&
     !loading
   ) {
@@ -149,7 +148,7 @@ export default function Categories({
       <ErrorMessage>
         <FormattedMessage
           id="error"
-          defaultMessage={WOK_FLOW_POLICY_NOT_CONFIGURED}
+          defaultMessage={WORK_FLOW_POLICY_NOT_CONFIGURED}
         />
       </ErrorMessage>
     );
