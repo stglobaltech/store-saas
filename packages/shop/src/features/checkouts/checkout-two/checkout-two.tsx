@@ -1,8 +1,10 @@
 import React, { useContext, useState, useEffect } from "react";
-import Router from "next/router";
+import { useRouter } from "next/router";
 import Link from "next/link";
+import { useNotifier } from "react-headless-notifier";
+import { useQuery, useSubscription } from "@apollo/client";
 import { Button } from "components/button/button";
-import { CURRENCY } from "utils/constant";
+import { CHEF_NOT_AVAILABLE } from "utils/constant";
 import { Scrollbar } from "components/scrollbar/scrollbar";
 import CheckoutWrapper, {
   CheckoutContainer,
@@ -34,8 +36,8 @@ import CheckoutWrapper, {
   NoProductMsg,
   NoProductImg,
 } from "./checkout-two.style";
-
 import { NoCartBag } from "assets/icons/NoCartBag";
+import { openModal } from "@redq/reuse-modal";
 
 import Sticky from "react-stickynode";
 import { ProfileContext } from "contexts/profile/profile.context";
@@ -50,20 +52,27 @@ import Contact from "features/contact/contact";
 import Payment from "features/payment/payment";
 import { useMutation } from "@apollo/client";
 import { M_PLACE_ORDER } from "graphql/mutation/place-order.mutation";
+import SuccessNotification from "../../../components/Notification/SuccessNotification";
+import DangerNotification from "../../../components/Notification/DangerNotification";
+import TopupWallet from "features/topup-wallet/topup-wallet";
+import { Q_GET_STORE_ID } from "graphql/query/loggedIn-queries.query";
+import { useAppState } from "contexts/app/app.provider";
+import { setCartId } from "utils/localStorage";
 
 // The type of props Checkout Form receives
 interface MyFormProps {
   cartId: string;
-  storeId: string;
   deviceType: any;
   deliveryCost: number;
+  wallet: any;
 }
 
 type CartItemProps = {
   product: any;
+  currency: string;
 };
 
-const OrderItem: React.FC<CartItemProps> = ({ product }) => {
+const OrderItem: React.FC<CartItemProps> = ({ product, currency }) => {
   const { _id, quantity, title, productName, unit, price, salePrice } = product;
   const displayPrice = salePrice ? salePrice : price;
   return (
@@ -73,23 +82,21 @@ const OrderItem: React.FC<CartItemProps> = ({ product }) => {
       <ItemInfo>
         {productName ? productName.en : title} {unit ? `| ${unit}` : ""}
       </ItemInfo>
-      <Price>
-        {CURRENCY}
-        {(displayPrice.price * quantity).toFixed(2)}
-      </Price>
+      <Price>{(displayPrice.price * quantity).toFixed(2)}</Price>
     </Items>
   );
 };
 
 const CheckoutWithSidebar: React.FC<MyFormProps> = ({
   cartId,
-  storeId,
   deliveryCost,
   deviceType,
+  wallet,
 }) => {
   const [hasCoupon, setHasCoupon] = useState(false);
   const { state, profileGetOperations } = useContext(ProfileContext);
   const { isRtl } = useLocale();
+
   const {
     items,
     removeCoupon,
@@ -102,29 +109,94 @@ const CheckoutWithSidebar: React.FC<MyFormProps> = ({
     isRestaurant,
     toggleRestaurant,
   } = useCart();
+  const workFlowPolicy = useAppState("workFlowPolicy") as any;
+  const storeId = workFlowPolicy["storeId"];
+
+  const size = useWindowSize();
+  const CURRENCY = workFlowPolicy["currency"];
+
   const [loading, setLoading] = useState(false);
   const [isValid, setIsValid] = useState(false);
 
+  const router = useRouter();
+  const { notify } = useNotifier();
+  const { balance } = wallet;
+
   const [placeOrder] = useMutation(M_PLACE_ORDER, {
     onCompleted: (data) => {
-      setLoading(true);
-      if (isValid) {
-        Router.push('/order-received');
+      if (
+        data &&
+        data.placeOrder &&
+        data.placeOrder.stripeCheckoutUrl &&
+        data.placeOrder.stripeCheckoutUrl.length
+      ) {
+        clearCart();
+        router.push(data.placeOrder.stripeCheckoutUrl);
+      } else if (data && data.placeOrder && data.placeOrder.success) {
+        clearCart();
+        router.replace("/order-received");
+      } else if (
+        data &&
+        data.placeOrder &&
+        data.placeOrder.message &&
+        data.placeOrder.message.en
+      ) {
+        notify(
+          <DangerNotification
+            message={`${data.placeOrder.message.en}`}
+            dismiss
+          />
+        );
       }
-      setLoading(false);
     },
   });
 
-  const size = useWindowSize();
+  function checkWalletTopup() {
+    return (
+      calculatePrice() > balance &&
+      profileGetOperations?.getPrimaryPaymentOption()?.type === "wallet"
+    );
+  }
 
-  const handleSubmit = async () => {
+  function walletTopupModalHandler() {
+    openModal({
+      show: true,
+      overlayClassName: "quick-view-overlay",
+      closeOnClickOutside: true,
+      component: TopupWallet,
+      closeComponent: "",
+      config: {
+        enableResizing: false,
+        disableDragging: true,
+        className: "quick-view-modal",
+        width: 458,
+        height: "auto",
+      },
+    });
+  }
+
+  function placeOrderHandler() {
+    setCartId(cartId);
+    const successUrl =
+      window.location.protocol +
+      "//" +
+      window.location.host +
+      `/order-received`;
+    const cancelUrl =
+      window.location.protocol + "//" + window.location.host + "/";
     placeOrder({
       variables: {
         createOrderInput: {
           cartId,
+          successUrl,
+          cancelUrl,
         },
       },
     });
+  }
+
+  const handleSubmit = async () => {
+    !checkWalletTopup() ? placeOrderHandler() : walletTopupModalHandler();
   };
 
   useEffect(() => {
@@ -194,7 +266,13 @@ const CheckoutWithSidebar: React.FC<MyFormProps> = ({
               className="paymentBox"
               style={{ paddingBottom: 30 }}
             >
-              <Payment increment={true} deviceType={deviceType} />
+              <Payment
+                increment={true}
+                deviceType={deviceType}
+                cartId={cartId}
+                storeId={storeId}
+                walletBalance={balance}
+              />
 
               {/* Coupon start */}
               {/* {coupon ? (
@@ -260,8 +338,10 @@ const CheckoutWithSidebar: React.FC<MyFormProps> = ({
                   style={{ width: "100%" }}
                 >
                   <FormattedMessage
-                    id="processCheckout"
-                    defaultMessage="Proceed to Checkout"
+                    id={
+                      checkWalletTopup() ? "rechargeWallet" : "processCheckout"
+                    }
+                    defaultMessage="Place Order"
                   />
                 </Button>
               </CheckoutSubmit>
@@ -289,6 +369,7 @@ const CheckoutWithSidebar: React.FC<MyFormProps> = ({
                         <OrderItem
                           key={`cartItem-${item._id}`}
                           product={item}
+                          currency={CURRENCY + " "}
                         />
                       ))
                     ) : (
@@ -317,7 +398,7 @@ const CheckoutWithSidebar: React.FC<MyFormProps> = ({
                       />
                     </Text>
                     <Text>
-                      {CURRENCY}
+                      {CURRENCY}{" "}
                       {calculateSubTotalPrice()}
                     </Text>
                   </TextWrapper>
@@ -330,7 +411,7 @@ const CheckoutWithSidebar: React.FC<MyFormProps> = ({
                       />
                     </Text>
                     <Text>
-                      {CURRENCY} {deliveryCost}
+                      {CURRENCY}{" "}{deliveryCost}
                     </Text>
                   </TextWrapper>
 
@@ -342,7 +423,7 @@ const CheckoutWithSidebar: React.FC<MyFormProps> = ({
                       />
                     </Text>
                     <Text>
-                      {CURRENCY}
+                      {CURRENCY}{" "}
                       {calculateDiscount()}
                     </Text>
                   </TextWrapper>
@@ -360,7 +441,7 @@ const CheckoutWithSidebar: React.FC<MyFormProps> = ({
                       </Small>
                     </Bold>
                     <Bold>
-                      {CURRENCY}
+                      {CURRENCY}{" "}
                       {(
                         Number(calculatePrice()) + Number(deliveryCost)
                       ).toFixed(2)}

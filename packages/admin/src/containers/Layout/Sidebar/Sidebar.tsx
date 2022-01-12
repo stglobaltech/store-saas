@@ -37,16 +37,16 @@ const sidebarMenus = [
     icon: <DashboardIcon />,
   },
   {
-    name: 'Products',
-    path: PRODUCTS,
-    exact: false,
-    icon: <ProductIcon />,
-  },
-  {
     name: 'Category',
     path: CATEGORY,
     exact: false,
     icon: <SidebarCategoryIcon />,
+  },
+  {
+    name: 'Products',
+    path: PRODUCTS,
+    exact: false,
+    icon: <ProductIcon />,
   },
   {
     name: 'Orders',

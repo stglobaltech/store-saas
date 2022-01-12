@@ -5,7 +5,9 @@ import { OFFER_MENU_ITEM, HELP_MENU_ITEM } from 'site-settings/site-navigation';
 import LanguageSwitcher from '../language-switcher/language-switcher';
 import { HelpIcon } from 'assets/icons/HelpIcon';
 import { RightMenuBox } from './right-menu.style';
+import ProfImage from "assets/images/dummy-profile-pic.png";
 const AuthMenu = dynamic(() => import('../auth-menu'), { ssr: false });
+
 
 type Props = {
   onLogout: () => void;
@@ -39,7 +41,7 @@ export const RightMenu: React.FC<Props> = ({
       <LanguageSwitcher />
 
       <AuthMenu
-        avatar={avatar}
+        avatar={ProfImage}
         onJoin={onJoin}
         onLogout={onLogout}
         isAuthenticated={isAuthenticated}

@@ -1,59 +1,64 @@
 export const initialState = {
-  searchTerm: '',
+  searchTerm: "",
   isSticky: false,
   isSidebarSticky: true,
   isDrawerOpen: false,
   isModalOpen: false,
+  workFlowPolicy: {},
 };
 
 type ActionType =
-  | { type: 'SET_SEARCH_TERM'; payload: string }
-  | { type: 'SET_STICKY' }
-  | { type: 'REMOVE_STICKY' }
-  | { type: 'SET_SIDEBAR_STICKY' }
-  | { type: 'REMOVE_SIDEBAR_STICKY' }
-  | { type: 'TOGGLE_DRAWER' }
-  | { type: 'TOGGLE_MODAL' };
+  | { type: "SET_SEARCH_TERM"; payload: string }
+  | { type: "SET_STICKY" }
+  | { type: "REMOVE_STICKY" }
+  | { type: "SET_SIDEBAR_STICKY" }
+  | { type: "REMOVE_SIDEBAR_STICKY" }
+  | { type: "TOGGLE_DRAWER" }
+  | { type: "TOGGLE_MODAL" }
+  | { type: "WORK_FLOW_POLICY"; payload: any }
 
 type StateType = typeof initialState;
 
 export function appReducer(state: StateType, action: ActionType): StateType {
   switch (action.type) {
-    case 'SET_SEARCH_TERM':
+    case "SET_SEARCH_TERM":
       return {
         ...state,
         searchTerm: action.payload,
       };
-    case 'SET_STICKY':
+    case "SET_STICKY":
       return {
         ...state,
         isSticky: true,
       };
-    case 'REMOVE_STICKY':
+    case "REMOVE_STICKY":
       return {
         ...state,
         isSticky: false,
       };
-    case 'SET_SIDEBAR_STICKY':
+    case "SET_SIDEBAR_STICKY":
       return {
         ...state,
         isSidebarSticky: true,
       };
-    case 'REMOVE_SIDEBAR_STICKY':
+    case "REMOVE_SIDEBAR_STICKY":
       return {
         ...state,
         isSidebarSticky: false,
       };
-    case 'TOGGLE_DRAWER':
+    case "TOGGLE_DRAWER":
       return {
         ...state,
         isDrawerOpen: !state.isDrawerOpen,
       };
-    case 'TOGGLE_MODAL':
+    case "TOGGLE_MODAL":
       return {
         ...state,
         isModalOpen: !state.isModalOpen,
       };
+    case "WORK_FLOW_POLICY":
+      return { ...state, workFlowPolicy: action.payload };
+
     default: {
       throw new Error(`Unsupported action type at App Reducer`);
     }

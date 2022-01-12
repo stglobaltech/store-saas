@@ -43,17 +43,24 @@ const RouteGuard = ({ children }) => {
 
   useEffect(() => {
     isAuthenticated(router.asPath);
+    router.replace("/store");
   }, []);
 
   const { cartItemsCount } = useCart();
   function isAuthenticated(url) {
-    const privatePaths = ["/checkout"];
+    const privatePaths = [
+      "/checkout",
+      "/transactions",
+      "/order-history",
+      "/order-received",
+      "/order",
+    ];
     const path = url.split("?")[0];
     if (
       (!isTokenValidOrUndefined() || !cartItemsCount) &&
       privatePaths.includes(path)
     ) {
-      router.push("/");
+      router.push("/store");
     }
   }
   return children;
@@ -70,22 +77,22 @@ export default function ExtendedApp({ Component, pageProps }) {
       <ThemeProvider theme={defaultTheme}>
         <GlobalStyle />
         <LanguageProvider messages={messages}>
-          <CartProvider>
-            <AppProvider>
-              <AuthProvider>
-                <AppLayout>
-                  <RouteGuard>
+          <RouteGuard>
+            <CartProvider>
+              <AppProvider>
+                <AuthProvider>
+                  <AppLayout>
                     <NotifierContextProvider>
                       <Component
                         {...pageProps}
                         deviceType={{ mobile, tablet, desktop }}
                       />
                     </NotifierContextProvider>
-                  </RouteGuard>
-                </AppLayout>
-              </AuthProvider>
-            </AppProvider>
-          </CartProvider>
+                  </AppLayout>
+                </AuthProvider>
+              </AppProvider>
+            </CartProvider>
+          </RouteGuard>
         </LanguageProvider>
       </ThemeProvider>
     </ApolloProvider>

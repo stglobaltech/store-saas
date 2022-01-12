@@ -1,50 +1,50 @@
-import React from 'react';
-import { ProductCard } from 'components/product-card/product-card-four';
-import styled from 'styled-components';
-import css from '@styled-system/css';
-import ErrorMessage from 'components/error-message/error-message';
-import { useQuery, NetworkStatus } from '@apollo/client';
-import { GET_PRODUCTS } from 'graphql/query/products.query';
-import { useRouter } from 'next/router';
-import { Button } from 'components/button/loadmore-button';
-import { FormattedMessage } from 'react-intl';
-import { Box } from 'components/box';
-import NoResultFound from 'components/no-result/no-result';
-import { LoaderItem, LoaderWrapper } from './product-list/product-list.style';
-import Placeholder from 'components/placeholder/placeholder';
+import React from "react";
+import { ProductCard } from "components/product-card/product-card-four";
+import styled from "styled-components";
+import css from "@styled-system/css";
+import ErrorMessage from "components/error-message/error-message";
+import { useQuery, NetworkStatus } from "@apollo/client";
+import { GET_PRODUCTS } from "graphql/query/products.query";
+import { useRouter } from "next/router";
+import { Button } from "components/button/loadmore-button";
+import { FormattedMessage } from "react-intl";
+import { Box } from "components/box";
+import NoResultFound from "components/no-result/no-result";
+import { LoaderItem, LoaderWrapper } from "./product-list/product-list.style";
+import Placeholder from "components/placeholder/placeholder";
 
 // import { Button } from './button';
 
 const Grid = styled.div(
   css({
-    display: 'grid',
-    gridGap: '10px',
-    gridTemplateColumns: 'repeat(1, minmax(180px, 1fr))',
+    display: "grid",
+    gridGap: "10px",
+    gridTemplateColumns: "repeat(1, minmax(180px, 1fr))",
 
-    '@media screen and (min-width: 440px)': {
-      gridTemplateColumns: 'repeat(2, minmax(180px, 1fr))',
+    "@media screen and (min-width: 440px)": {
+      gridTemplateColumns: "repeat(2, minmax(180px, 1fr))",
     },
 
-    '@media screen and (min-width: 768px)': {
-      gridTemplateColumns: 'repeat(3, minmax(180px, 1fr))',
-      gridGap: '20px',
+    "@media screen and (min-width: 768px)": {
+      gridTemplateColumns: "repeat(3, minmax(180px, 1fr))",
+      gridGap: "20px",
     },
 
-    '@media screen and (min-width: 991px)': {
-      gridTemplateColumns: 'repeat(2, minmax(180px, 1fr))',
-      gridGap: '30px',
+    "@media screen and (min-width: 991px)": {
+      gridTemplateColumns: "repeat(2, minmax(180px, 1fr))",
+      gridGap: "30px",
     },
 
-    '@media screen and (min-width: 1100px)': {
-      gridTemplateColumns: 'repeat(3, minmax(180px, 1fr))',
+    "@media screen and (min-width: 1100px)": {
+      gridTemplateColumns: "repeat(3, minmax(180px, 1fr))",
     },
 
-    '@media screen and (min-width: 1700px)': {
-      gridTemplateColumns: 'repeat(4, minmax(240px, 1fr))',
+    "@media screen and (min-width: 1700px)": {
+      gridTemplateColumns: "repeat(4, minmax(240px, 1fr))",
     },
 
-    '@media screen and (min-width: 2200px)': {
-      gridTemplateColumns: 'repeat(5, minmax(240px, 1fr))',
+    "@media screen and (min-width: 2200px)": {
+      gridTemplateColumns: "repeat(5, minmax(240px, 1fr))",
     },
   })
 );
@@ -77,18 +77,23 @@ export const ProductGrid = ({
     }
   );
   const loadingMore = networkStatus === NetworkStatus.fetchMore;
-  if (error) return <ErrorMessage message={error.message} />;
+  if (error)
+    return (
+      <ErrorMessage>
+        <FormattedMessage id="error" defaultMessage={error.message} />
+      </ErrorMessage>
+    );
   if (loading && !loadingMore) {
     return (
       <LoaderWrapper>
         <LoaderItem>
-          <Placeholder uniqueKey='1' />
+          <Placeholder uniqueKey="1" />
         </LoaderItem>
         <LoaderItem>
-          <Placeholder uniqueKey='2' />
+          <Placeholder uniqueKey="2" />
         </LoaderItem>
         <LoaderItem>
-          <Placeholder uniqueKey='3' />
+          <Placeholder uniqueKey="3" />
         </LoaderItem>
       </LoaderWrapper>
     );
@@ -114,18 +119,18 @@ export const ProductGrid = ({
       </Grid>
 
       {loadMore && hasMore && (
-        <Box style={{ textAlign: 'center' }} mt={'2rem'}>
+        <Box style={{ textAlign: "center" }} mt={"2rem"}>
           <Button
             onClick={handleLoadMore}
             loading={loadingMore}
-            variant='secondary'
+            variant="secondary"
             style={{
               fontSize: 14,
-              display: 'inline-flex',
+              display: "inline-flex",
             }}
-            border='1px solid #f1f1f1'
+            border="1px solid #f1f1f1"
           >
-            <FormattedMessage id='loadMoreButton' defaultMessage='Load More' />
+            <FormattedMessage id="loadMoreButton" defaultMessage="Load More" />
           </Button>
         </Box>
       )}
