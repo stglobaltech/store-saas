@@ -334,6 +334,7 @@ export default function OrdersReport() {
                               gridColumnStart: '1',
                               gridColumnEnd: 'one',
                             }}
+                            msg={"No transactions witnessed so far"}
                           />
                         )
                       ) : null}

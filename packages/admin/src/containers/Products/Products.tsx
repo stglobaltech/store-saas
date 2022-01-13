@@ -243,7 +243,7 @@ export default function Products() {
                   </Col>
                 ))
               ) : (
-                <NoResult />
+                <NoResult msg={"No products added yet"}/>
               )
             ) : (
               <LoaderWrapper>

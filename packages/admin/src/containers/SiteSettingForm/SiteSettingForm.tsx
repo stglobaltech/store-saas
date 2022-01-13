@@ -36,11 +36,8 @@ const SiteSettingsForm: React.FC<Props> = () => {
     <Grid fluid={true}>
       <Form onSubmit={handleSubmit(onSubmit)} style={{ paddingBottom: 0 }}>
         <Row>
-          <Col md={4}>
-            <FieldDetails>Upload your site logo here</FieldDetails>
-          </Col>
-
-          <Col md={8}>
+          <Col md={12}>
+          <FieldDetails>Upload your site logo here</FieldDetails>
             <DrawerBox>
               <Uploader onChange={handleUploader} />
             </DrawerBox>
@@ -48,14 +45,11 @@ const SiteSettingsForm: React.FC<Props> = () => {
         </Row>
 
         <Row>
-          <Col md={4}>
+          <Col md={12}>
+            <DrawerBox>
             <FieldDetails>
               Add your site description and necessary information from here
             </FieldDetails>
-          </Col>
-
-          <Col md={8}>
-            <DrawerBox>
               <FormFields>
                 <FormLabel>Site Name</FormLabel>
                 <Input

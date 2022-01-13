@@ -4,13 +4,7 @@ const withOptimizedImages = require('next-optimized-images');
 // next.js configuration
 const nextConfig = {
   async redirects() {
-    return [
-      {
-        source: '/',
-        destination: '/store',
-        permanent: false,
-      },
-    ];
+    return [];
   },
 };
 

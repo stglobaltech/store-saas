@@ -261,10 +261,8 @@ const AddProduct: React.FC<Props> = (props) => {
           )}
         >
           <Row>
-            <Col lg={4}>
-              <FieldDetails>Upload your Product image here</FieldDetails>
-            </Col>
-            <Col lg={8}>
+            <Col lg={12}>
+            <FieldDetails>Upload your Product image here</FieldDetails>
               <DrawerBox
                 overrides={{
                   Block: {
@@ -287,13 +285,10 @@ const AddProduct: React.FC<Props> = (props) => {
           </Row>
 
           <Row>
-            <Col lg={4}>
-              <FieldDetails>
+            <Col lg={12}>
+            <FieldDetails>
                 Add your Product description and necessary information from here
               </FieldDetails>
-            </Col>
-
-            <Col lg={8}>
               <DrawerBox>
                 <FormFields>
                   <FormLabel>Product Name</FormLabel>
@@ -321,7 +316,7 @@ const AddProduct: React.FC<Props> = (props) => {
                 </FormFields>
 
                 <FormFields>
-                  <FormLabel>Product Name (Regional Language)</FormLabel>
+                  <FormLabel>Product Name In Regional Language</FormLabel>
                   <Input
                     name="productNameRegional"
                     inputRef={register({ required: true, minLength: 3, maxLength: 20 })}
@@ -355,7 +350,7 @@ const AddProduct: React.FC<Props> = (props) => {
 
 
                 <FormFields>
-                  <FormLabel>Description (Regional Language)</FormLabel>
+                  <FormLabel>Description In Regional Language</FormLabel>
                   <Textarea
                     value={descriptionRegional}
                     onChange={handleRegionalDescriptionChange}
