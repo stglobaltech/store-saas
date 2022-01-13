@@ -94,7 +94,7 @@ function VerifyUser({ handleSentOtp }) {
             }
           />
           {verifyState.sentOtp ? (
-            <FormattedMessage id="otpSent" defaultMessage="Otp Sent" />
+            <FormattedMessage id="signUpOtpSent" defaultMessage="Otp Sent" />
           ) : null}
           {!verifyState.sentOtp ? (
             <Button

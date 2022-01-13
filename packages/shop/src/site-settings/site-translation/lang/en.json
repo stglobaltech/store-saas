@@ -118,6 +118,7 @@
   "continueBtn": "Continue",
   "signUpAfterOtp": "Next",
   "otpSent": "Otp Sent To Your Phone/Email",
+  "signUpOtpSent":"Otp sent to your mobile number",
   "sendOtp": "Send Otp",
   "orText": "or",
   "continueFacebookBtn": "Continue with Facebook",
