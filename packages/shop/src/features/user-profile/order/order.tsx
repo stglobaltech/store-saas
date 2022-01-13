@@ -46,7 +46,7 @@ const orderTableColumns = [
 
           <ItemDetails>
             <ItemName>{record.name.en}</ItemName>
-            <ItemSize>{record.quantity}</ItemSize>
+            {/* <ItemSize>{record.quantity}</ItemSize> */}
             <ItemPrice>
               {Math.floor(record.quotedPrice / record.quantity)}
             </ItemPrice>

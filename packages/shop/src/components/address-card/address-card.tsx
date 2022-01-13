@@ -84,7 +84,6 @@ const UpdateAddress = (props: FormikProps<FormValues> & MyFormProps) => {
 
   const [addressMutation, { data }] = useMutation(M_ADD_ADDRESS, {
     onCompleted: (data) => {
-      console.log("data", data);
       if (data && data.saveAddress && data.saveAddress.id) {
         const { saveAddress } = data;
         const newAddress = {
@@ -190,6 +189,13 @@ const UpdateAddress = (props: FormikProps<FormValues> & MyFormProps) => {
         <Button
           onClick={handleSubmit}
           style={{ width: "100%", height: "44px" }}
+          disabled={
+            !addressCoordinates.lat ||
+            !addressCoordinates.lng ||
+            !addressValue.name.length ||
+            !addressValue.buildingNo.length ||
+            !addressValue.info.length
+          }
         >
           <FormattedMessage
             id={item && item.id ? "updateAddressBtn" : "saveAddressBtn"}

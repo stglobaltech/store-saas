@@ -20,7 +20,7 @@ import { Q_SEARCH_PRODUCTS_BASED_ON_CATEGORY_FOR_USER } from "graphql/query/sear
 import { useCart } from "contexts/cart/use-cart";
 import { Q_GET_CART } from "graphql/query/get-cart.query";
 import { refactorGetCartDataBeforeAddingToCart } from "utils/refactor-product-before-adding-to-cart";
-import { getToken } from "utils/localStorage";
+import { getStoreId, getToken } from "utils/localStorage";
 import { Q_GET_STORE_ID } from "graphql/query/loggedIn-queries.query";
 import { useAppState } from "contexts/app/app.provider";
 
@@ -76,7 +76,7 @@ export const ProductGrid = ({
     query: { category, search },
   } = router;
 
-  const storeId = workFlowPolicy.storeId;
+  const storeId = workFlowPolicy?.storeId;
 
   useEffect(() => {
     setPage(1);

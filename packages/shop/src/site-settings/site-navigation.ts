@@ -67,11 +67,11 @@ export const PROFILE_MENU_ITEM = {
 };
 export const AUTHORIZED_MENU_ITEMS = [
   //PROFILE_MENU_ITEM,
-  {
-    id: "nav.checkout",
-    defaultMessage: "Checkout",
-    href: CHECKOUT_PAGE,
-  },
+  // {
+  //   id: "nav.checkout",
+  //   defaultMessage: "Checkout",
+  //   href: CHECKOUT_PAGE,
+  // },
   // {
   //   id: 'alternativeCheckout',
   //   href: CHECKOUT_PAGE_TWO,
