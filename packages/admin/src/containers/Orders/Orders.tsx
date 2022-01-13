@@ -23,6 +23,7 @@ import { FormFields } from 'components/FormFields/FormFields';
 import Select from 'components/Select/Select';
 import Button from 'components/Button/Button';
 import { InLineLoader } from 'components/InlineLoader/InlineLoader';
+import { SettingIcon } from 'assets/icons/SettingIcon';
 
 type CustomThemeT = { red400: string; textNormal: string; colors: any };
 const themedUseStyletron = createThemedUseStyletron<CustomThemeT>();
@@ -234,7 +235,7 @@ export default function Orders() {
                 <TableWrapper>
                   <StyledTable
                     style={{ borderBottom: '0px' }}
-                    $gridTemplateColumns='minmax(150px, auto) minmax(150px, auto) minmax(120px, auto) minmax(100px, auto) minmax(100px, auto) minmax(150px, auto)'
+                    $gridTemplateColumns='minmax(110px, auto) minmax(150px, auto) minmax(140px, auto) minmax(80px, auto) minmax(80px, auto) minmax(150px, auto) minmax(80px, auto)'
                   >
                     <StyledHeadCell>ID</StyledHeadCell>
                     <StyledHeadCell>User Name</StyledHeadCell>
@@ -242,6 +243,7 @@ export default function Orders() {
                     <StyledHeadCell>Amount</StyledHeadCell>
                     <StyledHeadCell>Status</StyledHeadCell>
                     <StyledHeadCell>Time</StyledHeadCell>
+                    <StyledHeadCell>Details</StyledHeadCell>
                     {data?.storeActiveOrders?.order?.length ? (
                       data.storeActiveOrders.order.map((item, index) => (
                         <React.Fragment key={index}>
@@ -271,6 +273,12 @@ export default function Orders() {
                           </StyledCell>
                           <StyledCell>
                             {new Date(item.createdAt).toLocaleString()}
+                          </StyledCell>
+                          <StyledCell
+                            onClick={() => openDrawer(item)}
+                            style={{ cursor: 'pointer' }}
+                          >
+                            <SettingIcon />
                           </StyledCell>
                         </React.Fragment>
                       ))
