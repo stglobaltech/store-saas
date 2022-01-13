@@ -16,7 +16,6 @@ import { Plus } from 'assets/icons/Plus';
 import NoResult from 'components/NoResult/NoResult';
 import { GET_PRODUCT_CATEGORIES, Q_GET_STORE_ID } from 'services/GQL';
 import { PencilIcon } from 'assets/icons/PencilIcon';
-import no_image from 'assets/image/no_image.jpg';
 import { TrashIcon } from 'assets/icons/TrashIcon';
 
 const Col = withStyle(Cols, () => ({
@@ -117,7 +116,6 @@ export default function Category() {
             <TableWrapper>
               <StyledTable $gridTemplateColumns='minmax(30px, auto) minmax(30px, auto) minmax(30px, auto) '>
                 <StyledHeadCell>Name</StyledHeadCell>
-                <StyledHeadCell>Image</StyledHeadCell>
                 <StyledHeadCell>Actions</StyledHeadCell>
 
                 {categoryData ? (
@@ -128,14 +126,6 @@ export default function Category() {
                         <React.Fragment key={index}>
                           <StyledCell>
                             {item.name.en}/{item.name.ar}
-                          </StyledCell>
-                          <StyledCell>
-                            <img
-                              src={item.imageUrl ? item.imageUrl : no_image}
-                              width='100'
-                              height='60'
-                              alt='category'
-                            ></img>
                           </StyledCell>
                           <StyledCell>
                             <StatefulTooltip

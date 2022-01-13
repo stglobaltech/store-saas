@@ -145,7 +145,7 @@ const AddCategory: React.FC<Props> = (props) => {
                   )}
                 </FormFields>
                 <FormFields>
-                  <FormLabel>Category Name (Regional Language)</FormLabel>
+                  <FormLabel>Category Name In Regional Language</FormLabel>
                   <Input
                     name="categoryNameRl"
                     inputRef={register({
