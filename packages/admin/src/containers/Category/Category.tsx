@@ -114,7 +114,7 @@ export default function Category() {
 
           <Wrapper style={{ boxShadow: '0 0 5px rgba(0, 0 , 0, 0.05)' }}>
             <TableWrapper>
-              <StyledTable $gridTemplateColumns='minmax(30px, auto) minmax(30px, auto) minmax(30px, auto) '>
+              <StyledTable $gridTemplateColumns='minmax(30px, auto) minmax(30px, auto)'>
                 <StyledHeadCell>Name</StyledHeadCell>
                 <StyledHeadCell>Actions</StyledHeadCell>
 
