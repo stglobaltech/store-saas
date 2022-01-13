@@ -28,7 +28,7 @@ export const ImageWrapper = styled.div<any>({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
-  height: 120,
+  height: 80,
   width: '100%',
   position: 'relative',
   overflow: 'hidden',
@@ -45,11 +45,13 @@ export const ImageWrapper = styled.div<any>({
 export const Title = styled.span<any>(
   css({
     fontSize: 'base',
-    fontWeight: 'semiBold',
+    fontWeight: 'bolder',
     color: 'text.bold',
     textAlign: 'center',
-    padding: '0 15px 15px',
+    padding: '15px',
     display: 'block',
+    letterSpacing:"3px",
+    lineHeight:"3px"
   })
 );
 

@@ -88,6 +88,7 @@ function VerifyUser({ handleSentOtp }) {
             height="48px"
             backgroundColor="#F7F7F7"
             mt="10px"
+            mb="20px"
             onChange={(e) =>
               setVerifyState({ ...verifyState, mobile: e.target.value })
             }

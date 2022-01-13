@@ -144,7 +144,7 @@ const EditCategory: React.FC<Props> = () => {
             />
           )}
         >
-          <Row>
+          {/* <Row>
             <Col lg={4}>
               <FieldDetails>Upload your Category image here</FieldDetails>
             </Col>
@@ -168,7 +168,7 @@ const EditCategory: React.FC<Props> = () => {
                 <Uploader onChange={uploadImage} imageURL={category.imageUrl} />
               </DrawerBox>
             </Col>
-          </Row>
+          </Row> */}
           <Row>
             <Col lg={4}>
               <FieldDetails>

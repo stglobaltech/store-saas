@@ -237,10 +237,8 @@ const AddProduct: React.FC<Props> = () => {
           )}
         >
           <Row>
-            <Col lg={4}>
-              <FieldDetails>Upload your Product image here</FieldDetails>
-            </Col>
-            <Col lg={8}>
+            <Col lg={12}>
+            <FieldDetails>Upload your Product image here</FieldDetails>
               <DrawerBox>
                 <Uploader onChange={uploadImage} imageURL={data.picture} />
               </DrawerBox>
@@ -248,14 +246,11 @@ const AddProduct: React.FC<Props> = () => {
           </Row>
 
           <Row>
-            <Col lg={4}>
+            <Col lg={12}>
+              <DrawerBox>
               <FieldDetails>
                 Add your Product description and necessary information from here
               </FieldDetails>
-            </Col>
-
-            <Col lg={8}>
-              <DrawerBox>
                 <FormFields>
                   <FormLabel>Product Name</FormLabel>
                   <Input

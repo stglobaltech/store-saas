@@ -243,6 +243,7 @@ export default function Category() {
                         gridColumnStart: '1',
                         gridColumnEnd: 'one',
                       }}
+                      msg={"No categories added yet"}
                     />
                   )
                 ) : null}

@@ -1,67 +1,70 @@
-import React, { useState, useCallback } from 'react';
-import { useForm } from 'react-hook-form';
-import { useQuery, useMutation } from '@apollo/client';
-import { useDrawerDispatch, useDrawerState } from 'context/DrawerContext';
-import { Scrollbars } from 'react-custom-scrollbars';
-import Input from 'components/Input/Input';
-import Select from 'components/Select/Select';
-import Button, { KIND } from 'components/Button/Button';
-import DrawerBox from 'components/DrawerBox/DrawerBox';
-import { Row, Col } from 'components/FlexBox/FlexBox';
+import React, { useState, useCallback } from "react";
+import { useForm } from "react-hook-form";
+import { useQuery, useMutation } from "@apollo/client";
+import { useDrawerDispatch, useDrawerState } from "context/DrawerContext";
+import { Scrollbars } from "react-custom-scrollbars";
+import Input from "components/Input/Input";
+import Select from "components/Select/Select";
+import Button, { KIND } from "components/Button/Button";
+import DrawerBox from "components/DrawerBox/DrawerBox";
+import { Row, Col } from "components/FlexBox/FlexBox";
 import {
   Form,
   DrawerTitleWrapper,
   DrawerTitle,
   FieldDetails,
   ButtonGroup,
-} from '../DrawerItems/DrawerItems.style';
-import { FormFields, FormLabel } from 'components/FormFields/FormFields';
-import Uploader from 'components/Uploader/Uploader';
-import { GetBannerURL } from 'services/REST/discount.service';
-import { Q_GET_USER_ID, Q_GET_RESTAURANT, M_EDIT_DISCOUNT } from 'services/GQL';
-import { useNotifier } from 'react-headless-notifier';
-import SuccessNotification from '../../components/Notification/SuccessNotification';
-import DangerNotification from '../../components/Notification/DangerNotification';
+} from "../DrawerItems/DrawerItems.style";
+import { FormFields, FormLabel } from "components/FormFields/FormFields";
+import Uploader from "components/Uploader/Uploader";
+import { GetBannerURL } from "services/REST/discount.service";
+import { Q_GET_USER_ID, Q_GET_RESTAURANT, M_EDIT_DISCOUNT } from "services/GQL";
+import { useNotifier } from "react-headless-notifier";
+import SuccessNotification from "../../components/Notification/SuccessNotification";
+import DangerNotification from "../../components/Notification/DangerNotification";
 
-interface imgUploadRes {[
-  urlText: string
-]: any}
+interface imgUploadRes {
+  [urlText: string]: any;
+}
 
 type Props = any;
 
 const EditCoupon: React.FC<Props> = (props) => {
   const dispatch = useDrawerDispatch();
-  const closeDrawer = useCallback(() => dispatch({ type: 'CLOSE_DRAWER' }), [
+  const closeDrawer = useCallback(() => dispatch({ type: "CLOSE_DRAWER" }), [
     dispatch,
   ]);
 
   const { notify } = useNotifier();
-  const { item, refetch } = useDrawerState('data');
+  const { item, refetch } = useDrawerState("data");
 
   const promotionTypes = [
     { value: "PROMOCODE", label: "PROMOCODE" },
-    { value: "OFFER", label: "OFFER" }
+    { value: "OFFER", label: "OFFER" },
   ];
-  const discountInTypes = [
-    { value: "Store", label: "Store" }
-  ];
+  const discountInTypes = [{ value: "Store", label: "Store" }];
   const discountTypes = [
     { value: "instant", label: "instant" },
-    { value: "cashback", label: "cashback" }
+    { value: "cashback", label: "cashback" },
   ];
   const units = [
     { value: "PERCENTAGE", label: "PERCENTAGE" },
-    { value: "COST", label: "COST" }
+    { value: "COST", label: "COST" },
   ];
 
-  const { register, handleSubmit, getValues, formState: { errors } } = useForm({
-    mode: 'onChange',
+  const {
+    register,
+    handleSubmit,
+    getValues,
+    formState: { errors },
+  } = useForm({
+    mode: "onChange",
     defaultValues: {
       name: item.name,
       arName: item.arName,
       startsOn: item.startsOn,
-      endsOn: item.endsOn
-    }
+      endsOn: item.endsOn,
+    },
   });
   const [offer, setOffer] = useState({
     category: [{ value: item.category, label: item.category }],
@@ -73,14 +76,16 @@ const EditCoupon: React.FC<Props> = (props) => {
     image: item?.discountToEntities?.store?.bannerURL ?? "",
     imageLoader: false,
     imageError: "",
-    imageRequired: false
+    imageRequired: false,
   });
 
-  const { data: { userId } } = useQuery(Q_GET_USER_ID);
+  const {
+    data: { userId },
+  } = useQuery(Q_GET_USER_ID);
 
   const { error, data: storeData } = useQuery(Q_GET_RESTAURANT, {
     context: { clientName: "CONTENT_SERVER" },
-    variables: { ownerId: userId }
+    variables: { ownerId: userId },
   });
 
   const [doUpdate, { loading: updating }] = useMutation(M_EDIT_DISCOUNT, {
@@ -88,22 +93,15 @@ const EditCoupon: React.FC<Props> = (props) => {
       closeDrawer();
       if (data && data.editDiscount && data.editDiscount.success) {
         notify(
-          <SuccessNotification
-            message={data.editDiscount.message.en}
-            dismiss
-          />
+          <SuccessNotification message={data.editDiscount.message.en} dismiss />
         );
 
         refetch();
-      }
-      else
+      } else
         notify(
-          <DangerNotification
-            message={data.editDiscount.message.en}
-            dismiss
-          />
+          <DangerNotification message={data.editDiscount.message.en} dismiss />
         );
-    }
+    },
   });
 
   const uploadImage = (files) => {
@@ -116,7 +114,7 @@ const EditCoupon: React.FC<Props> = (props) => {
           ...offer,
           image: result.urlText,
           imageLoader: false,
-          imageError: ""
+          imageError: "",
         });
       })
       .catch(() => {
@@ -124,14 +122,18 @@ const EditCoupon: React.FC<Props> = (props) => {
           ...offer,
           image: "",
           imageLoader: false,
-          imageError: "Something went wrong! Try after sometime"
+          imageError: "Something went wrong! Try after sometime",
         });
       });
   };
 
   const onSubmit = (values) => {
-    if(offer.discountIn[0].value === "Store" && offer.category[0].value === "OFFER" && !offer.image)
-      return setOffer({...offer, imageRequired: true});
+    if (
+      offer.discountIn[0].value === "Store" &&
+      offer.category[0].value === "OFFER" &&
+      !offer.image
+    )
+      return setOffer({ ...offer, imageRequired: true });
 
     const discountEditInput = {
       _id: item._id,
@@ -149,20 +151,24 @@ const EditCoupon: React.FC<Props> = (props) => {
       discountType: offer.discountType[0].value,
       discountToEntities: {
         store: {
-          bannerURL: (offer.discountIn[0].value === "Store" && offer.category[0].value === "OFFER") ? offer.image : ""
-        }
+          bannerURL:
+            offer.discountIn[0].value === "Store" &&
+            offer.category[0].value === "OFFER"
+              ? offer.image
+              : "",
+        },
       },
       conditionals: {
         firstOrder: false,
         purchaseAbove: 0,
         offerDays: [],
         timings: "",
-        paymentType: []
+        paymentType: [],
       },
       restaurant: {
         name: storeData.getStore.name.en,
-        _id: storeData.getStore._id
-      }
+        _id: storeData.getStore._id,
+      },
     };
 
     doUpdate({ variables: { discountEditInput } });
@@ -178,29 +184,25 @@ const EditCoupon: React.FC<Props> = (props) => {
         <DrawerTitle>Update Coupon</DrawerTitle>
       </DrawerTitleWrapper>
 
-      <Form onSubmit={handleSubmit(onSubmit)} style={{ height: '100%' }}>
+      <Form onSubmit={handleSubmit(onSubmit)} style={{ height: "100%" }}>
         <Scrollbars
           autoHide
           renderView={(props) => (
-            <div {...props} style={{ ...props.style, overflowX: 'hidden' }} />
+            <div {...props} style={{ ...props.style, overflowX: "hidden" }} />
           )}
           renderTrackHorizontal={(props) => (
             <div
               {...props}
-              style={{ display: 'none' }}
+              style={{ display: "none" }}
               className="track-horizontal"
             />
           )}
         >
           <Row>
-            <Col lg={4}>
+            <Col lg={12}>
               <FieldDetails>
-                Add your coupon description and necessary informations from
-                here
+                Add your coupon description and necessary informations from here
               </FieldDetails>
-            </Col>
-
-            <Col lg={8}>
               <DrawerBox>
                 <FormFields>
                   <FormLabel>Promotion Type</FormLabel>
@@ -211,7 +213,9 @@ const EditCoupon: React.FC<Props> = (props) => {
                     value={offer.category}
                     searchable={false}
                     clearable={false}
-                    onChange={({ value }) => setOffer({...offer, category: value})}
+                    onChange={({ value }) =>
+                      setOffer({ ...offer, category: value })
+                    }
                     overrides={{
                       Placeholder: {
                         style: ({ $theme }) => {
@@ -261,11 +265,20 @@ const EditCoupon: React.FC<Props> = (props) => {
                 </FormFields>
 
                 <FormFields>
-                  <FormLabel>{offer.category[0].value === "OFFER" ? "Offer" : "Promocode"} Name in English</FormLabel>
+                  <FormLabel>
+                    {offer.category[0].value === "OFFER"
+                      ? "Offer"
+                      : "Promocode"}{" "}
+                    Name in English
+                  </FormLabel>
                   <Input
                     name="name"
                     placeholder="Name in English"
-                    inputRef={register({ required: true, minLength: 3, maxLength: 15 })}
+                    inputRef={register({
+                      required: true,
+                      minLength: 3,
+                      maxLength: 15,
+                    })}
                   />
                   {errors.name && (
                     <div
@@ -281,18 +294,26 @@ const EditCoupon: React.FC<Props> = (props) => {
                         ? "Required"
                         : (errors.name.type === "minLength" ||
                             errors.name.type === "maxLength") &&
-                          "Offer Name or Promocode Name must be 3-15 characters"
-                      }
+                          "Offer Name or Promocode Name must be 3-15 characters"}
                     </div>
                   )}
                 </FormFields>
 
                 <FormFields>
-                  <FormLabel>{offer.category[0].value === "OFFER" ? "Offer" : "Promocode"} Name in Arabic</FormLabel>
+                  <FormLabel>
+                    {offer.category[0].value === "OFFER"
+                      ? "Offer"
+                      : "Promocode"}{" "}
+                    Name in Arabic
+                  </FormLabel>
                   <Input
                     name="arName"
                     placeholder="Name in Arabic"
-                    inputRef={register({ required: true, minLength: 3, maxLength: 15 })}
+                    inputRef={register({
+                      required: true,
+                      minLength: 3,
+                      maxLength: 15,
+                    })}
                   />
                   {errors.arName && (
                     <div
@@ -308,8 +329,7 @@ const EditCoupon: React.FC<Props> = (props) => {
                         ? "Required"
                         : (errors.arName.type === "minLength" ||
                             errors.arName.type === "maxLength") &&
-                            "Offer Name or Promocode Name must be 3-15 characters"
-                      }
+                          "Offer Name or Promocode Name must be 3-15 characters"}
                     </div>
                   )}
                 </FormFields>
@@ -352,7 +372,7 @@ const EditCoupon: React.FC<Props> = (props) => {
                           return false;
                         }
                         return true;
-                      }
+                      },
                     })}
                   />
                   {errors.endsOn && (
@@ -367,9 +387,8 @@ const EditCoupon: React.FC<Props> = (props) => {
                     >
                       {errors.endsOn.type === "required"
                         ? "Required"
-                        : (errors.endsOn.type === "validate" &&
-                            "Select Proper Date.Expiry Date Should Be Greater Than Start Date"
-                      )}
+                        : errors.endsOn.type === "validate" &&
+                          "Select Proper Date.Expiry Date Should Be Greater Than Start Date"}
                     </div>
                   )}
                 </FormFields>
@@ -383,7 +402,9 @@ const EditCoupon: React.FC<Props> = (props) => {
                     value={offer.discountIn}
                     searchable={false}
                     clearable={false}
-                    onChange={({ value }) => setOffer({...offer, discountIn: value})}
+                    onChange={({ value }) =>
+                      setOffer({ ...offer, discountIn: value })
+                    }
                     overrides={{
                       Placeholder: {
                         style: ({ $theme }) => {
@@ -441,7 +462,9 @@ const EditCoupon: React.FC<Props> = (props) => {
                     value={offer.discountType}
                     searchable={false}
                     clearable={false}
-                    onChange={({ value }) => setOffer({...offer, discountType: value})}
+                    onChange={({ value }) =>
+                      setOffer({ ...offer, discountType: value })
+                    }
                     overrides={{
                       Placeholder: {
                         style: ({ $theme }) => {
@@ -498,7 +521,9 @@ const EditCoupon: React.FC<Props> = (props) => {
                     value={offer.discountValue}
                     placeholder="Offer Value"
                     inputRef={register}
-                    onChange={(e) => setOffer({...offer, discountValue: e.target.value})}
+                    onChange={(e) =>
+                      setOffer({ ...offer, discountValue: e.target.value })
+                    }
                   />
                 </FormFields>
 
@@ -511,7 +536,9 @@ const EditCoupon: React.FC<Props> = (props) => {
                     value={offer.discountUnit}
                     searchable={false}
                     clearable={false}
-                    onChange={({ value }) => setOffer({...offer, discountUnit: value})}
+                    onChange={({ value }) =>
+                      setOffer({ ...offer, discountUnit: value })
+                    }
                     overrides={{
                       Placeholder: {
                         style: ({ $theme }) => {
@@ -569,7 +596,9 @@ const EditCoupon: React.FC<Props> = (props) => {
                     placeholder="Maximum Value"
                     pattern={"[0-9]"}
                     inputRef={register}
-                    onChange={(e) => setOffer({...offer, maximumValue: e.target.value})}
+                    onChange={(e) =>
+                      setOffer({ ...offer, maximumValue: e.target.value })
+                    }
                   />
                 </FormFields>
               </DrawerBox>
@@ -577,45 +606,45 @@ const EditCoupon: React.FC<Props> = (props) => {
           </Row>
 
           {offer.category[0].value === "OFFER" && (
-          <Row>
-            <Col lg={4}>
-              <FieldDetails>Upload your Banner image here</FieldDetails>
-            </Col>
-            <Col lg={8}>
-              <DrawerBox
-                overrides={{
-                  Block: {
-                    style: {
-                      width: '100%',
-                      height: 'auto',
-                      padding: '30px',
-                      borderRadius: '3px',
-                      backgroundColor: '#ffffff',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
+            <Row>
+              <Col lg={4}>
+                <FieldDetails>Upload your Banner image here</FieldDetails>
+              </Col>
+              <Col lg={8}>
+                <DrawerBox
+                  overrides={{
+                    Block: {
+                      style: {
+                        width: "100%",
+                        height: "auto",
+                        padding: "30px",
+                        borderRadius: "3px",
+                        backgroundColor: "#ffffff",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                      },
                     },
-                  },
-                }}
-              >
-                <Uploader onChange={uploadImage} imageURL={offer.image} />
-              </DrawerBox>
-              {(offer.imageError.length || offer.imageRequired) && (
-                <div
-                  style={{
-                    margin: "5px 0 30px auto",
-                    fontFamily: "Lato, sans-serif",
-                    fontSize: "12px",
-                    fontWeight: "bold",
-                    color: "rgb(252, 92, 99)",
-                    textAlign: "right"
                   }}
                 >
-                  {offer.imageError || "Required"}
-                </div>
-              )}
-            </Col>
-          </Row>
+                  <Uploader onChange={uploadImage} imageURL={offer.image} />
+                </DrawerBox>
+                {(offer.imageError.length || offer.imageRequired) && (
+                  <div
+                    style={{
+                      margin: "5px 0 30px auto",
+                      fontFamily: "Lato, sans-serif",
+                      fontSize: "12px",
+                      fontWeight: "bold",
+                      color: "rgb(252, 92, 99)",
+                      textAlign: "right",
+                    }}
+                  >
+                    {offer.imageError || "Required"}
+                  </div>
+                )}
+              </Col>
+            </Row>
           )}
         </Scrollbars>
 
@@ -627,12 +656,12 @@ const EditCoupon: React.FC<Props> = (props) => {
             overrides={{
               BaseButton: {
                 style: ({ $theme }) => ({
-                  width: '50%',
-                  borderTopLeftRadius: '3px',
-                  borderTopRightRadius: '3px',
-                  borderBottomRightRadius: '3px',
-                  borderBottomLeftRadius: '3px',
-                  marginRight: '15px',
+                  width: "50%",
+                  borderTopLeftRadius: "3px",
+                  borderTopRightRadius: "3px",
+                  borderBottomRightRadius: "3px",
+                  borderBottomLeftRadius: "3px",
+                  marginRight: "15px",
                   color: $theme.colors.red400,
                 }),
               },
@@ -647,11 +676,11 @@ const EditCoupon: React.FC<Props> = (props) => {
             overrides={{
               BaseButton: {
                 style: ({ $theme }) => ({
-                  width: '50%',
-                  borderTopLeftRadius: '3px',
-                  borderTopRightRadius: '3px',
-                  borderBottomRightRadius: '3px',
-                  borderBottomLeftRadius: '3px',
+                  width: "50%",
+                  borderTopLeftRadius: "3px",
+                  borderTopRightRadius: "3px",
+                  borderBottomRightRadius: "3px",
+                  borderBottomLeftRadius: "3px",
                 }),
               },
             }}

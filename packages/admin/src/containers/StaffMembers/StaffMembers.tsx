@@ -181,6 +181,7 @@ export default function StaffMembers() {
                         gridColumnStart: '1',
                         gridColumnEnd: 'one',
                       }}
+                      msg={"No staff members added"}
                     />
                   )
                 ) : null}

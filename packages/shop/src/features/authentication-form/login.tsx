@@ -50,6 +50,12 @@ function SendOtp({ handleVerifyOtp }) {
     context: { linkName: "auth" },
     onCompleted: (data) => {
       if (data && data.sendOtp && data.sendOtp.success) {
+        notify(
+          <SuccessNotification
+            message="Otp sent to your phone/email"
+            dismiss
+          />
+        );
         handleVerifyOtp(mobile, countryCode);
       } else {
         notify(

@@ -184,14 +184,11 @@ const AddCoupon: React.FC<Props> = (props) => {
           )}
         >
           <Row>
-            <Col lg={4}>
-              <FieldDetails>
+            <Col lg={12}>
+            <FieldDetails>
                 Add your coupon description and necessary informations from
                 here
               </FieldDetails>
-            </Col>
-
-            <Col lg={8}>
               <DrawerBox>
                 <FormFields>
                   <FormLabel>Promotion Type</FormLabel>
