@@ -23,21 +23,27 @@ const Card = styled.div({
     transform: "translateY(-5px)",
   },
 });
+
+
 const ImageWrapper = styled.div(
   css({
-    position: "relative",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    overflow: "hidden",
-    height: ["190px", "210px"],
-    backgroundPosition: "cover",
+    // height: ["190px", "210px"],
+    height: '200px',
+    width: '100%',
+    position: 'relative',
+    overflow: 'hidden',
     img: {
-      display: "block",
-      maxHeight: "100%",
-      maxWidth: "100%",
-      width: "auto",
-      height: "auto",
+      // display: "block",
+      // maxHeight: "100%",
+      // maxWidth: "100%",
+      // width: "auto",
+      // height: "auto",
+      flexShrink: 0,
+      minWidth: '100%',
+      minHeight: '200px',
     },
   })
 );

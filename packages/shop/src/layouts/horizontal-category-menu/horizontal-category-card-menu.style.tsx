@@ -28,17 +28,20 @@ export const ImageWrapper = styled.div<any>({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
-  height: 80,
+  height: '200px',
   width: '100%',
   position: 'relative',
   overflow: 'hidden',
   marginBottom: 10,
 
   img: {
-    width: 'auto',
-    height: 'auto',
-    maxWidth: '100%',
-    maxHeight: '100%',
+    // width: 'auto',
+    // height: '200px',
+    // maxWidth: '100%',
+    // maxHeight: '100%',
+    flexShrink: 0,
+    minWidth: '100%',
+    minHeight: '200px',
   },
 });
 

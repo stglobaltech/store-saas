@@ -65,14 +65,14 @@ export const HorizontalCategoryCardMenu = ({ }: Props) => {
                   active={selectedQueries === category._id}
                 >
                   <ImageWrapper>
-                    {/* <Image
+                    <Image
                       url={
-                        category.imageUrl?.length ? category.imageUrl : noImage
+                        category?.imageUrl?.length ? category.imageUrl : noImage
                       }
-                      alt={category.title}
-                    /> */}
-                    <Title>{!isRtl ? category.name.en : category.name.ar}</Title>
+                      alt={category?.title}
+                    />
                   </ImageWrapper>
+                  <Title>{!isRtl ? category.name.en : category.name.ar}</Title>
                 </ItemCard>
               </SwiperSlide>
             );
