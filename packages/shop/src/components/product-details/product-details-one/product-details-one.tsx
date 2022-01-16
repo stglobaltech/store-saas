@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useContext, useEffect } from "react";
 import Router from "next/router";
 import { Button } from "components/button/button";
 import {
@@ -20,6 +20,11 @@ import {
   MetaSingle,
   MetaItem,
   RelatedItems,
+  ProductDescriptionTitle,
+  MetaData,
+  ProductMetaSingle,
+  ProductMetaItem,
+  ProductMetaItemDes,
 } from "./product-details-one.style";
 import { LongArrowLeft } from "assets/icons/LongArrowLeft";
 import { CartIcon } from "assets/icons/CartIcon";
@@ -47,6 +52,11 @@ import {
 import { useAppState } from "contexts/app/app.provider";
 import { getCartId } from "utils/localStorage";
 import { handlePrevOrderPending } from "components/prev-order-pending/handleprevorderpending";
+import Image from "components/image/image";
+import DeliveryTruck from "../../../assets/images/cargo-truck.png";
+import CashOnDelivery from "../../../assets/images/pay.png";
+import Return from "../../../assets/images/return.png";
+import ShoppingBag from '../../../assets/images/shopping-bag-green.png';
 
 type ProductDetailsProps = {
   product: any;
@@ -62,7 +72,8 @@ const ProductDetails: React.FunctionComponent<ProductDetailsProps> = ({
   deviceType,
 }) => {
   const workFlowPolicy = useAppState("workFlowPolicy") as any;
-  const storeId =workFlowPolicy["storeId"] ;
+  const {authState}=useContext<any>(AuthContext);
+  const storeId = workFlowPolicy["storeId"];
   const entityId = storeId;
 
   const { isRtl } = useLocale();
@@ -272,8 +283,11 @@ const ProductDetails: React.FunctionComponent<ProductDetailsProps> = ({
 
         <ProductInfo dir={isRtl ? "rtl" : "ltr"}>
           <ProductTitlePriceWrapper>
-            <ProductTitle>{!isRtl?product.productName.en:product.productName?.ar}</ProductTitle>
+            <ProductTitle>
+              {!isRtl ? product.productName.en : product.productName?.ar}
+            </ProductTitle>
             <ProductPriceWrapper>
+              <MetaData>per piece</MetaData>
               {product.discountInPercent ? (
                 <SalePrice>
                   {workFlowPolicy.currency + " "}
@@ -291,9 +305,6 @@ const ProductDetails: React.FunctionComponent<ProductDetailsProps> = ({
           <ProductWeight>
             <b>maximum quantity</b> : {product.maxQuantity}
           </ProductWeight>
-          <ProductDescription>
-            <ReadMore character={600}>{!isRtl?product.description.en:product.description?.ar}</ReadMore>
-          </ProductDescription>
 
           <ProductCartWrapper>
             <ProductCartBtn>
@@ -320,22 +331,43 @@ const ProductDetails: React.FunctionComponent<ProductDetailsProps> = ({
                 />
               )}
             </ProductCartBtn>
+            {authState?.isAuthenticated?
+            <ProductCartBtn onClick={()=>Router.push("/checkout")}><Image url={ShoppingBag} style={{width:"50px",height:"50px"}}/></ProductCartBtn>:null}
           </ProductCartWrapper>
-          {/* 
+
           <ProductMeta>
-            <MetaSingle>
-              {product?.categories?.map((item: any) => (
-                <Link
-                  href={`/${product.type.toLowerCase()}?category=${item.slug}`}
-                  key={`link-${item.id}`}
-                >
-                  <a>
-                    <MetaItem>{item.title}</MetaItem>
-                  </a>
-                </Link>
-              ))}
-            </MetaSingle>
-          </ProductMeta> */}
+            <ProductMetaSingle>
+              <ProductMetaItem>
+                <Image
+                  url={DeliveryTruck}
+                  style={{ width: "20px", height: "20px" }}
+                />
+                <ProductMetaItemDes>
+                  Dispatched within 24 hours
+                </ProductMetaItemDes>
+              </ProductMetaItem>
+              <ProductMetaItem>
+                <Image
+                  url={CashOnDelivery}
+                  style={{ width: "20px", height: "20px" }}
+                />
+                <ProductMetaItemDes>
+                  Pay on delivery available
+                </ProductMetaItemDes>
+              </ProductMetaItem>
+              <ProductMetaItem>
+                <Image url={Return} style={{ width: "20px", height: "20px" }} />
+                <ProductMetaItemDes> Track your order</ProductMetaItemDes>
+              </ProductMetaItem>
+            </ProductMetaSingle>
+          </ProductMeta>
+
+          <ProductDescription>
+            <ProductDescriptionTitle>Product Details</ProductDescriptionTitle>
+            <ReadMore character={600}>
+              {!isRtl ? product.description.en : product.description?.ar}
+            </ReadMore>
+          </ProductDescription>
         </ProductInfo>
 
         {/* {isRtl && (

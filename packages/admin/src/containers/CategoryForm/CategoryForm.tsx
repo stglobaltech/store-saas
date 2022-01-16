@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useMutation, useQuery } from "@apollo/client";
 import { useDrawerDispatch } from "context/DrawerContext";
@@ -23,6 +23,12 @@ import {
 } from "services/GQL";
 import SuccessNotification from "components/Notification/SuccessNotification";
 import DangerNotification from "components/Notification/DangerNotification";
+import Uploader from "components/Uploader/Uploader";
+import { uploadFile } from "services/REST/restaurant.service";
+
+interface imgUploadRes {
+  [urlText: string]: any;
+}
 
 type Props = any;
 
@@ -30,6 +36,11 @@ const AddCategory: React.FC<Props> = (props) => {
   const {
     data: { storeId },
   } = useQuery(Q_GET_STORE_ID);
+
+  const [categoryImage, setCategoryImage] = useState({
+    url: "",
+    uploading: false,
+  });
 
   const dispatch = useDrawerDispatch();
 
@@ -79,12 +90,29 @@ const AddCategory: React.FC<Props> = (props) => {
     }
   );
 
+  const uploadImage = (files) => {
+    setCategoryImage({ ...categoryImage, uploading: true });
+    const formData = new FormData();
+    formData.append("file", files[0], files[0].name);
+    uploadFile(formData)
+      .then((result: imgUploadRes) => {
+        setCategoryImage({
+          ...categoryImage,
+          url: result.urlText,
+          uploading: false,
+        });
+      })
+      .catch((err) => {
+        setCategoryImage({ ...categoryImage, uploading: false });
+      });
+  };
+
   const onSubmit = (values) => {
     const newCategory = {
       name: { en: values.categoryName, ar: values.categoryNameRl },
       isEnable: true,
       storeCode: storeId,
-      imageUrl: "",
+      imageUrl: categoryImage.url,
     };
     createCategory({ variables: { categoryCreateInput: newCategory } });
   };
@@ -111,11 +139,34 @@ const AddCategory: React.FC<Props> = (props) => {
         >
           <Row>
             <Col lg={12}>
+            <FieldDetails>Upload your Category image here</FieldDetails>
+              <DrawerBox
+                overrides={{
+                  Block: {
+                    style: {
+                      width: '100%',
+                      height: 'auto',
+                      padding: '30px',
+                      borderRadius: '3px',
+                      backgroundColor: '#ffffff',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    },
+                  },
+                }}
+              >
+                <Uploader onChange={uploadImage} />
+              </DrawerBox>
+            </Col>
+          </Row>
+          <Row>
+            <Col lg={12}>
               <DrawerBox>
-                <FieldDetails>
-                  Add your category description and necessary informations from
-                  here
-                </FieldDetails>
+              <FieldDetails>
+                Add your category description and necessary informations from
+                here
+              </FieldDetails>
                 <FormFields>
                   <FormLabel>Category Name</FormLabel>
                   <Input
@@ -145,7 +196,7 @@ const AddCategory: React.FC<Props> = (props) => {
                   )}
                 </FormFields>
                 <FormFields>
-                  <FormLabel>Category Name In Regional Language</FormLabel>
+                  <FormLabel>Category Name (Regional Language)</FormLabel>
                   <Input
                     name="categoryNameRl"
                     inputRef={register({
@@ -200,7 +251,7 @@ const AddCategory: React.FC<Props> = (props) => {
 
           <Button
             type="submit"
-            disabled={saving}
+            disabled={saving || categoryImage.uploading}
             overrides={{
               BaseButton: {
                 style: ({ $theme }) => ({
@@ -213,7 +264,11 @@ const AddCategory: React.FC<Props> = (props) => {
               },
             }}
           >
-            {saving ? "Saving" : "Create Category"}
+            {categoryImage.uploading
+              ? "loading"
+              : saving
+              ? "Saving"
+              : "Create Category"}
           </Button>
         </ButtonGroup>
       </Form>
