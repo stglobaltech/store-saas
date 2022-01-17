@@ -88,12 +88,13 @@ function VerifyUser({ handleSentOtp }) {
             height="48px"
             backgroundColor="#F7F7F7"
             mt="10px"
+            mb="20px"
             onChange={(e) =>
               setVerifyState({ ...verifyState, mobile: e.target.value })
             }
           />
           {verifyState.sentOtp ? (
-            <FormattedMessage id="otpSent" defaultMessage="Otp Sent" />
+            <FormattedMessage id="signUpOtpSent" defaultMessage="Otp Sent" />
           ) : null}
           {!verifyState.sentOtp ? (
             <Button

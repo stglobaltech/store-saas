@@ -142,11 +142,8 @@ const StoreSettingsForm: React.FC<Props> = () => {
 
       <Form onSubmit={handleSubmit(onSubmit)} style={{ paddingBottom: 0 }}>
         <Row>
-          <Col md={4}>
-            <FieldDetails>Upload your store logo here</FieldDetails>
-          </Col>
-
-          <Col md={8}>
+          <Col md={12}>
+          <FieldDetails>Upload your store logo here</FieldDetails>
             <DrawerBox>
               <Uploader onChange={uploadImage} imageURL={data.getStore.logo} />
             </DrawerBox>
@@ -154,20 +151,18 @@ const StoreSettingsForm: React.FC<Props> = () => {
         </Row>
 
         <Row>
-          <Col md={4}>
-            <FieldDetails>
+          <Col md={12}>
+          <FieldDetails>
               Add your store description and necessary information from here
             </FieldDetails>
-          </Col>
-
-          <Col md={8}>
             <DrawerBox>
               <FormFields>
                 <FormLabel>Store Name</FormLabel>
                 <Input
                   name="storeName"
-                  inputRef={register({ required: true, minLength: 3, maxLength: 20 })}
+                  inputRef={register({ required: true, minLength: 3, maxLength: 50 })}
                 />
+                <FieldDetails>Store name may be clipped to a few characters if it is too long</FieldDetails>
                 {errors.storeName &&
                   <div style={{
                     margin: "5px 0 0 auto",
@@ -178,7 +173,7 @@ const StoreSettingsForm: React.FC<Props> = () => {
                   }}>
                     {errors.storeName.type === "required" ? "Required" : (
                       (errors.storeName.type === "minLength" || errors.storeName.type === "maxLength") &&
-                      "Store Name must be 3-20 characters"
+                      "Store Name must be 3-50 characters"
                     )}
                   </div>
                 }

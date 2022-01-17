@@ -20,7 +20,6 @@ import { Q_GET_USER_PROFILE } from "graphql/query/get-user-profile.query";
 import {
   ERROR_FETCHING_CART,
   ERROR_FETCHING_USER_DETAILS,
-  GENERAL_ERROR_MSG,
 } from "utils/constant";
 import { FormattedMessage } from "react-intl";
 import { useAppState } from "contexts/app/app.provider";
@@ -39,7 +38,9 @@ const CheckoutPage: NextPage<Props> = ({ deviceType }) => {
   const { clearCart } = useCart();
   const router = useRouter();
 
-  const { data, loading, error } = useQuery(Q_GET_ALL_ADDRESSES);
+  const { data, loading, error } = useQuery(Q_GET_ALL_ADDRESSES, {
+    fetchPolicy: "cache-and-network",
+  });
 
   const { authDispatch } = React.useContext<any>(AuthContext);
   const workFlowPolicyOfStore = useAppState("workFlowPolicy");

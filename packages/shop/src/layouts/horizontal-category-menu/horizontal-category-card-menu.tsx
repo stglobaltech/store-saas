@@ -27,7 +27,7 @@ interface Props {
   productCategoriesSSR?: Array<any>;
 }
 
-export const HorizontalCategoryCardMenu = ({ productCategoriesSSR }: Props) => {
+export const HorizontalCategoryCardMenu = ({ }: Props) => {
   const router = useRouter();
   const { isRtl } = useLocale();
 
@@ -62,14 +62,14 @@ export const HorizontalCategoryCardMenu = ({ productCategoriesSSR }: Props) => {
                 <ItemCard
                   role="button"
                   onClick={() => onCategoryClick(category._id)}
-                  active={selectedQueries === category.slug}
+                  active={selectedQueries === category._id}
                 >
                   <ImageWrapper>
                     <Image
                       url={
-                        category.imageUrl?.length ? category.imageUrl : noImage
+                        category?.imageUrl?.length ? category.imageUrl : noImage
                       }
-                      alt={category.title}
+                      alt={category?.title}
                     />
                   </ImageWrapper>
                   <Title>{!isRtl ? category.name.en : category.name.ar}</Title>

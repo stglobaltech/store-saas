@@ -1,24 +1,24 @@
-import React, { useCallback } from 'react';
-import { useForm } from 'react-hook-form';
-import { v4 as uuidv4 } from 'uuid';
-import { useMutation, gql } from '@apollo/client';
-import { Scrollbars } from 'react-custom-scrollbars';
-import { useDrawerDispatch } from 'context/DrawerContext';
-import Input from 'components/Input/Input';
-import Checkbox from 'components/CheckBox/CheckBox';
-import PhoneInput from 'components/PhoneInput/PhoneInput';
-import Button, { KIND } from 'components/Button/Button';
+import React, { useCallback } from "react";
+import { useForm } from "react-hook-form";
+import { v4 as uuidv4 } from "uuid";
+import { useMutation, gql } from "@apollo/client";
+import { Scrollbars } from "react-custom-scrollbars";
+import { useDrawerDispatch } from "context/DrawerContext";
+import Input from "components/Input/Input";
+import Checkbox from "components/CheckBox/CheckBox";
+import PhoneInput from "components/PhoneInput/PhoneInput";
+import Button, { KIND } from "components/Button/Button";
 
-import DrawerBox from 'components/DrawerBox/DrawerBox';
-import { Row, Col } from 'components/FlexBox/FlexBox';
+import DrawerBox from "components/DrawerBox/DrawerBox";
+import { Row, Col } from "components/FlexBox/FlexBox";
 import {
   Form,
   DrawerTitleWrapper,
   DrawerTitle,
   FieldDetails,
   ButtonGroup,
-} from '../DrawerItems/DrawerItems.style';
-import { FormFields, FormLabel } from 'components/FormFields/FormFields';
+} from "../DrawerItems/DrawerItems.style";
+import { FormFields, FormLabel } from "components/FormFields/FormFields";
 
 const GET_STAFFS = gql`
   query getStaffs($role: String, $searchBy: String) {
@@ -52,13 +52,13 @@ type Props = any;
 
 const StaffMemberForm: React.FC<Props> = (props) => {
   const dispatch = useDrawerDispatch();
-  const closeDrawer = useCallback(() => dispatch({ type: 'CLOSE_DRAWER' }), [
+  const closeDrawer = useCallback(() => dispatch({ type: "CLOSE_DRAWER" }), [
     dispatch,
   ]);
   const { register, handleSubmit } = useForm();
   const [country, setCountry] = React.useState(undefined);
   const [checked, setChecked] = React.useState(true);
-  const [text, setText] = React.useState('');
+  const [text, setText] = React.useState("");
 
   const [createStaff] = useMutation(CREATE_STAFF, {
     update(cache, { data: { createStaff } }) {
@@ -76,7 +76,7 @@ const StaffMemberForm: React.FC<Props> = (props) => {
     const newStaff = {
       id: uuidv4(),
       ...data,
-      role: data.role ? 'admin' : 'staff',
+      role: data.role ? "admin" : "staff",
       creation_date: new Date(),
     };
     console.log(data);
@@ -90,28 +90,25 @@ const StaffMemberForm: React.FC<Props> = (props) => {
         <DrawerTitle>Add Staff Member</DrawerTitle>
       </DrawerTitleWrapper>
 
-      <Form onSubmit={handleSubmit(onSubmit)} style={{ height: '100%' }}>
+      <Form onSubmit={handleSubmit(onSubmit)} style={{ height: "100%" }}>
         <Scrollbars
           autoHide
           renderView={(props) => (
-            <div {...props} style={{ ...props.style, overflowX: 'hidden' }} />
+            <div {...props} style={{ ...props.style, overflowX: "hidden" }} />
           )}
           renderTrackHorizontal={(props) => (
             <div
               {...props}
-              style={{ display: 'none' }}
+              style={{ display: "none" }}
               className="track-horizontal"
             />
           )}
         >
           <Row>
-            <Col lg={4}>
+            <Col lg={12}>
               <FieldDetails>
                 Add staff name, description and necessary information from here
               </FieldDetails>
-            </Col>
-
-            <Col lg={8}>
               <DrawerBox>
                 <FormFields>
                   <FormLabel>First Name</FormLabel>
@@ -154,14 +151,11 @@ const StaffMemberForm: React.FC<Props> = (props) => {
           </Row>
 
           <Row>
-            <Col lg={4}>
+            <Col lg={12}>
               <FieldDetails>
                 Expand or restrict user’s permissions to access certain part of
                 pickbazar system.
               </FieldDetails>
-            </Col>
-
-            <Col lg={8}>
               <DrawerBox>
                 <FormFields>
                   <Checkbox
@@ -192,12 +186,12 @@ const StaffMemberForm: React.FC<Props> = (props) => {
             overrides={{
               BaseButton: {
                 style: ({ $theme }) => ({
-                  width: '50%',
-                  borderTopLeftRadius: '3px',
-                  borderTopRightRadius: '3px',
-                  borderBottomRightRadius: '3px',
-                  borderBottomLeftRadius: '3px',
-                  marginRight: '15px',
+                  width: "50%",
+                  borderTopLeftRadius: "3px",
+                  borderTopRightRadius: "3px",
+                  borderBottomRightRadius: "3px",
+                  borderBottomLeftRadius: "3px",
+                  marginRight: "15px",
                   color: $theme.colors.red400,
                 }),
               },
@@ -211,11 +205,11 @@ const StaffMemberForm: React.FC<Props> = (props) => {
             overrides={{
               BaseButton: {
                 style: ({ $theme }) => ({
-                  width: '50%',
-                  borderTopLeftRadius: '3px',
-                  borderTopRightRadius: '3px',
-                  borderBottomRightRadius: '3px',
-                  borderBottomLeftRadius: '3px',
+                  width: "50%",
+                  borderTopLeftRadius: "3px",
+                  borderTopRightRadius: "3px",
+                  borderBottomRightRadius: "3px",
+                  borderBottomLeftRadius: "3px",
                 }),
               },
             }}

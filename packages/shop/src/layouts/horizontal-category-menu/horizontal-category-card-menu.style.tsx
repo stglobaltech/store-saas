@@ -28,28 +28,33 @@ export const ImageWrapper = styled.div<any>({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
-  height: 120,
+  height: '200px',
   width: '100%',
   position: 'relative',
   overflow: 'hidden',
   marginBottom: 10,
 
   img: {
-    width: 'auto',
-    height: 'auto',
-    maxWidth: '100%',
-    maxHeight: '100%',
+    // width: 'auto',
+    // height: '200px',
+    // maxWidth: '100%',
+    // maxHeight: '100%',
+    flexShrink: 0,
+    minWidth: '100%',
+    minHeight: '200px',
   },
 });
 
 export const Title = styled.span<any>(
   css({
     fontSize: 'base',
-    fontWeight: 'semiBold',
+    fontWeight: 'bolder',
     color: 'text.bold',
     textAlign: 'center',
-    padding: '0 15px 15px',
+    padding: '15px',
     display: 'block',
+    letterSpacing:"3px",
+    lineHeight:"3px"
   })
 );
 

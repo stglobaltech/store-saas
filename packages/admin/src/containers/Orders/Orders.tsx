@@ -231,7 +231,7 @@ export default function Orders() {
               <InLineLoader />
             ) : (
               <Wrapper style={{ boxShadow: '0 0 5px rgba(0, 0 , 0, 0.05)' }}>
-                <TableWrapper>
+                <TableWrapper style={{ height: "auto" }}>
                   <StyledTable
                     style={{ borderBottom: '0px' }}
                     $gridTemplateColumns='minmax(150px, auto) minmax(150px, auto) minmax(120px, auto) minmax(100px, auto) minmax(100px, auto) minmax(150px, auto)'
@@ -281,6 +281,7 @@ export default function Orders() {
                           gridColumnStart: '1',
                           gridColumnEnd: 'one',
                         }}
+                        msg={"No orders placed yet"}
                       />
                     )}
                   </StyledTable>

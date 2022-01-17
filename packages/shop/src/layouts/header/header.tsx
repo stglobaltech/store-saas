@@ -51,7 +51,7 @@ const Header: React.FC<Props> = ({ className }) => {
       removeToken();
       authDispatch({ type: "SIGN_OUT" });
       clearCart();
-      Router.push("/store");
+      Router.push("/");
     }
   };
 
@@ -75,7 +75,7 @@ const Header: React.FC<Props> = ({ className }) => {
       },
     });
   };
-  const showSearch = pathname.includes("/store/");
+  const showSearch = pathname.includes("/");
   return (
     <HeaderWrapper className={className} id="layout-header">
       <LeftMenu logo={logo} isStoreLogo={isStoreLogo}/>

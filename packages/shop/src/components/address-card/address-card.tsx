@@ -190,6 +190,13 @@ const UpdateAddress = (props: FormikProps<FormValues> & MyFormProps) => {
         <Button
           onClick={handleSubmit}
           style={{ width: "100%", height: "44px" }}
+          disabled={
+            !addressCoordinates.lat ||
+            !addressCoordinates.lng ||
+            !addressValue.name.length ||
+            !addressValue.buildingNo.length ||
+            !addressValue.info.length
+          }
         >
           <FormattedMessage
             id={item && item.id ? "updateAddressBtn" : "saveAddressBtn"}

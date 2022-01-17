@@ -59,8 +59,7 @@ export const BoxedCartButton: React.FC<CartButtonProps> = ({
       {itemCount} {itemPostfix}
     </TotalItems>
     <PriceBoxAlt>
-      {pricePrefix + " "}
-      {parseFloat(`${price}`).toFixed(2)}
+      Cart
     </PriceBoxAlt>
   </CartPopupBoxButton>
 );
