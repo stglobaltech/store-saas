@@ -39,7 +39,7 @@ export const CartItem: React.FC<Props> = ({
   onRemove,
 }) => {
   const workFlowPolicy=useAppState("workFlowPolicy") as any;
-  const storeId =workFlowPolicy["storeId"]
+  const storeId =useAppState("activeStoreId");
   const entityId = storeId;
 
   const { productName, picture, price, salePrice, unit, quantity } = data;

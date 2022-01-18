@@ -75,6 +75,7 @@ export const Q_SEARCH_PRODUCTS = gql`
     searchProduct(productSearchInput: $productSearchInput) {
       products {
         _id
+        isActivated
         productName {
           en
           ar

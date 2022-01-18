@@ -21,7 +21,8 @@ import {
   ERROR_FETCHING_USER_DETAILS,
 } from "utils/constant";
 import { FormattedMessage } from "react-intl";
-import { useAppState } from "contexts/app/app.provider";5
+import { useAppState } from "contexts/app/app.provider";import { refactorPaymentMethods } from "utils/payment-methods";
+5
 
 type Props = {
   deviceType: {
@@ -43,6 +44,8 @@ const CheckoutPage: NextPage<Props> = ({ deviceType }) => {
 
   const { authDispatch } = React.useContext<any>(AuthContext);
   const workFlowPolicyOfStore = useAppState("workFlowPolicy");
+
+  console.log('workFlowPolicyStore',workFlowPolicyOfStore);
 
   if (!isTokenValidOrUndefined()) {
     removeToken();
@@ -102,14 +105,8 @@ const CheckoutPage: NextPage<Props> = ({ deviceType }) => {
     userAddresses = formatAddress();
   }
 
-  let policies = {};
-  policies["paymentType"] = [
-    {
-      type: "cash",
-      id: 1,
-      description: paymentoptions.filter((option) => option.title === "cash"),
-    },
-  ];
+  let policies = refactorPaymentMethods(workFlowPolicyOfStore);
+  console.log('policies',policies);
 
   return (
     <>

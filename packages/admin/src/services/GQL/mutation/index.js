@@ -6,3 +6,4 @@ export * from './products/products';
 export * from './offers/offers';
 export * from './order';
 export * from './register';
+export * from './products/toggle-product.mutation';
