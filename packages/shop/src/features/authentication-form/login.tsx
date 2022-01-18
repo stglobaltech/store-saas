@@ -75,6 +75,7 @@ function SendOtp({ handleVerifyOtp }) {
         sendOtpInputDto: {
           mobile: mobile,
           countryCode: countryCode,
+          appType:"USER"
         },
       },
     });

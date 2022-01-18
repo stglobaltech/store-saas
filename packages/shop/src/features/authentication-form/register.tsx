@@ -146,7 +146,8 @@ function SignUp({ mobile,countryCode }: SignUpProps) {
   const intl = useIntl();
   const { notify } = useNotifier();
   const { authDispatch } = useContext<any>(AuthContext);
-  const workFlowPolicy=useAppState("workFlowPolicy")
+  const workFlowPolicy=useAppState("workFlowPolicy");
+  const storeId=useAppState("activeStoreId");
 
 
   const toggleSignInForm = () => {
@@ -183,7 +184,7 @@ function SignUp({ mobile,countryCode }: SignUpProps) {
           osVersion: "WEB",
           deviceModel: "WEB",
           versionCode: "WEB",
-          storeId:workFlowPolicy["storeId"]
+          storeId
         },
       },
     });

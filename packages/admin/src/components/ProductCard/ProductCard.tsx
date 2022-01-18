@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import {
   ProductCardWrapper,
   ProductImageWrapper,
@@ -13,8 +13,14 @@ import {
   ProductPriceWrapper,
   ProductPrice,
   DiscountedPrice,
-} from './ProductCard.style';
-import { useDrawerDispatch } from 'context/DrawerContext';
+} from "./ProductCard.style";
+import { useDrawerDispatch } from "context/DrawerContext";
+import Switch from "components/switch/Switch";
+import { useMutation } from "@apollo/client";
+import { M_TOGGLE_PRODUCT_ISActivated } from "services/GQL";
+import { useNotifier } from "react-headless-notifier";
+import SuccessNotification from "../../components/Notification/SuccessNotification";
+import DangerNotification from "../../components/Notification/DangerNotification";
 
 type ProductCardProps = {
   title: string;
@@ -27,6 +33,8 @@ type ProductCardProps = {
   orderId?: number;
   discountInPercent?: number;
   data: any;
+  isActivated?: boolean;
+  productId?: string;
 };
 
 const ProductCard: React.FC<ProductCardProps> = ({
@@ -39,26 +47,64 @@ const ProductCard: React.FC<ProductCardProps> = ({
   currency,
   data,
   orderId,
+  isActivated,
+  productId,
   ...props
 }) => {
   const dispatch = useDrawerDispatch();
+  const { notify } = useNotifier();
 
   const openDrawer = React.useCallback(
     () =>
       dispatch({
-        type: 'OPEN_DRAWER',
-        drawerComponent: 'PRODUCT_UPDATE_FORM',
+        type: "OPEN_DRAWER",
+        drawerComponent: "PRODUCT_UPDATE_FORM",
         data: data,
       }),
     [dispatch, data]
   );
+
+  const [toggleProduct] = useMutation(M_TOGGLE_PRODUCT_ISActivated, {
+    onCompleted: (data) => {
+      if (
+        data &&
+        data.toggleProductIsActivatedState &&
+        data.toggleProductIsActivatedState.success
+      ) {
+        notify(
+          <SuccessNotification
+            message={data.toggleProductIsActivatedState?.message?.en}
+            dismiss
+          />
+        );
+      } else {
+        notify(
+          <DangerNotification
+            message={
+              data?.toggleProductIsActivated?.message?.en ||
+              "Could not change product state"
+            }
+            dismiss
+          />
+        );
+      }
+    },
+  });
+
+  function handleToggle(e) {
+    toggleProduct({
+      variables: {
+        productToggleIsActivatedInputDto: {
+          productIds: [productId],
+          isActivated: e,
+        },
+      },
+    });
+  }
+
   return (
-    <ProductCardWrapper
-      {...props}
-      className="product-card"
-      onClick={openDrawer}
-    >
-      <ProductImageWrapper>
+    <ProductCardWrapper {...props} className="product-card">
+      <ProductImageWrapper onClick={openDrawer}>
         <Image url={image} className="product-image" />
         {discountInPercent && discountInPercent !== 0 ? (
           <>
@@ -73,19 +119,19 @@ const ProductCard: React.FC<ProductCardProps> = ({
         <ProductMeta>
           <ProductPriceWrapper>
             <ProductPrice>
-              {currency}{" "}
-              {salePrice && salePrice !== 0 ? salePrice : price}
+              {currency} {salePrice && salePrice !== 0 ? salePrice : price}
             </ProductPrice>
 
             {discountInPercent && discountInPercent !== 0 ? (
               <DiscountedPrice>
-                {currency}{" "}
-                {price}
+                {currency} {price}
               </DiscountedPrice>
             ) : null}
           </ProductPriceWrapper>
 
-          <OrderID>{orderId}</OrderID>
+          <OrderID>
+            <Switch isActivated={isActivated} handleToggle={handleToggle} />
+          </OrderID>
         </ProductMeta>
       </ProductInfo>
     </ProductCardWrapper>

@@ -168,7 +168,7 @@ const PaymentRadioCard: React.FC<RadioCardProps> = ({
       />
       {title && <CardTitle>{title}</CardTitle>}
       {content && walletBalance === undefined ? (
-        <CardContent>{content[0]["content"]}</CardContent>
+        <CardContent>{content}</CardContent>
       ) : (
         <CardContent>
           {content}

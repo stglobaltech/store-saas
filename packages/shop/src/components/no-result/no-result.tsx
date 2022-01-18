@@ -50,13 +50,15 @@ const NoResultFound: React.FC<NoResultFoundProps> = ({
         <img src={GreenboxSvg} alt="No Result" />
       </ImageWrapper>
 
-      <ButtonWrapper>
-        <div onClick={onClickButton}>
-          <Button>
-            <ArrowPrev /> Go Back
-          </Button>
-        </div>
-      </ButtonWrapper>
+      {forPagination ? (
+        <ButtonWrapper>
+          <div onClick={onClickButton}>
+            <Button>
+              <ArrowPrev /> Go Back
+            </Button>
+          </div>
+        </ButtonWrapper>
+      ) : null}
     </NoResultWrapper>
   );
 };

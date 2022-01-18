@@ -44,14 +44,15 @@ export const Products: React.FC<ProductsProps> = ({
   type,
 }) => {
   const router = useRouter();
-  const workFlowPolicy=useAppState("workFlowPolicy")
+  const workFlowPolicy=useAppState("workFlowPolicy");
+  const storeId=useAppState("activeStoreId");
   const { data, error, loading, fetchMore, networkStatus } = useQuery(
     GET_PRODUCTS,
     {
       // context: { linkName: 'auth' },
       variables: {
         userStoreProductsFindInputDto: {
-          storeId: workFlowPolicy["storeId"],
+          storeId,
           paginate: {
             page: 1,
             perPage: 10,

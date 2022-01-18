@@ -71,13 +71,11 @@ export const ProductGrid = ({
 }: Props) => {
   const router = useRouter();
   const workFlowPolicy = useAppState("workFlowPolicy") as any;
-  const storeId=useAppState("activeStoreId");
+  const storeId = useAppState("activeStoreId");
   const [page, setPage] = useState(1);
   const {
     query: { category, search },
   } = router;
-
-
 
   useEffect(() => {
     setPage(1);
@@ -125,6 +123,7 @@ export const ProductGrid = ({
         storeId,
         categoryId: category,
         productKey: search,
+        isActivated:true,
         paginate: {
           page,
           perPage: 30,
@@ -143,6 +142,7 @@ export const ProductGrid = ({
       productSearchInput: {
         storeId,
         productKey: search,
+        isActivated:true,
         paginate: {
           page,
           perPage: 30,
@@ -188,8 +188,8 @@ export const ProductGrid = ({
   ) {
     return (
       <NoResultFound
-        forPagination={true}
-        prevPagePagination={() => setPage((page) => page - 1)}
+        forPagination={page !== 1 ? true : false}
+        prevPagePagination={() => setPage((page) => (page >= 2 ? page - 1 : 1))}
       />
     );
   }
@@ -202,8 +202,8 @@ export const ProductGrid = ({
   ) {
     return (
       <NoResultFound
-        forPagination={true}
-        prevPagePagination={() => setPage((page) => page - 1)}
+        forPagination={page !== 1 ? true : false}
+        prevPagePagination={() => setPage((page) => (page >= 2 ? page - 1 : 1))}
       />
     );
   }
@@ -216,8 +216,8 @@ export const ProductGrid = ({
   ) {
     return (
       <NoResultFound
-        forPagination={true}
-        prevPagePagination={() => setPage((page) => page - 1)}
+        forPagination={page !== 1 ? true : false}
+        prevPagePagination={() => setPage((page) => (page >= 2 ? page - 1 : 1))}
       />
     );
   }
@@ -230,8 +230,8 @@ export const ProductGrid = ({
   ) {
     return (
       <NoResultFound
-        forPagination={true}
-        prevPagePagination={() => setPage((page) => page - 1)}
+        forPagination={page !== 1 ? true : false}
+        prevPagePagination={() => setPage((page) => (page >= 2 ? page - 1 : 1))}
       />
     );
   }
@@ -315,8 +315,10 @@ export const ProductGrid = ({
   // }
 
   return (
-    <section style={{marginTop:"50px"}}>
-      <h4 style={{marginBottom:"20px",color:"#04aa6d",padding:"10px"}}>Products</h4>
+    <section style={{ marginTop: "50px" }}>
+      <h4 style={{ marginBottom: "20px", color: "#04aa6d", padding: "10px" }}>
+        Products
+      </h4>
       <Grid style={style}>
         {fetchedProducts.map((product) => (
           <ProductCard
