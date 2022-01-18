@@ -123,7 +123,6 @@ export const ProductGrid = ({
         storeId,
         categoryId: category,
         productKey: search,
-        isActivated:true,
         paginate: {
           page,
           perPage: 30,
@@ -142,7 +141,6 @@ export const ProductGrid = ({
       productSearchInput: {
         storeId,
         productKey: search,
-        isActivated:true,
         paginate: {
           page,
           perPage: 30,
