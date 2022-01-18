@@ -21,6 +21,7 @@ import { isCategoryPage } from "../is-home-page";
 import useDimensions from "utils/useComponentSize";
 import { useQuery } from "@apollo/client";
 import { Q_GET_STORE } from "graphql/query/getstore.query";
+import { LeftMenu } from "./menu/left-menu/left-menu";
 
 type MobileHeaderProps = {
   className?: string;
@@ -101,10 +102,11 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({ className }) => {
         </DrawerWrapper>
 
         <LogoWrapper>
-          <Logo
+          {/* <Logo
             imageUrl={logo}
             alt={isStoreLogo ? "Shop Logo" : "Orderznow Logo"}
-          />
+          /> */}
+                  <LeftMenu logo="" isStoreLogo={false} showLogo={false}/>
         </LogoWrapper>
 
         <LanguageSwitcher />

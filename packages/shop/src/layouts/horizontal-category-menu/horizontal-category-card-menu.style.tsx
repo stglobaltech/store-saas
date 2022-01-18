@@ -33,7 +33,6 @@ export const ImageWrapper = styled.div<any>({
   position: 'relative',
   overflow: 'hidden',
   marginBottom: 10,
-
   img: {
     // width: 'auto',
     // height: '200px',

@@ -9,7 +9,7 @@ import { useAppState } from "contexts/app/app.provider";
 
 function TopupWallet() {
   const workFlowPolicy=useAppState("workFlowPolicy")
-  const storeId = workFlowPolicy["storeId"];
+  const storeId = useAppState("activeStoreId");
 
   const [amount, setAmount] = useState(0);
   const intl = useIntl();

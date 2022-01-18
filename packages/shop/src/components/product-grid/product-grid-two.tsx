@@ -71,12 +71,13 @@ export const ProductGrid = ({
 }: Props) => {
   const router = useRouter();
   const workFlowPolicy = useAppState("workFlowPolicy") as any;
+  const storeId=useAppState("activeStoreId");
   const [page, setPage] = useState(1);
   const {
     query: { category, search },
   } = router;
 
-  const storeId = workFlowPolicy.storeId;
+
 
   useEffect(() => {
     setPage(1);
@@ -314,7 +315,8 @@ export const ProductGrid = ({
   // }
 
   return (
-    <section>
+    <section style={{marginTop:"50px"}}>
+      <h4 style={{marginBottom:"20px",color:"#04aa6d",padding:"10px"}}>Products</h4>
       <Grid style={style}>
         {fetchedProducts.map((product) => (
           <ProductCard

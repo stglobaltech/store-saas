@@ -59,7 +59,7 @@ const Cart: React.FC<CartPropsType> = ({
     authDispatch,
   } = React.useContext<any>(AuthContext);
   const workFlowPolicy = useAppState("workFlowPolicy") as any;
-  const storeId = workFlowPolicy["StoreId"];
+  const storeId = useAppState("activeStoreId");
   const entityId = storeId;
 
   const [hasCoupon, setCoupon] = useState(false);
