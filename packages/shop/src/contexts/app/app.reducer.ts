@@ -5,6 +5,8 @@ export const initialState = {
   isDrawerOpen: false,
   isModalOpen: false,
   workFlowPolicy: {},
+  branches: [],
+  activeStoreId: null,
 };
 
 type ActionType =
@@ -16,6 +18,9 @@ type ActionType =
   | { type: "TOGGLE_DRAWER" }
   | { type: "TOGGLE_MODAL" }
   | { type: "WORK_FLOW_POLICY"; payload: any }
+  | { type: "BRANCHES"; payload: any }
+  | { type: "POLICY_AND_BRANCHES"; payload: any }
+  | { type: "ACTIVE_STORE_ID"; payload: any };
 
 type StateType = typeof initialState;
 
@@ -58,6 +63,24 @@ export function appReducer(state: StateType, action: ActionType): StateType {
       };
     case "WORK_FLOW_POLICY":
       return { ...state, workFlowPolicy: action.payload };
+    case "BRANCHES":
+      return { ...state, branches: action.payload };
+    case "ACTIVE_STORE_ID":
+      return { ...state, activeStoreId: action.payload };
+    case "POLICY_AND_BRANCHES":
+      if (!state.activeStoreId) {
+        return {
+          ...state,
+          workFlowPolicy: action.payload.policy,
+          branches: action.payload.branches,
+          activeStoreId: action.payload.storeId,
+        };
+      }
+      return {
+        ...state,
+        workFlowPolicy: action.payload.policy,
+        branches: action.payload.branches,
+      };
 
     default: {
       throw new Error(`Unsupported action type at App Reducer`);

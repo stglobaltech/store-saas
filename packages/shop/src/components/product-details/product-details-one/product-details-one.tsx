@@ -73,7 +73,7 @@ const ProductDetails: React.FunctionComponent<ProductDetailsProps> = ({
 }) => {
   const workFlowPolicy = useAppState("workFlowPolicy") as any;
   const {authState}=useContext<any>(AuthContext);
-  const storeId = workFlowPolicy["storeId"];
+  const storeId = useAppState("activeStoreId");
   const entityId = storeId;
 
   const { isRtl } = useLocale();

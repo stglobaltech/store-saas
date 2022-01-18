@@ -1,6 +1,9 @@
 import React from "react";
 import { useQuery } from "@apollo/client";
-import { GET_CATEGORIES } from "graphql/query/category.query";
+import {
+  GET_CATEGORIES,
+  GET_CATEGORIES_BY_STOREID,
+} from "graphql/query/category.query";
 import { useRouter } from "next/router";
 import SwiperCore, { Navigation } from "swiper";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -16,10 +19,12 @@ import {
   SliderNav,
 } from "./horizontal-category-card-menu.style";
 import noImage from "assets/images/no_image.jpg";
+import All from "../../assets/images/all.png";
 import Loader from "components/loader/loader";
 import { FormattedMessage } from "react-intl";
 import ErrorMessage from "../../components/error-message/error-message";
 import { useLocale } from "contexts/language/language.provider";
+import { useAppState } from "contexts/app/app.provider";
 SwiperCore.use([Navigation]);
 
 interface Props {
@@ -27,11 +32,14 @@ interface Props {
   productCategoriesSSR?: Array<any>;
 }
 
-export const HorizontalCategoryCardMenu = ({ }: Props) => {
+export const HorizontalCategoryCardMenu = ({}: Props) => {
   const router = useRouter();
+  const storeId = useAppState("activeStoreId");
   const { isRtl } = useLocale();
 
-  const { data, loading, error } = useQuery(GET_CATEGORIES);
+  const { data, loading, error } = useQuery(GET_CATEGORIES_BY_STOREID, {
+    variables: { storeId },
+  });
 
   const { pathname, query } = router;
   const selectedQueries = query.category;
@@ -55,29 +63,27 @@ export const HorizontalCategoryCardMenu = ({ }: Props) => {
   const sliderContent = () => {
     return (
       <>
-        {data?.getCategoriesForUserBasedOnDomain?.productCategories?.map(
-          (category, idx) => {
-            return (
-              <SwiperSlide key={idx}>
-                <ItemCard
-                  role="button"
-                  onClick={() => onCategoryClick(category._id)}
-                  active={selectedQueries === category._id}
-                >
-                  <ImageWrapper>
-                    <Image
-                      url={
-                        category?.imageUrl?.length ? category.imageUrl : noImage
-                      }
-                      alt={category?.title}
-                    />
-                  </ImageWrapper>
-                  <Title>{!isRtl ? category.name.en : category.name.ar}</Title>
-                </ItemCard>
-              </SwiperSlide>
-            );
-          }
-        )}
+        {data?.getCategoriesForUser?.productCategories?.map((category, idx) => {
+          return (
+            <SwiperSlide key={idx}>
+              <ItemCard
+                role="button"
+                onClick={() => onCategoryClick(category._id)}
+                active={selectedQueries === category._id}
+              >
+                <ImageWrapper>
+                  <Image
+                    url={
+                      category?.imageUrl?.length ? category.imageUrl : noImage
+                    }
+                    alt={category?.title}
+                  />
+                </ImageWrapper>
+                <Title>{!isRtl ? category.name.en : category.name.ar}</Title>
+              </ItemCard>
+            </SwiperSlide>
+          );
+        })}
       </>
     );
   };
@@ -110,6 +116,9 @@ export const HorizontalCategoryCardMenu = ({ }: Props) => {
 
   return (
     <CategoryWrapper>
+      <h4 style={{ marginBottom: "20px", color: "#04aa6d", padding: "10px" }}>
+        Categories
+      </h4>
       <CategoryInner>
         <Swiper
           id="category-card-menu"
@@ -121,6 +130,14 @@ export const HorizontalCategoryCardMenu = ({ }: Props) => {
           slidesPerView={7}
           spaceBetween={10}
         >
+          <SwiperSlide key={"all"}>
+            <ItemCard role="button" onClick={() => router.replace("/")} active={router.asPath==="/"}>
+              <ImageWrapper>
+                <Image url={All} alt={"All Categories"} />
+              </ImageWrapper>
+              <Title>{!isRtl ? "All" : "All"}</Title>
+            </ItemCard>
+          </SwiperSlide>
           {sliderContent()}
         </Swiper>
         <SliderNav className="banner-slider-next">

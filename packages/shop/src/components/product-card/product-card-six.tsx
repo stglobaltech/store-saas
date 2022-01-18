@@ -24,17 +24,16 @@ const Card = styled.div({
   },
 });
 
-
 const ImageWrapper = styled.div(
   css({
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
     // height: ["190px", "210px"],
-    height: '200px',
-    width: '100%',
-    position: 'relative',
-    overflow: 'hidden',
+    height: "200px",
+    width: "100%",
+    position: "relative",
+    overflow: "hidden",
     img: {
       // display: "block",
       // maxHeight: "100%",
@@ -42,8 +41,8 @@ const ImageWrapper = styled.div(
       // width: "auto",
       // height: "auto",
       flexShrink: 0,
-      minWidth: '100%',
-      minHeight: '200px',
+      minWidth: "100%",
+      minHeight: "200px",
     },
   })
 );
@@ -140,10 +139,7 @@ export const ProductCard = ({ data, currency }: Props) => {
   return (
     <Link href="/product/[slug]" as={`/product/${_id}`}>
       <Card>
-        <Box position="relative">
-          <CounterWrapper>
-            <AddItemToCart data={data} />
-          </CounterWrapper>
+        <Box position="relative" padding={10}>
           <ImageWrapper>
             <img
               src={picture?.length ? picture : noImage}
@@ -152,12 +148,13 @@ export const ProductCard = ({ data, currency }: Props) => {
           </ImageWrapper>
           {/* {discountInPercent ? <Discount>{discountInPercent}%</Discount> : null} */}
         </Box>
-        <Box padding={20}>
+        <Box padding={10}>
           <PriceWrapper>
             <Price>{currency + " " + price}</Price>
             {/* <SalePrice>{basePrice}</SalePrice> */}
           </PriceWrapper>
           <Title>{!isRtl ? productName.en : productName?.ar}</Title>
+          <AddItemToCart data={data} variant="full"/>
         </Box>
       </Card>
     </Link>

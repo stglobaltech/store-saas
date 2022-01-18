@@ -32,6 +32,7 @@ import { messages } from "site-settings/site-translation/messages";
 import "typeface-lato";
 import "typeface-poppins";
 import { useEffect } from "react";
+import { privatePaths } from "utils/routes";
 // need to provide types
 const DemoSwitcher = dynamic(
   () => import("components/demo-switcher/switcher-btn")
@@ -48,13 +49,6 @@ const RouteGuard = ({ children }) => {
 
   const { cartItemsCount } = useCart();
   function isAuthenticated(url) {
-    const privatePaths = [
-      "/checkout",
-      "/transactions",
-      "/order-history",
-      "/order-received",
-      "/order",
-    ];
     const path = url.split("?")[0];
     if (
       (!isTokenValidOrUndefined() || !cartItemsCount) &&
@@ -69,7 +63,7 @@ const RouteGuard = ({ children }) => {
 export default function ExtendedApp({ Component, pageProps }) {
   const mobile = useMedia("(max-width: 580px)");
   const tablet = useMedia("(max-width: 991px)");
-  const desktop = useMedia("(min-width: 992px)");
+  const desktop = useMedia("(min-width: 1100px)");
   const apolloClient = useApollo(pageProps.initialApolloState);
 
   return (

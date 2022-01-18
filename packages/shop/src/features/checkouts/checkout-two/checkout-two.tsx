@@ -58,6 +58,7 @@ import TopupWallet from "features/topup-wallet/topup-wallet";
 import { Q_GET_STORE_ID } from "graphql/query/loggedIn-queries.query";
 import { useAppState } from "contexts/app/app.provider";
 import { setCartId } from "utils/localStorage";
+import usePagination from "@mui/material/usePagination/usePagination";
 
 // The type of props Checkout Form receives
 interface MyFormProps {
@@ -110,7 +111,7 @@ const CheckoutWithSidebar: React.FC<MyFormProps> = ({
     toggleRestaurant,
   } = useCart();
   const workFlowPolicy = useAppState("workFlowPolicy") as any;
-  const storeId = workFlowPolicy["storeId"];
+  const storeId = useAppState("activeStoreId");
 
   const size = useWindowSize();
   const CURRENCY = workFlowPolicy["currency"];
