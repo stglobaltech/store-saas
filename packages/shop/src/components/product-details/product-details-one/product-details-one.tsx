@@ -56,7 +56,7 @@ import Image from "components/image/image";
 import DeliveryTruck from "../../../assets/images/cargo-truck.png";
 import CashOnDelivery from "../../../assets/images/pay.png";
 import Return from "../../../assets/images/return.png";
-import ShoppingBag from '../../../assets/images/shopping-bag-green.png';
+import ShoppingBag from "../../../assets/images/shopping-bag-green.png";
 
 type ProductDetailsProps = {
   product: any;
@@ -72,7 +72,7 @@ const ProductDetails: React.FunctionComponent<ProductDetailsProps> = ({
   deviceType,
 }) => {
   const workFlowPolicy = useAppState("workFlowPolicy") as any;
-  const {authState}=useContext<any>(AuthContext);
+  const { authState } = useContext<any>(AuthContext);
   const storeId = useAppState("activeStoreId");
   const entityId = storeId;
 
@@ -331,8 +331,14 @@ const ProductDetails: React.FunctionComponent<ProductDetailsProps> = ({
                 />
               )}
             </ProductCartBtn>
-            {authState?.isAuthenticated?
-            <ProductCartBtn onClick={()=>Router.push("/checkout")}><Image url={ShoppingBag} style={{width:"50px",height:"50px"}}/></ProductCartBtn>:null}
+            {authState?.isAuthenticated ? (
+              <ProductCartBtn onClick={() => Router.push("/checkout")}>
+                <Image
+                  url={ShoppingBag}
+                  style={{ width: "50px", height: "50px",cursor:"pointer" }}
+                />
+              </ProductCartBtn>
+            ) : null}
           </ProductCartWrapper>
 
           <ProductMeta>
