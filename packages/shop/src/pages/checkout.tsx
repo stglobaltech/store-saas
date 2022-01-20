@@ -45,8 +45,6 @@ const CheckoutPage: NextPage<Props> = ({ deviceType }) => {
   const { authDispatch } = React.useContext<any>(AuthContext);
   const workFlowPolicyOfStore = useAppState("workFlowPolicy");
 
-  console.log('workFlowPolicyStore',workFlowPolicyOfStore);
-
   if (!isTokenValidOrUndefined()) {
     removeToken();
     clearCart();
@@ -106,7 +104,6 @@ const CheckoutPage: NextPage<Props> = ({ deviceType }) => {
   }
 
   let policies = refactorPaymentMethods(workFlowPolicyOfStore);
-  console.log('policies',policies);
 
   return (
     <>

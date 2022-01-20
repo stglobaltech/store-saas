@@ -79,6 +79,8 @@ const Payment = ({
     }
   }
 
+  console.log('storePolicies',state.storePolicies);
+
   return (
     <>
       <CardHeader increment={increment}>

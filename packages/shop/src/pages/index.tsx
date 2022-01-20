@@ -124,7 +124,7 @@ export default function Categories({
       data.getWorkFlowPolicyOfStoreBasedOnDomain.data.plan.length &&
       storeBranches &&
       storeBranches.getStoreBranchesBasedOnDomain &&
-      storeBranches.getStoreBranchesBasedOnDomain.length
+      storeBranches.getStoreBranchesBasedOnDomain.length && !branches.length && !Object.keys(storePolicy).length
     ) {
       appDispatch({
         type: "POLICY_AND_BRANCHES",
