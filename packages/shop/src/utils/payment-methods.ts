@@ -45,7 +45,7 @@ export const refactorPaymentMethods = (workFlowPolicyData) => {
           id: 1,
           description: paymentoptions.filter(
             (option) => option.title === "cash"
-          ),
+          )[0].content,
         },
       ];
     }
