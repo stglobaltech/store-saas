@@ -70,7 +70,7 @@ const OrderCard: React.FC<MobileOrderCardProps> = ({
   }
 
   const workFlowPolicy = useAppState("workFlowPolicy");
-  const storeId = workFlowPolicy["storeId"];
+  const storeId = useAppState("activeStoreId");
   const userId = getUserId();
 
   const { data: storeFinishedOrder } = useSubscription(S_STORE_FINISHED_ORDER, {

@@ -151,6 +151,10 @@ const PaymentRadioCard: React.FC<RadioCardProps> = ({
   onChange,
   walletBalance,
 }) => {
+
+  console.log('title',title);
+  console.log('content',content);
+
   return (
     <CardWrapper
       htmlFor={`${id}`}
@@ -168,7 +172,7 @@ const PaymentRadioCard: React.FC<RadioCardProps> = ({
       />
       {title && <CardTitle>{title}</CardTitle>}
       {content && walletBalance === undefined ? (
-        <CardContent>{content[0]["content"]}</CardContent>
+        <CardContent>{content}</CardContent>
       ) : (
         <CardContent>
           {content}

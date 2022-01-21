@@ -242,7 +242,6 @@ export const ProductCartBtn = styled.div`
     border-radius: 20px;
     padding-left: 20px;
     padding-right: 20px;
-
     .btn-icon {
       margin-right: 5px;
 
@@ -290,7 +289,6 @@ font-family: ${themeGet('fonts.body', 'sans-serif')};
   margin-bottom: 10px;
   padding: 0 15px;
   border-radius: ${themeGet('radii.base', '6px')};
-  cursor: pointer;
   height: 30px;
   display:flex;
   align-items: center;

@@ -103,4 +103,4 @@ export function constructEventOrder(event: any) {
   ];
 }
 
-export const ifPaymentNotConfirmed = (status) => {};
+

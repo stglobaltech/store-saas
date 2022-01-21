@@ -52,10 +52,8 @@ import Contact from "features/contact/contact";
 import Payment from "features/payment/payment";
 import { useMutation } from "@apollo/client";
 import { M_PLACE_ORDER } from "graphql/mutation/place-order.mutation";
-import SuccessNotification from "../../../components/Notification/SuccessNotification";
 import DangerNotification from "../../../components/Notification/DangerNotification";
 import TopupWallet from "features/topup-wallet/topup-wallet";
-import { Q_GET_STORE_ID } from "graphql/query/loggedIn-queries.query";
 import { useAppState } from "contexts/app/app.provider";
 import { setCartId } from "utils/localStorage";
 
@@ -110,7 +108,7 @@ const CheckoutWithSidebar: React.FC<MyFormProps> = ({
     toggleRestaurant,
   } = useCart();
   const workFlowPolicy = useAppState("workFlowPolicy") as any;
-  const storeId = workFlowPolicy["storeId"];
+  const storeId = useAppState("activeStoreId");
 
   const size = useWindowSize();
   const CURRENCY = workFlowPolicy["currency"];

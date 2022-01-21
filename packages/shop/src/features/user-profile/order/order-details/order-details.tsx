@@ -54,7 +54,7 @@ const OrderDetails: React.FC<OrderDetailsProps> = ({
   refetch,
 }) => {
   const workFlowPolicy = useAppState("workFlowPolicy");
-  const storeId = workFlowPolicy["storeId"];
+  const storeId = useAppState("activeStoreId");
   const userId = getUserId();
 
   const { data: storeFinishedOrder } = useSubscription(S_STORE_FINISHED_ORDER, {

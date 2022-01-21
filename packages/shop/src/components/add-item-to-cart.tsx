@@ -95,7 +95,7 @@ export const AddItemToCart = ({ data, variant, buttonText }: Props) => {
   const { notify } = useNotifier();
   const workFlowPolicy=useAppState("workFlowPolicy")
 
-  const storeId = workFlowPolicy["storeId"];
+  const storeId = useAppState("activeStoreId");
   const entityId = storeId;
 
   const [addProductToCart, { loading: addProductLoading }] = useMutation(

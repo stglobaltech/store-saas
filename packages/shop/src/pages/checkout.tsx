@@ -9,12 +9,11 @@ import { useCart } from "contexts/cart/use-cart";
 import { AuthContext } from "contexts/auth/auth.context";
 import { isTokenValidOrUndefined } from "utils/tokenValidation";
 import { ProfileProvider } from "contexts/profile/profile.provider";
-import { getStoreId, removeToken } from "utils/localStorage";
+import { removeToken } from "utils/localStorage";
 import { useRouter } from "next/router";
 import { Q_GET_CART } from "graphql/query/get-cart.query";
 import Loader from "components/loader/loader";
 import ErrorMessage from "../components/error-message/error-message";
-import { Q_WORK_FLOW_POLICY } from "graphql/query/work-flow-policy-query";
 import paymentoptions from "features/checkouts/data";
 import { Q_GET_USER_PROFILE } from "graphql/query/get-user-profile.query";
 import {
@@ -22,7 +21,8 @@ import {
   ERROR_FETCHING_USER_DETAILS,
 } from "utils/constant";
 import { FormattedMessage } from "react-intl";
-import { useAppState } from "contexts/app/app.provider";
+import { useAppState } from "contexts/app/app.provider";import { refactorPaymentMethods } from "utils/payment-methods";
+5
 
 type Props = {
   deviceType: {
@@ -33,7 +33,7 @@ type Props = {
 };
 
 const CheckoutPage: NextPage<Props> = ({ deviceType }) => {
-  const storeId = getStoreId();
+  const storeId = useAppState("activeStoreId");
 
   const { clearCart } = useCart();
   const router = useRouter();
@@ -103,14 +103,7 @@ const CheckoutPage: NextPage<Props> = ({ deviceType }) => {
     userAddresses = formatAddress();
   }
 
-  let policies = {};
-  policies["paymentType"] = [
-    {
-      type: "cash",
-      id: 1,
-      description: paymentoptions.filter((option) => option.title === "cash"),
-    },
-  ];
+  let policies = refactorPaymentMethods(workFlowPolicyOfStore);
 
   return (
     <>

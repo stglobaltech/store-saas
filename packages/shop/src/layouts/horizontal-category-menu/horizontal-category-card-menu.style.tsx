@@ -12,7 +12,7 @@ export const CategoryInner = styled.div<any>({
 });
 
 export const ItemCard = styled.div<any>((props) =>
-  css({
+ css({
     textAlign: 'center',
     borderRadius: 6,
     backgroundColor: '#fff',
@@ -32,8 +32,7 @@ export const ImageWrapper = styled.div<any>({
   width: '100%',
   position: 'relative',
   overflow: 'hidden',
-  marginBottom: 10,
-
+  padding:20,
   img: {
     // width: 'auto',
     // height: '200px',

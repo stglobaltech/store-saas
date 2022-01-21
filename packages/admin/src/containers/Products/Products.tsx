@@ -83,8 +83,6 @@ export default function Products() {
     fetchPolicy:"network-only"
   });
 
-  console.log('workFlowPolicyData',workFlowPolicyData);
-
   const [categories, setCategories] = useState([]);
   const [filterInput, setFilterInput] = useState({
     category: [],
@@ -238,6 +236,8 @@ export default function Products() {
                         currency={workFlowPolicyData?.getStorePlanForUserWebAdmin?.data?.plan[0]?.currency}
                         price={item.price.price}
                         data={{...item, queryToRefetch: refetch}}
+                        isActivated={item.isActivated}
+                        productId={item._id}
                       />
                     </Fade>
                   </Col>

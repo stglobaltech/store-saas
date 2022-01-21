@@ -103,6 +103,7 @@ function VerifyUser({ handleSentOtp }) {
               width="100%"
               type="submit"
               style={{ margin: "20px 0" }}
+              disabled={!verifyState.mobile || !verifyState.countryCode}
             >
               <FormattedMessage id="sendOtp" defaultMessage="Continue" />
             </Button>
@@ -113,6 +114,7 @@ function VerifyUser({ handleSentOtp }) {
               width="100%"
               type="submit"
               style={{ margin: "20px 0" }}
+              disabled={!verifyState.mobile || !verifyState.countryCode}
             >
               <FormattedMessage id="signUpAfterOtp" defaultMessage="Continue" />
             </Button>
@@ -146,7 +148,8 @@ function SignUp({ mobile,countryCode }: SignUpProps) {
   const intl = useIntl();
   const { notify } = useNotifier();
   const { authDispatch } = useContext<any>(AuthContext);
-  const workFlowPolicy=useAppState("workFlowPolicy")
+  const workFlowPolicy=useAppState("workFlowPolicy");
+  const storeId=useAppState("activeStoreId");
 
 
   const toggleSignInForm = () => {
@@ -183,7 +186,7 @@ function SignUp({ mobile,countryCode }: SignUpProps) {
           osVersion: "WEB",
           deviceModel: "WEB",
           versionCode: "WEB",
-          storeId:workFlowPolicy["storeId"]
+          storeId
         },
       },
     });
@@ -267,7 +270,7 @@ function SignUp({ mobile,countryCode }: SignUpProps) {
               </a>
             </Link>
           </HelperText>
-          <Button variant="primary" size="big" width="100%" type="submit">
+          <Button variant="primary" size="big" width="100%" type="submit" disabled={!signup.name || !signup.email || !signup.otp}>
             <FormattedMessage id="continueBtn" defaultMessage="Continue" />
           </Button>
         </form>

@@ -51,7 +51,7 @@ const Payment = ({
       orderPayType: value,
     };
     if (value === "card" || value === "wallet") {
-      input["paymentGateWay"] = state.storePolicies.gateWayName[0];
+      input["paymentGateWay"] = state.storePolicies.gateWayName;
     }
     try {
       const { data, error } = (await updateOrderPayType({
@@ -78,6 +78,8 @@ const Payment = ({
       notify(<DangerNotification message={`${error}`} dismiss />);
     }
   }
+
+  console.log('storePolicies',state.storePolicies);
 
   return (
     <>

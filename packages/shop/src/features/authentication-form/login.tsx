@@ -75,6 +75,7 @@ function SendOtp({ handleVerifyOtp }) {
         sendOtpInputDto: {
           mobile: mobile,
           countryCode: countryCode,
+          appType:"USER"
         },
       },
     });
@@ -115,6 +116,7 @@ function SendOtp({ handleVerifyOtp }) {
             size="big"
             style={{ width: "100%", marginTop: "20px" }}
             type="submit"
+            disabled={!mobile || !countryCode}
           >
             <FormattedMessage id="sendOtp" defaultMessage="Send Otp" />
           </Button>
@@ -160,7 +162,7 @@ function VerifyOtp({ mobile, countryCode, handleLoginSuccess }) {
       } else if(data && data.userLogin && data.userLogin.accessToken===null && data.userLogin.refreshToken===null) {
         notify(
           <DangerNotification
-            message={`${mobile} is not registered with us! Please signup and continue!!`}
+            message={`Please enter the correct otp sent to your mobile number and email`}
             dismiss
           />
         );
@@ -214,6 +216,7 @@ function VerifyOtp({ mobile, countryCode, handleLoginSuccess }) {
             size="big"
             style={{ width: "100%" }}
             type="submit"
+            disabled={!otp}
           >
             <FormattedMessage id="loginBtnText" defaultMessage="Login" />
           </Button>
