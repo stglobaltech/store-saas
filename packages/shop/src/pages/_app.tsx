@@ -32,6 +32,7 @@ import { messages } from "site-settings/site-translation/messages";
 import "typeface-lato";
 import "typeface-poppins";
 import { useEffect } from "react";
+import { privatePaths } from "utils/routes";
 // need to provide types
 const DemoSwitcher = dynamic(
   () => import("components/demo-switcher/switcher-btn")
@@ -43,11 +44,11 @@ const RouteGuard = ({ children }) => {
 
   useEffect(() => {
     isAuthenticated(router.asPath);
+    router.replace("/");
   }, []);
 
   const { cartItemsCount } = useCart();
   function isAuthenticated(url) {
-    const privatePaths = ["/checkout"];
     const path = url.split("?")[0];
     if (
       (!isTokenValidOrUndefined() || !cartItemsCount) &&
@@ -62,7 +63,7 @@ const RouteGuard = ({ children }) => {
 export default function ExtendedApp({ Component, pageProps }) {
   const mobile = useMedia("(max-width: 580px)");
   const tablet = useMedia("(max-width: 991px)");
-  const desktop = useMedia("(min-width: 992px)");
+  const desktop = useMedia("(min-width: 1100px)");
   const apolloClient = useApollo(pageProps.initialApolloState);
 
   return (
@@ -70,22 +71,22 @@ export default function ExtendedApp({ Component, pageProps }) {
       <ThemeProvider theme={defaultTheme}>
         <GlobalStyle />
         <LanguageProvider messages={messages}>
-          <CartProvider>
-            <AppProvider>
-              <AuthProvider>
-                <AppLayout>
-                  <RouteGuard>
+          <RouteGuard>
+            <CartProvider>
+              <AppProvider>
+                <AuthProvider>
+                  <AppLayout>
                     <NotifierContextProvider>
                       <Component
                         {...pageProps}
                         deviceType={{ mobile, tablet, desktop }}
                       />
                     </NotifierContextProvider>
-                  </RouteGuard>
-                </AppLayout>
-              </AuthProvider>
-            </AppProvider>
-          </CartProvider>
+                  </AppLayout>
+                </AuthProvider>
+              </AppProvider>
+            </CartProvider>
+          </RouteGuard>
         </LanguageProvider>
       </ThemeProvider>
     </ApolloProvider>

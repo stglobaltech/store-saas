@@ -9,14 +9,15 @@ import { Header, Heading } from 'components/Wrapper.style';
 import Fade from 'react-reveal/Fade';
 import ProductCard from 'components/ProductCard/ProductCard';
 import NoResult from 'components/NoResult/NoResult';
-import { CURRENCY } from 'settings/constants';
 import Placeholder from 'components/Placeholder/Placeholder';
 import { useDrawerDispatch } from 'context/DrawerContext';
 import {
   Q_GET_STORE_ID,
   Q_GET_CATEGORIES,
-  Q_SEARCH_PRODUCTS
+  Q_SEARCH_PRODUCTS,
+  Q_STORE_PLAN_FOR_USER_WEB_ADMIN
 } from 'services/GQL';
+import { InLineLoader } from 'components/InlineLoader/InlineLoader';
 
 export const ProductsRow = styled('div', ({ $theme }) => ({
   display: 'flex',
@@ -75,6 +76,13 @@ export default function Products() {
 
   const { data: { storeId } } = useQuery(Q_GET_STORE_ID);
 
+  const {data:workFlowPolicyData,loading:workFlowPolicyLoading,error:workFlowPolicyError}=useQuery(Q_STORE_PLAN_FOR_USER_WEB_ADMIN,{
+    variables:{
+      storeId
+    },
+    fetchPolicy:"network-only"
+  });
+
   const [categories, setCategories] = useState([]);
   const [filterInput, setFilterInput] = useState({
     category: [],
@@ -131,7 +139,9 @@ export default function Products() {
     });
   };
 
-  if (getCategoriesError || error)
+  if(workFlowPolicyLoading) return <InLineLoader />
+
+  if (getCategoriesError || error || workFlowPolicyError)
     return <div>Error Fetching Data</div>;
 
   let hasNextPage = false,
@@ -223,15 +233,17 @@ export default function Products() {
                       <ProductCard
                         title={item.productName.en}
                         image={item.picture}
-                        currency={CURRENCY}
+                        currency={workFlowPolicyData?.getStorePlanForUserWebAdmin?.data?.plan[0]?.currency}
                         price={item.price.price}
                         data={{...item, queryToRefetch: refetch}}
+                        isActivated={item.isActivated}
+                        productId={item._id}
                       />
                     </Fade>
                   </Col>
                 ))
               ) : (
-                <NoResult />
+                <NoResult msg={"No products added yet"}/>
               )
             ) : (
               <LoaderWrapper>

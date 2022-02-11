@@ -1,5 +1,4 @@
-import React, { useEffect } from "react";
-import Link from "next/link";
+import React, { useContext, useEffect } from "react";
 import Router from "next/router";
 import { Button } from "components/button/button";
 import {
@@ -21,17 +20,43 @@ import {
   MetaSingle,
   MetaItem,
   RelatedItems,
+  ProductDescriptionTitle,
+  MetaData,
+  ProductMetaSingle,
+  ProductMetaItem,
+  ProductMetaItemDes,
 } from "./product-details-one.style";
 import { LongArrowLeft } from "assets/icons/LongArrowLeft";
 import { CartIcon } from "assets/icons/CartIcon";
 import ReadMore from "components/truncate/truncate";
 import CarouselWithCustomDots from "components/multi-carousel/multi-carousel";
 import Products from "components/product-grid/product-list/product-list";
-import { CURRENCY } from "utils/constant";
 import { FormattedMessage } from "react-intl";
 import { useLocale } from "contexts/language/language.provider";
-import { useCart } from "contexts/cart/use-cart";
 import { Counter } from "components/counter/counter";
+
+import AuthenticationForm from "features/authentication-form";
+import { openModal } from "@redq/reuse-modal";
+import { useNotifier } from "react-headless-notifier";
+import { useMutation } from "@apollo/client";
+import { useCart } from "contexts/cart/use-cart";
+import { AuthContext } from "contexts/auth/auth.context";
+import { M_ADD_PRODUCT_TO_CART } from "graphql/mutation/add-product-to-cart.mutation";
+import { M_UPDATE_PRODUCT_QUANTITY } from "graphql/mutation/update-product-quantity.mutation";
+import SuccessNotification from "../../../components/Notification/SuccessNotification";
+import DangerNotification from "../../../components/Notification/DangerNotification";
+import {
+  ADD_PRODUCT_TO_CART_FAILED,
+  ERROR_CART_DELETED,
+} from "../../../utils/constant";
+import { useAppState } from "contexts/app/app.provider";
+import { getCartId } from "utils/localStorage";
+import { handlePrevOrderPending } from "components/prev-order-pending/handleprevorderpending";
+import Image from "components/image/image";
+import DeliveryTruck from "../../../assets/images/cargo-truck.png";
+import CashOnDelivery from "../../../assets/images/pay.png";
+import Return from "../../../assets/images/return.png";
+import ShoppingBag from "../../../assets/images/shopping-bag-green.png";
 
 type ProductDetailsProps = {
   product: any;
@@ -46,18 +71,180 @@ const ProductDetails: React.FunctionComponent<ProductDetailsProps> = ({
   product,
   deviceType,
 }) => {
+  const workFlowPolicy = useAppState("workFlowPolicy") as any;
+  const { authState } = useContext<any>(AuthContext);
+  const storeId = useAppState("activeStoreId");
+  const entityId = storeId;
+
   const { isRtl } = useLocale();
-  const { addItem, removeItem, isInCart, getItem } = useCart();
   const data = product;
+
+  const {
+    addItem,
+    removeItem,
+    getItem,
+    isInCart,
+    cartItemsCount,
+    getParticularItemCount,
+  } = useCart();
+
+  const { notify } = useNotifier();
+
+  const [addProductToCart, { loading: addProductLoading }] = useMutation(
+    M_ADD_PRODUCT_TO_CART,
+    {
+      onCompleted: (resData) => {
+        if (
+          resData &&
+          resData.addProductToCart &&
+          resData.addProductToCart.productId
+        ) {
+          addItem({
+            ...data,
+            inCartProductId: resData.addProductToCart.productId,
+          });
+        } else {
+          notify(
+            <DangerNotification message={ADD_PRODUCT_TO_CART_FAILED} dismiss />
+          );
+        }
+      },
+    }
+  );
+
+  const [
+    updateProductQuantity,
+    { loading: updateProductQuantityLoading },
+  ] = useMutation(M_UPDATE_PRODUCT_QUANTITY);
+
+  const {
+    authState: { isAuthenticated },
+    authDispatch,
+  } = React.useContext<any>(AuthContext);
+
+  function handleJoin() {
+    authDispatch({
+      type: "SIGNIN",
+    });
+
+    openModal({
+      show: true,
+      overlayClassName: "quick-view-overlay",
+      closeOnClickOutside: true,
+      component: AuthenticationForm,
+      closeComponent: "",
+      config: {
+        enableResizing: false,
+        disableDragging: true,
+        className: "quick-view-modal",
+        width: 458,
+        height: "auto",
+      },
+    });
+  }
+
+  async function addItemHandler() {
+    const {
+      _id,
+      productName: { en, ar },
+      price,
+      quantity,
+      maxQuantity,
+    } = data;
+    const addProductInput = {
+      entityId,
+      storeCode: storeId,
+      product: {
+        productId: _id,
+        name: { en, ar },
+        quantity: 1,
+        maxQuantity: maxQuantity,
+        price: price.price,
+        quotedPrice: price.price,
+      },
+    };
+    const itemCountInCart = getParticularItemCount(data._id);
+    // if (getCartId()) {
+    //   return handlePrevOrderPending();
+    // }
+    if (itemCountInCart === 0) {
+      addProductToCart({ variables: { addProductInput } });
+    } else {
+      const currentItem = getItem(data._id);
+      try {
+        if (currentItem.maxQuantity < itemCountInCart + 1)
+          throw new Error(
+            `maximum of ${data.maxQuantity} ${data.productName.en} can be added to the cart!`
+          );
+        const res = (await updateProductQuantity({
+          variables: {
+            quantityUpdateInput: {
+              productId: currentItem.inCartProductId,
+              quantity: itemCountInCart + 1,
+              entityId: storeId,
+            },
+          },
+        })) as any;
+        if (
+          res &&
+          res.data.updateCartProductQuantity &&
+          res.data.updateCartProductQuantity.totalPrice
+        ) {
+          addItem(data);
+        } else {
+          throw new Error(`could not add ${data.productName.en} to the cart!`);
+        }
+      } catch (error) {
+        notify(<DangerNotification message={`${error.message}`} dismiss />);
+      }
+    }
+  }
+
+  async function removeItemHandler() {
+    const { _id, maxQuantity } = data;
+    const itemCountInCart = getParticularItemCount(_id);
+    const currentItem = getItem(data._id);
+    try {
+      const res = await updateProductQuantity({
+        variables: {
+          quantityUpdateInput: {
+            productId: currentItem.inCartProductId,
+            quantity: itemCountInCart - 1,
+            entityId: storeId,
+          },
+        },
+      });
+      if (
+        res &&
+        res.data.updateCartProductQuantity &&
+        res.data.updateCartProductQuantity.totalPrice
+      ) {
+        removeItem(data);
+      }
+    } catch (error) {
+      if (error.message === ERROR_CART_DELETED) {
+        removeItem(data);
+        notify(
+          <SuccessNotification message={`Your cart is empty now!`} dismiss />
+        );
+      }
+    }
+  }
 
   const handleAddClick = (e) => {
     e.stopPropagation();
-    addItem(data);
+    if (!isAuthenticated) {
+      handleJoin();
+    } else {
+      addItemHandler();
+    }
+    // if (!isInCart(data.id)) {
+    //   cartAnimation(e);
+    // }
   };
-
   const handleRemoveClick = (e) => {
     e.stopPropagation();
-    removeItem(data);
+    removeItemHandler();
   };
 
   useEffect(() => {
@@ -88,7 +275,7 @@ const ProductDetails: React.FunctionComponent<ProductDetailsProps> = ({
             </BackButton>
 
             <CarouselWithCustomDots
-              items={[{url:product.picture}]}
+              items={[{ url: product.picture }]}
               deviceType={deviceType}
             />
           </ProductPreview>
@@ -96,20 +283,21 @@ const ProductDetails: React.FunctionComponent<ProductDetailsProps> = ({
 
         <ProductInfo dir={isRtl ? "rtl" : "ltr"}>
           <ProductTitlePriceWrapper>
-            <ProductTitle>{product.productName.en}</ProductTitle>
+            <ProductTitle>
+              {!isRtl ? product.productName.en : product.productName?.ar}
+            </ProductTitle>
             <ProductPriceWrapper>
+              <MetaData>per piece</MetaData>
               {product.discountInPercent ? (
                 <SalePrice>
-                  {CURRENCY}
+                  {workFlowPolicy.currency + " "}
                   {product.price.price}
                 </SalePrice>
               ) : null}
 
               <ProductPrice>
-                {CURRENCY}
-                {product.price.basePrice
-                  ? product.price.basePrice
-                  : product.price.price}
+                {workFlowPolicy.currency + " "}
+                {product.price.price}
               </ProductPrice>
             </ProductPriceWrapper>
           </ProductTitlePriceWrapper>
@@ -117,9 +305,6 @@ const ProductDetails: React.FunctionComponent<ProductDetailsProps> = ({
           <ProductWeight>
             <b>maximum quantity</b> : {product.maxQuantity}
           </ProductWeight>
-          <ProductDescription>
-            <ReadMore character={600}>{product.description.en}</ReadMore>
-          </ProductDescription>
 
           <ProductCartWrapper>
             <ProductCartBtn>
@@ -133,8 +318,8 @@ const ProductDetails: React.FunctionComponent<ProductDetailsProps> = ({
                   <CartIcon mr={2} />
                   <ButtonText>
                     <FormattedMessage
-                      id="addCartButton"
-                      defaultMessage="Cart"
+                      id="addCartButtons"
+                      defaultMessage="Add to cart"
                     />
                   </ButtonText>
                 </Button>
@@ -146,22 +331,49 @@ const ProductDetails: React.FunctionComponent<ProductDetailsProps> = ({
                 />
               )}
             </ProductCartBtn>
+            {authState?.isAuthenticated ? (
+              <ProductCartBtn onClick={() => Router.push("/checkout")}>
+                <Image
+                  url={ShoppingBag}
+                  style={{ width: "50px", height: "50px",cursor:"pointer" }}
+                />
+              </ProductCartBtn>
+            ) : null}
           </ProductCartWrapper>
-          {/* 
+
           <ProductMeta>
-            <MetaSingle>
-              {product?.categories?.map((item: any) => (
-                <Link
-                  href={`/${product.type.toLowerCase()}?category=${item.slug}`}
-                  key={`link-${item.id}`}
-                >
-                  <a>
-                    <MetaItem>{item.title}</MetaItem>
-                  </a>
-                </Link>
-              ))}
-            </MetaSingle>
-          </ProductMeta> */}
+            <ProductMetaSingle>
+              <ProductMetaItem>
+                <Image
+                  url={DeliveryTruck}
+                  style={{ width: "20px", height: "20px" }}
+                />
+                <ProductMetaItemDes>
+                  Dispatched within 24 hours
+                </ProductMetaItemDes>
+              </ProductMetaItem>
+              <ProductMetaItem>
+                <Image
+                  url={CashOnDelivery}
+                  style={{ width: "20px", height: "20px" }}
+                />
+                <ProductMetaItemDes>
+                  Pay on delivery available
+                </ProductMetaItemDes>
+              </ProductMetaItem>
+              <ProductMetaItem>
+                <Image url={Return} style={{ width: "20px", height: "20px" }} />
+                <ProductMetaItemDes> Track your order</ProductMetaItemDes>
+              </ProductMetaItem>
+            </ProductMetaSingle>
+          </ProductMeta>
+
+          <ProductDescription>
+            <ProductDescriptionTitle>Product Details</ProductDescriptionTitle>
+            <ReadMore character={600}>
+              {!isRtl ? product.description.en : product.description?.ar}
+            </ReadMore>
+          </ProductDescription>
         </ProductInfo>
 
         {/* {isRtl && (

@@ -11,9 +11,11 @@ export const Q_GET_PRODUCTS_BASED_ON_STORE = gql`
         _id
         productName {
           en
+          ar
         }
         description {
           en
+          ar
         }
         picture
         price {
@@ -42,9 +44,11 @@ export const Q_GET_PRODUCTS_BASED_ON_CATEGORY = gql`
         _id
         productName {
           en
+          ar
         }
         description {
           en
+          ar
         }
         picture
         price {
@@ -71,11 +75,14 @@ export const Q_SEARCH_PRODUCTS = gql`
     searchProduct(productSearchInput: $productSearchInput) {
       products {
         _id
+        isActivated
         productName {
           en
+          ar
         }
         description {
           en
+          ar
         }
         picture
         price {

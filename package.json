@@ -22,7 +22,8 @@
     "serve:admin": "lerna run --parallel serve",
     "dev:api-shop": "yarn workspace @pick-bazar/api shop-dev",
     "dev:api-admin": "yarn workspace @pick-bazar/api admin",
-    "build:api": "yarn workspace @pick-bazar/api build"
+    "build:api": "yarn workspace @pick-bazar/api build",
+    "export:shop":"yarn workspace @pick-bazar/shop export"
   },
   "devDependencies": {
     "concurrently": "^6.0.2",

@@ -46,12 +46,14 @@ const AddProduct: React.FC<Props> = () => {
   const { register, handleSubmit, setValue, formState: { errors } } = useForm({
     defaultValues: {
       productNameEn: data.productName.en,
+      productNameAr:data.productName.ar,
       maxQuantity: data.maxQuantity
     },
   });
 
   useEffect(() => {
     register({ name: 'description' });
+    register({name:"descriptionRegional"})
   }, [register]);
 
   const [productPicture, setProductPicture] = useState({
@@ -59,6 +61,7 @@ const AddProduct: React.FC<Props> = () => {
     uploading: false
   });
   const [description, setDescription] = useState(data.description.en);
+  const [descriptionRegional,setDescriptionRegional]=useState(data.description.ar);
   const [priceSplit, setPriceSplit] = useState({
     price: data.price.price,
     priceWithoutVat: data.price.basePrice,
@@ -116,19 +119,40 @@ const AddProduct: React.FC<Props> = () => {
     setDescription(value);
   };
 
+  const handleRegionalDescriptionChange=(e)=>{
+    const value=e.target.value;
+    setValue("descriptionRegional",value);
+    setDescriptionRegional(value);
+  }
+
   const vatPercentage = (storePlanData) => {
-    if(
+    const nullish = [null, undefined];
+    if (
       storePlanData &&
+      !nullish.includes(storePlanData.globalVat) &&
       storePlanData.plan &&
       storePlanData.plan.length &&
-      storePlanData.plan[0].vat
-    )
+      !nullish.includes(storePlanData.plan[0].vat)
+    ) {
       return storePlanData.plan[0].vat;
-    else if(
+    } else if (
       storePlanData &&
-      storePlanData.globalVat
-    )
+      !nullish.includes(storePlanData.globalVat) &&
+      (!storePlanData.plan ||
+        (storePlanData.plan &&
+          storePlanData.plan.length &&
+          nullish.includes(storePlanData.plan[0].vat)))
+    ) {
       return storePlanData.globalVat;
+    } else if (
+      storePlanData &&
+      nullish.includes(storePlanData.globalVat) &&
+      storePlanData.plan &&
+      storePlanData.plan.length &&
+      !nullish.includes(storePlanData.plan[0].vat)
+    ) {
+      return storePlanData.plan[0].vat;
+    }
   };
 
   const handlePriceChange = (e) => {
@@ -164,7 +188,7 @@ const AddProduct: React.FC<Props> = () => {
       storeId,
       productName: {
         en: values.productNameEn,
-        ar: ""
+        ar: values.productNameAr
       },
       price: {
         price: parseFloat(priceSplit.price),
@@ -175,7 +199,7 @@ const AddProduct: React.FC<Props> = () => {
       maxQuantity: parseFloat(values.maxQuantity),
       description: {
         en: description,
-        ar: ""
+        ar: descriptionRegional
       },
       picture: productPicture.url
     }
@@ -213,10 +237,8 @@ const AddProduct: React.FC<Props> = () => {
           )}
         >
           <Row>
-            <Col lg={4}>
-              <FieldDetails>Upload your Product image here</FieldDetails>
-            </Col>
-            <Col lg={8}>
+            <Col lg={12}>
+            <FieldDetails>Upload your Product image here</FieldDetails>
               <DrawerBox>
                 <Uploader onChange={uploadImage} imageURL={data.picture} />
               </DrawerBox>
@@ -224,14 +246,11 @@ const AddProduct: React.FC<Props> = () => {
           </Row>
 
           <Row>
-            <Col lg={4}>
+            <Col lg={12}>
+              <DrawerBox>
               <FieldDetails>
                 Add your Product description and necessary information from here
               </FieldDetails>
-            </Col>
-
-            <Col lg={8}>
-              <DrawerBox>
                 <FormFields>
                   <FormLabel>Product Name</FormLabel>
                   <Input
@@ -258,10 +277,43 @@ const AddProduct: React.FC<Props> = () => {
                 </FormFields>
 
                 <FormFields>
+                  <FormLabel>Product Name (Regional Language)</FormLabel>
+                  <Input
+                    name="productNameAr"
+                    inputRef={register({ required: true, minLength: 3, maxLength: 20 })}
+                  />
+                  {errors.productNameAr && (
+                    <div
+                      style={{
+                        margin: "5px 0 0 auto",
+                        fontFamily: "Lato, sans-serif",
+                        fontSize: "12px",
+                        fontWeight: "bold",
+                        color: "rgb(252, 92, 99)",
+                      }}
+                    >
+                      {errors.productNameAr.type === "required"
+                        ? "Required"
+                        : (errors.productNameAr.type === "minLength" ||
+                            errors.productNameAr.type === "maxLength") &&
+                          "Product Name must be 3-20 characters"}
+                    </div>
+                  )}
+                </FormFields>
+
+                <FormFields>
                   <FormLabel>Description</FormLabel>
                   <Textarea
                     value={description}
                     onChange={handleDescriptionChange}
+                  />
+                </FormFields>
+
+                <FormFields>
+                  <FormLabel>Description (Regional Language)</FormLabel>
+                  <Textarea
+                    value={descriptionRegional}
+                    onChange={handleRegionalDescriptionChange}
                   />
                 </FormFields>
 
@@ -272,6 +324,7 @@ const AddProduct: React.FC<Props> = () => {
                     name="price"
                     value={priceSplit.price.toString()}
                     min="0"
+                    step="any"
                     inputRef={register}
                     onChange={handlePriceChange}
                   />
@@ -286,6 +339,7 @@ const AddProduct: React.FC<Props> = () => {
                     min="0"
                     inputRef={register}
                     onChange={handlePriceChange}
+                    step="any"
                   />
                 </FormFields>
 

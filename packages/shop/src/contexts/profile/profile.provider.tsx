@@ -117,12 +117,13 @@ function reducer(state: any, action: Action): any {
         ),
       };
     case "SET_PRIMARY_PAYMENT_OPTION":
-      return {
+      const test= {
         ...state,
-        selectedPaymentOption: state.paymentoptions.filter(
+        selectedPaymentOption: state.storePolicies.paymentType.filter(
           (option) => option.id === action.payload
         )[0],
       };
+      return test;
     default:
       return state;
   }

@@ -15,7 +15,7 @@ import {
   // Input,
   Divider,
 } from "./authentication-form.style";
-import { useLazyQuery, useMutation } from "@apollo/client";
+import {  useLazyQuery, useMutation } from "@apollo/client";
 import { AuthContext } from "contexts/auth/auth.context";
 import { FormattedMessage, useIntl } from "react-intl";
 import { closeModal } from "@redq/reuse-modal";
@@ -25,7 +25,7 @@ import { Select } from "components/forms/select";
 import { M_USER_LOGIN } from "graphql/mutation/me";
 import { setToken } from "utils/localStorage";
 import { initializeApollo } from "utils/apollo";
-import { Q_GET_USERID } from "graphql/query/loggedIn-user.query";
+import { Q_GET_ROLES, Q_GET_USERID } from "graphql/query/loggedIn-queries.query";
 import { useCart } from "contexts/cart/use-cart";
 import SuccessNotification from "../../components/Notification/SuccessNotification";
 import DangerNotification from "../../components/Notification/DangerNotification";
@@ -50,6 +50,12 @@ function SendOtp({ handleVerifyOtp }) {
     context: { linkName: "auth" },
     onCompleted: (data) => {
       if (data && data.sendOtp && data.sendOtp.success) {
+        notify(
+          <SuccessNotification
+            message="Otp sent to your phone/email"
+            dismiss
+          />
+        );
         handleVerifyOtp(mobile, countryCode);
       } else {
         notify(
@@ -69,6 +75,7 @@ function SendOtp({ handleVerifyOtp }) {
         sendOtpInputDto: {
           mobile: mobile,
           countryCode: countryCode,
+          appType:"USER"
         },
       },
     });
@@ -87,6 +94,10 @@ function SendOtp({ handleVerifyOtp }) {
           />
         </SubHeading>
         <form onSubmit={loginCallback}>
+          <Select
+            options={countryCodes}
+            handleChange={(value) => setCountryCode(value)}
+          />
           <Input
             type="text"
             placeholder={intl.formatMessage({
@@ -98,17 +109,14 @@ function SendOtp({ handleVerifyOtp }) {
             required
             height="48px"
             backgroundColor="#F7F7F7"
-            mb="10px"
-          />
-          <Select
-            options={countryCodes}
-            handleChange={(value) => setCountryCode(value)}
+            mt="10px"
           />
           <Button
             variant="primary"
             size="big"
             style={{ width: "100%", marginTop: "20px" }}
             type="submit"
+            disabled={!mobile || !countryCode}
           >
             <FormattedMessage id="sendOtp" defaultMessage="Send Otp" />
           </Button>
@@ -147,10 +155,14 @@ function VerifyOtp({ mobile, countryCode, handleLoginSuccess }) {
           query: Q_GET_USERID,
           data: { userId },
         });
-      } else {
+        client.writeQuery({
+          query:Q_GET_ROLES,
+          data:{roles}
+        })
+      } else if(data && data.userLogin && data.userLogin.accessToken===null && data.userLogin.refreshToken===null) {
         notify(
           <DangerNotification
-            message={`${data.userLogin.message.en}`}
+            message={`Please enter the correct otp sent to your mobile number and email`}
             dismiss
           />
         );
@@ -204,6 +216,7 @@ function VerifyOtp({ mobile, countryCode, handleLoginSuccess }) {
             size="big"
             style={{ width: "100%" }}
             type="submit"
+            disabled={!otp}
           >
             <FormattedMessage id="loginBtnText" defaultMessage="Login" />
           </Button>

@@ -1,10 +1,10 @@
-import styled from 'styled-components';
-import { themeGet } from '@styled-system/theme-get';
+import styled from "styled-components";
+import { themeGet } from "@styled-system/theme-get";
 
-const ProgressBar = styled('div')`
+const ProgressBar = styled("div")`
   width: 100%;
   height: 4px;
-  background-color: ${themeGet('colors.gray.700', '#E6E6E6')};
+  background-color: ${themeGet("colors.gray.700", "#E6E6E6")};
   position: absolute;
   top: 50%;
   left: 0;
@@ -20,20 +20,20 @@ const ProgressBar = styled('div')`
   }
 `;
 
-const StatusBox = styled('div')`
-  font-family: ${themeGet('fonts.body', 'Lato')};
-  font-size: ${themeGet('fontSizes.sm', '13')}px;
-  font-weight: ${themeGet('fontWeights.bold', '700')};
-  color: ${themeGet('colors.primary.regular', '#009E7F')};
+const StatusBox = styled("div")`
+  font-family: ${themeGet("fonts.body", "Lato")};
+  font-size: ${themeGet("fontSizes.sm", "13")}px;
+  font-weight: ${themeGet("fontWeights.bold", "700")};
+  color: ${themeGet("colors.primary.regular", "#009E7F")};
   width: 36px;
   height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  background-color: ${themeGet('colors.white', '#ffffff')};
+  background-color: ${themeGet("colors.white", "#ffffff")};
   z-index: 1;
-  border: 1px dashed ${themeGet('colors.primary.regular', '#009E7F')};
+  border: 1px dashed ${themeGet("colors.primary.regular", "#009E7F")};
 `;
 
 const CheckMarkWrapper = styled.span`
@@ -45,7 +45,7 @@ const CheckMarkWrapper = styled.span`
   }
 `;
 
-const StatusDetails = styled('div')`
+const StatusDetails = styled("div")`
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -57,11 +57,11 @@ const StatusDetails = styled('div')`
   }
 `;
 
-const StatusTitle = styled('span')`
-  font-family: ${themeGet('fonts.body', 'Lato')};
-  font-size: ${themeGet('fontSizes.base', '15')}px;
-  font-weight: ${themeGet('fontWeights.bold', '700')};
-  color: ${themeGet('colors.text.bold', '#0D1136')};
+const StatusTitle = styled("span")`
+  font-family: ${themeGet("fonts.body", "Lato")};
+  font-size: ${themeGet("fontSizes.base", "15")}px;
+  font-weight: ${themeGet("fontWeights.bold", "700")};
+  color: ${themeGet("colors.text.bold", "#0D1136")};
   text-align: center;
   padding: 0 8px;
 
@@ -70,15 +70,15 @@ const StatusTitle = styled('span')`
   }
 `;
 
-const StatusNote = styled('span')`
-  font-family: ${themeGet('fonts.body', 'Lato')};
-  font-size: ${themeGet('fontSizes.sm', '13')}px;
-  font-weight: ${themeGet('fontWeights.regular', '400')};
-  color: ${themeGet('colors.text.regular', '#77798C')};
+const StatusNote = styled("span")`
+  font-family: ${themeGet("fonts.body", "Lato")};
+  font-size: ${themeGet("fontSizes.sm", "13")}px;
+  font-weight: ${themeGet("fontWeights.regular", "400")};
+  color: ${themeGet("colors.text.regular", "#77798C")};
   margin-top: 8px;
 `;
 
-const ProgressBarWrapper = styled('div')`
+const ProgressBarWrapper = styled("div")`
   position: relative;
   width: 100%;
   display: flex;
@@ -93,17 +93,17 @@ const ProgressBarWrapper = styled('div')`
 
   &.checked {
     ${ProgressBar} {
-      background-color: ${themeGet('colors.primary.regular', '#009E7F')};
+      background-color: ${themeGet("colors.primary.regular", "#009E7F")};
     }
 
     ${StatusBox} {
-      background-color: ${themeGet('colors.primary.regular', '#009E7F')};
+      background-color: ${themeGet("colors.primary.regular", "#009E7F")};
       color: #ffffff;
     }
   }
 `;
 
-const ProgressStep = styled('div')`
+const ProgressStep = styled("div")`
   display: flex;
   flex: 1;
   flex-direction: column;
@@ -144,9 +144,52 @@ const ProgressStep = styled('div')`
   }
 `;
 
+const SingleProgressStep = styled("div")`
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+
+  @media (max-width: 767px) {
+    flex-direction: row;
+    margin-bottom: 30px;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  &:first-child {
+    ${ProgressBar} {
+      width: 50%;
+      left: 50%;
+      display: none;
+
+      @media (max-width: 767px) {
+        width: 3px;
+        height: 100%;
+        top: 50%;
+      }
+    }
+  }
+
+  &:last-child {
+    ${ProgressBar} {
+      width: 50%;
+
+      @media (max-width: 767px) {
+        width: 3px;
+        height: 100%;
+        top: -50%;
+      }
+    }
+  }
+`;
+
 export {
   ProgressBarWrapper,
   ProgressStep,
+  SingleProgressStep,
   ProgressBar,
   StatusBox,
   StatusTitle,

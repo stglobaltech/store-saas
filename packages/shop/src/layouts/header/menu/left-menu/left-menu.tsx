@@ -1,11 +1,11 @@
-import React from 'react';
-import Router, { useRouter } from 'next/router';
-import { FormattedMessage } from 'react-intl';
-import Popover from 'components/popover/popover';
-import Logo from 'layouts/logo/logo';
-import { MenuDown } from 'assets/icons/MenuDown';
-import { CATEGORY_MENU_ITEMS } from 'site-settings/site-navigation';
-import * as categoryMenuIcons from 'assets/icons/category-menu-icons';
+import React, { useEffect } from "react";
+import { useRouter } from "next/router";
+import { FormattedMessage } from "react-intl";
+import Popover from "components/popover/popover";
+import Logo from "layouts/logo/logo";
+import { MenuDown } from "assets/icons/MenuDown";
+import { CATEGORY_MENU_ITEMS } from "site-settings/site-navigation";
+import * as categoryMenuIcons from "assets/icons/category-menu-icons";
 import {
   MainMenu,
   IconWrapper,
@@ -14,32 +14,34 @@ import {
   Icon,
   Arrow,
   LeftMenuBox,
-} from './left-menu.style';
+} from "./left-menu.style";
+import { useAppDispatch, useAppState } from "contexts/app/app.provider";
+import { privatePaths } from "utils/routes";
 
 const CategoryIcon = ({ name }) => {
   const TagName = categoryMenuIcons[name];
   return !!TagName ? <TagName /> : <p>Invalid icon {name}</p>;
 };
 
-const CategoryMenu = (props: any) => {
+const CategoryMenu = ({ branches, ...props }: any) => {
   const handleOnClick = (item) => {
-    if (item.dynamic) {
-      Router.push('/[type]', `${item.href}`);
-      props.onClick(item);
-      return;
-    }
-    Router.push(`${item.href}`);
+    // if (item.dynamic) {
+    //   Router.push("/[type]", `${item.href}`);
+    //   props.onClick(item);
+    //   return;
+    // }
+    // Router.push(`${item.href}`);
     props.onClick(item);
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column' }}>
-      {CATEGORY_MENU_ITEMS.map((item) => (
-        <MenuItem key={item.id} {...props} onClick={() => handleOnClick(item)}>
-          <IconWrapper>
+    <div style={{ display: "flex", flexDirection: "column" }}>
+      {branches.map((item) => (
+        <MenuItem key={item._id} {...props} onClick={() => handleOnClick(item)}>
+          {/* <IconWrapper>
             <CategoryIcon name={item.icon} />
-          </IconWrapper>
-          <FormattedMessage id={item.id} defaultMessage={item.defaultMessage} />
+          </IconWrapper> */}
+          <FormattedMessage id={item._id} defaultMessage={item.name.en} />
         </MenuItem>
       ))}
     </div>
@@ -48,24 +50,62 @@ const CategoryMenu = (props: any) => {
 
 type Props = {
   logo: string;
+  isStoreLogo: boolean;
+  showLogo?:boolean;
 };
 
-export const LeftMenu: React.FC<Props> = ({ logo }) => {
+export const LeftMenu: React.FC<Props> = ({ logo, isStoreLogo,showLogo }) => {
   const router = useRouter();
-  const initialMenu = CATEGORY_MENU_ITEMS.find(
-    (item) => item.href === router.asPath
-  );
-  const [activeMenu, setActiveMenu] = React.useState(
-    initialMenu ?? CATEGORY_MENU_ITEMS[0]
-  );
+  const branches = useAppState("branches");
+  const activeStoreId = useAppState("activeStoreId");
+  const appDispatch = useAppDispatch();
+  const initialMenu = branches.find((item) => item._id === activeStoreId);
+  const [activeMenu, setActiveMenu] = React.useState(null);
+
+  useEffect(() => {
+    setActiveMenu(initialMenu);
+  }, [initialMenu]);
+
+  function handleBranchChange(item) {
+    setActiveMenu(item);
+    appDispatch({ type: "ACTIVE_STORE_ID", payload: item._id });
+  }
+
+  const path = router.pathname;
 
   return (
     <LeftMenuBox>
-      <Logo
+      {showLogo?<Logo
         imageUrl={logo}
-        alt={'Shop Logo'}
-        onClick={() => setActiveMenu(CATEGORY_MENU_ITEMS[0])}
-      />
+        alt={isStoreLogo ? "Shop Logo" : "Orderznow Logo"}
+        onClick={() => router.replace("/")}
+      />:null}
+
+      {activeMenu && !privatePaths.includes(path) ? (
+        <MainMenu>
+          <Popover
+            className="right"
+            handler={
+              <SelectedItem>
+                <span>
+                  <span>
+                    <FormattedMessage
+                      id={activeMenu?._id}
+                      defaultMessage={activeMenu?.name?.en}
+                    />
+                  </span>
+                </span>
+                <Arrow>
+                  <MenuDown />
+                </Arrow>
+              </SelectedItem>
+            }
+            content={
+              <CategoryMenu onClick={handleBranchChange} branches={branches} />
+            }
+          />
+        </MainMenu>
+      ) : null}
 
       {/* <MainMenu>
         <Popover

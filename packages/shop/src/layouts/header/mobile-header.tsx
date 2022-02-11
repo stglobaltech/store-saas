@@ -1,7 +1,7 @@
-import React from 'react';
-import { useRouter } from 'next/router';
-import { openModal, closeModal } from '@redq/reuse-modal';
-import MobileDrawer from './mobile-drawer';
+import React from "react";
+import { useRouter } from "next/router";
+import { openModal, closeModal } from "@redq/reuse-modal";
+import MobileDrawer from "./mobile-drawer";
 import {
   MobileHeaderWrapper,
   MobileHeaderInnerWrapper,
@@ -10,15 +10,18 @@ import {
   SearchWrapper,
   SearchModalWrapper,
   SearchModalClose,
-} from './header.style';
-import Search from 'features/search/search';
-import LogoImage from 'assets/images/orderznow_web-logo.png'
-import { SearchIcon } from 'assets/icons/SearchIcon';
-import { LongArrowLeft } from 'assets/icons/LongArrowLeft';
-import Logo from 'layouts/logo/logo';
-import LanguageSwitcher from './menu/language-switcher/language-switcher';
-import { isCategoryPage } from '../is-home-page';
-import useDimensions from 'utils/useComponentSize';
+} from "./header.style";
+import Search from "features/search/search";
+import LogoImage from "assets/images/orderznow_web-logo.png";
+import { SearchIcon } from "assets/icons/SearchIcon";
+import { LongArrowLeft } from "assets/icons/LongArrowLeft";
+import Logo from "layouts/logo/logo";
+import LanguageSwitcher from "./menu/language-switcher/language-switcher";
+import { isCategoryPage } from "../is-home-page";
+import useDimensions from "utils/useComponentSize";
+import { useQuery } from "@apollo/client";
+import { Q_GET_STORE } from "graphql/query/getstore.query";
+import { LeftMenu } from "./menu/left-menu/left-menu";
 
 type MobileHeaderProps = {
   className?: string;
@@ -31,11 +34,11 @@ const SearchModal: React.FC<{}> = () => {
   };
   return (
     <SearchModalWrapper>
-      <SearchModalClose type='submit' onClick={() => closeModal()}>
+      <SearchModalClose type="submit" onClick={() => closeModal()}>
         <LongArrowLeft />
       </SearchModalClose>
       <Search
-        className='header-modal-search'
+        className="header-modal-search"
         showButtonText={false}
         onSubmit={onSubmit}
       />
@@ -44,9 +47,33 @@ const SearchModal: React.FC<{}> = () => {
 };
 
 const MobileHeader: React.FC<MobileHeaderProps> = ({ className }) => {
+  let logo = LogoImage;
+  let isStoreLogo = false;
   const { pathname, query } = useRouter();
 
   const [mobileHeaderRef, dimensions] = useDimensions();
+
+  const { data: storeData } = useQuery(Q_GET_STORE, {
+    variables: {
+      input: {
+        paginate: {
+          page: 1,
+          perPage: 10,
+        },
+      },
+    },
+    fetchPolicy: "cache-and-network",
+  });
+
+  if (
+    storeData &&
+    storeData.getStoresForUser &&
+    storeData.getStoresForUser.stores &&
+    storeData.getStoresForUser.stores[0]?.logo
+  ) {
+    logo = storeData.getStoresForUser.stores[0]?.logo;
+    isStoreLogo = true;
+  }
 
   const handleSearchModal = () => {
     openModal({
@@ -54,16 +81,16 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({ className }) => {
       config: {
         enableResizing: false,
         disableDragging: true,
-        className: 'search-modal-mobile',
-        width: '100%',
-        height: '100%',
+        className: "search-modal-mobile",
+        width: "100%",
+        height: "100%",
       },
       closeOnClickOutside: false,
       component: SearchModal,
       closeComponent: () => <div />,
     });
   };
-  const type = pathname === '/restaurant' ? 'restaurant' : query.type;
+  const type = pathname === "/restaurant" ? "restaurant" : query.type;
 
   const isHomePage = isCategoryPage(type);
 
@@ -75,7 +102,11 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({ className }) => {
         </DrawerWrapper>
 
         <LogoWrapper>
-          <Logo imageUrl={LogoImage} alt='shop logo' />
+          {/* <Logo
+            imageUrl={logo}
+            alt={isStoreLogo ? "Shop Logo" : "Orderznow Logo"}
+          /> */}
+                  <LeftMenu logo="" isStoreLogo={false} showLogo={false}/>
         </LogoWrapper>
 
         <LanguageSwitcher />
@@ -83,7 +114,7 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({ className }) => {
         {isHomePage ? (
           <SearchWrapper
             onClick={handleSearchModal}
-            className='searchIconWrapper'
+            className="searchIconWrapper"
           >
             <SearchIcon />
           </SearchWrapper>

@@ -1,5 +1,5 @@
 import React from "react";
-import NoResultSvg from "./no-result.svg";
+import MiniBoxSvg from "./mini-box.png";
 import { NoResultWrapper, ImageWrapper, ButtonWrapper } from "./NoResult.style";
 import Button from "../Button/Button";
 // import { ArrowPrev } from '../AllSvgIcon';
@@ -9,20 +9,22 @@ type NoResultProps = {
   onClick?: () => void;
   hideButton?: boolean;
   style?: any;
+  msg?: any;
 };
 
 const NoResult: React.FC<NoResultProps> = ({
   id,
   onClick,
   hideButton = true,
-  style
+  style,
+  msg,
 }) => {
   return (
     <NoResultWrapper id={id} style={style}>
-      <h3>Sorry, No result found :(</h3>
+      {msg ? <h3>{msg}</h3> : <h3>Sorry, No result found :(</h3>}
 
       <ImageWrapper>
-        <img src={NoResultSvg} alt="No Result" />
+        <img src={MiniBoxSvg} alt="No Result" />
       </ImageWrapper>
 
       {hideButton ? (

@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { Scrollbar } from 'components/scrollbar/scrollbar';
-import { useQuery, gql } from '@apollo/client';
+import React, { useState, useEffect } from "react";
+import { Scrollbar } from "components/scrollbar/scrollbar";
+import { useQuery, gql } from "@apollo/client";
 import {
   DesktopView,
   MobileView,
@@ -16,59 +16,40 @@ import {
   ItemSize,
   ItemPrice,
   NoOrderFound,
-} from './order.style';
+} from "./order.style";
 
-import OrderDetails from './order-details/order-details';
-import OrderCard from './order-card/order-card';
-import OrderCardMobile from './order-card/order-card-mobile';
-import useComponentSize from 'utils/useComponentSize';
-import { FormattedMessage } from 'react-intl';
-
-const progressData = ['Order Received', 'Order On The Way', 'Order Delivered'];
-
-const GET_ORDERS = gql`
-  query getAllOrders($text: String, $user: Int!, $limit: Int) {
-    orders(text: $text, limit: $limit, user: $user) {
-      id
-      status
-      deliveryAddress
-      amount
-      date
-      subtotal
-      deliveryFee
-      discount
-      deliveryTime
-      products {
-        title
-        price
-        total
-        image
-        weight
-        quantity
-        id
-      }
-    }
-  }
-`;
+import OrderDetails from "./order-details/order-details";
+import OrderCard from "./order-card/order-card";
+import OrderCardMobile from "./order-card/order-card-mobile";
+import useComponentSize from "utils/useComponentSize";
+import { FormattedMessage } from "react-intl";
+import { Q_USER_ORDER_HISTORY } from "graphql/query/user-order-history.query";
+import { useAppState } from "contexts/app/app.provider";
+import { Q_GET_USERID } from "graphql/query/loggedIn-queries.query";
+import { Q_GET_USER_ACTIVE_ORDERS } from "graphql/query/get-user-active-order.query";
+import ErrorMessage from "components/error-message/error-message";
+import { ERROR_FETCHING_ACTIVE_ORDERS } from "utils/constant";
 
 const orderTableColumns = [
   {
-    title: <FormattedMessage id='cartItems' defaultMessage='Items' />,
-    dataIndex: '',
-    key: 'items',
+    title: <FormattedMessage id="cartItems" defaultMessage="Items" />,
+    dataIndex: "",
+    key: "items",
     width: 250,
     ellipsis: true,
     render: (text, record) => {
       return (
         <ItemWrapper>
           <ImageWrapper>
-            <img src={record.image} alt={record.title} />
+            {/* <img src={record.image} alt={record.title} /> */}
           </ImageWrapper>
 
           <ItemDetails>
-            <ItemName>{record.title}</ItemName>
-            <ItemSize>{record.weight}</ItemSize>
-            <ItemPrice>${record.price}</ItemPrice>
+            <ItemName>{record.name.en}</ItemName>
+            <ItemSize>{record.quantity}</ItemSize>
+            <ItemPrice>
+              {Math.floor(record.quotedPrice / record.quantity)}
+            </ItemPrice>
           </ItemDetails>
         </ItemWrapper>
       );
@@ -76,88 +57,121 @@ const orderTableColumns = [
   },
   {
     title: (
-      <FormattedMessage id='intlTableColTitle2' defaultMessage='Quantity' />
+      <FormattedMessage id="intlTableColTitle2" defaultMessage="Quantity" />
     ),
-    dataIndex: 'quantity',
-    key: 'quantity',
-    align: 'center',
+    dataIndex: "quantity",
+    key: "quantity",
+    align: "center",
     width: 100,
   },
   {
-    title: <FormattedMessage id='intlTableColTitle3' defaultMessage='Price' />,
-    dataIndex: '',
-    key: 'price',
-    align: 'right',
+    title: <FormattedMessage id="intlTableColTitle3" defaultMessage="Price" />,
+    dataIndex: "",
+    key: "price",
+    align: "right",
     width: 100,
     render: (text, record) => {
-      return <p>${record.total}</p>;
+      return <p>{record.quotedPrice}</p>;
     },
   },
 ];
 
-const OrdersContent: React.FC<{}> = () => {
+const OrdersContent: React.FC<{
+  data: any;
+  error: any;
+  loading: any;
+  refetch: () => void;
+}> = ({ data, error, loading, refetch }) => {
   const [order, setOrder] = useState(null);
-  const [active, setActive] = useState('');
+  const [active, setActive] = useState("");
+
+  const workFlowPolicy = useAppState("workFlowPolicy") as any;
 
   const [targetRef, size] = useComponentSize();
   const orderListHeight = size.height - 79;
-  const { data, error, loading } = useQuery(GET_ORDERS, {
-    variables: {
-      limit: 7,
-      user: 1,
-    },
-  });
 
   useEffect(() => {
-    if (data && data.orders && data.orders.length !== 0) {
-      setOrder(data.orders[0]);
-      setActive(data.orders[0].id);
+    if (
+      data &&
+      data.userActiveOrders &&
+      data.userActiveOrders &&
+      data.userActiveOrders.length
+    ) {
+      const currentOrder = data.userActiveOrders[0];
+      if (order && active) {
+        const currentClickedOrder = data.userActiveOrders.filter(
+          (o) => o._id === order._id
+        );
+        if (currentClickedOrder) {
+          setOrder(currentClickedOrder[0] ?? currentOrder);
+          setActive(
+            (currentClickedOrder[0] && currentClickedOrder[0]._id) ??
+              currentOrder
+          );
+        } else {
+          setOrder(currentOrder);
+          setActive(currentOrder._id);
+        }
+      } else {
+        setOrder(currentOrder);
+        setActive(currentOrder._id);
+      }
     }
-  }, [data && data.orders]);
+  }, [data && data.userActiveOrders]);
 
   if (loading) {
     return <div>loading...</div>;
   }
 
-  if (error) return <div>{error.message}</div>;
+  if (error)
+    return (
+      <ErrorMessage>
+        <FormattedMessage
+          id="error"
+          defaultMessage={ERROR_FETCHING_ACTIVE_ORDERS}
+        />
+      </ErrorMessage>
+    );
 
   const handleClick = (order: any) => {
     setOrder(order);
-    setActive(order.id);
+    setActive(order._id);
   };
 
   return (
     <OrderBox>
       <DesktopView>
         <OrderListWrapper style={{ height: size.height }}>
-          <Title style={{ padding: '0 20px' }}>
+          <Title style={{ padding: "0 20px" }}>
             <FormattedMessage
-              id='intlOrderPageTitle'
-              defaultMessage='My Order'
+              id="intlOrderPageTitle"
+              defaultMessage="My ongoing orders"
             />
           </Title>
-          <Scrollbar className='order-scrollbar'>
+          <Scrollbar className="order-scrollbar">
             <OrderList>
-              {data.orders.length !== 0 ? (
-                data.orders.map((current: any) => (
+              {data.userActiveOrders.length !== 0 ? (
+                data.userActiveOrders.map((current: any) => (
                   <OrderCard
-                    key={current.id}
-                    orderId={current.id}
-                    className={current.id === active ? 'active' : ''}
-                    status={progressData[current.status - 1]}
-                    date={current.date}
-                    deliveryTime={current.deliveryTime}
-                    amount={current.amount}
+                    key={current._id}
+                    shortOrderId={current.shortOrderId}
+                    orderId={current._id}
+                    className={current._id === active ? "active" : ""}
+                    status={current.status}
+                    date={current.createdAt}
+                    orderPayType={current.orderPayType}
+                    amount={current.orderCart.totalQuotedPrice}
                     onClick={() => {
                       handleClick(current);
                     }}
+                    currency={workFlowPolicy.currency}
                   />
                 ))
               ) : (
                 <NoOrderFound>
                   <FormattedMessage
-                    id='intlNoOrderFound'
-                    defaultMessage='No order found'
+                    id="intlNoOrderFound"
+                    defaultMessage="No order found"
                   />
                 </NoOrderFound>
               )}
@@ -166,23 +180,24 @@ const OrdersContent: React.FC<{}> = () => {
         </OrderListWrapper>
 
         <OrderDetailsWrapper ref={targetRef}>
-          <Title style={{ padding: '0 20px' }}>
+          <Title style={{ padding: "0 20px" }}>
             <FormattedMessage
-              id='orderDetailsText'
-              defaultMessage='Order Details'
+              id="orderDetailsText"
+              defaultMessage="Order Details"
             />
           </Title>
-          {order && order.id && (
+          {order && order._id && (
             <OrderDetails
-              progressStatus={order.status}
-              progressData={progressData}
-              address={order.deliveryAddress}
-              subtotal={order.subtotal}
+              event={order.event}
+              address={order.orderCart.address}
+              subtotal={order.orderCart.totalQuotedPrice}
               discount={order.discount}
-              deliveryFee={order.deliveryFee}
+              deliveryFee={order.orderCart.deliveryCost}
               grandTotal={order.amount}
-              tableData={order.products}
+              tableData={order.orderCart.products}
               columns={orderTableColumns}
+              orderId={order._id}
+              refetch={refetch}
             />
           )}
         </OrderDetailsWrapper>
@@ -191,9 +206,8 @@ const OrdersContent: React.FC<{}> = () => {
       <MobileView>
         <OrderList>
           <OrderCardMobile
-            orders={data.orders}
-            className={order && order.id === active ? 'active' : ''}
-            progressData={progressData}
+            orders={data.userActiveOrders}
+            className={order && order._id === active ? "active" : ""}
             columns={orderTableColumns}
             onClick={() => {
               handleClick(order);

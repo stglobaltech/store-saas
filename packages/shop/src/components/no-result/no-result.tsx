@@ -1,6 +1,6 @@
 import React from "react";
 import { useRouter } from "next/router";
-import NoResultSvg from "./no-result.svg";
+import GreenboxSvg from "./green-box-3d.png";
 import {
   NoResultWrapper,
   ImageWrapper,
@@ -47,16 +47,18 @@ const NoResultFound: React.FC<NoResultFoundProps> = ({
       </h3>
 
       <ImageWrapper>
-        <img src={NoResultSvg} alt="No Result" />
+        <img src={GreenboxSvg} alt="No Result" />
       </ImageWrapper>
 
-      <ButtonWrapper>
-        <div onClick={onClickButton}>
-          <Button>
-            <ArrowPrev /> Go Back
-          </Button>
-        </div>
-      </ButtonWrapper>
+      {forPagination ? (
+        <ButtonWrapper>
+          <div onClick={onClickButton}>
+            <Button>
+              <ArrowPrev /> Go Back
+            </Button>
+          </div>
+        </ButtonWrapper>
+      ) : null}
     </NoResultWrapper>
   );
 };

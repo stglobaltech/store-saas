@@ -1,6 +1,6 @@
-import React from 'react';
-import { useRouter } from 'next/router';
-import dynamic from 'next/dynamic';
+import React from "react";
+import { useRouter } from "next/router";
+import dynamic from "next/dynamic";
 import {
   ProductsRow,
   ProductsCol,
@@ -8,22 +8,23 @@ import {
   LoaderWrapper,
   LoaderItem,
   ProductCardWrapper,
-} from './product-list.style';
-import { CURRENCY } from 'utils/constant';
-import { useQuery, NetworkStatus } from '@apollo/client';
-import Placeholder from 'components/placeholder/placeholder';
-import Fade from 'react-reveal/Fade';
-import NoResultFound from 'components/no-result/no-result';
-import { FormattedMessage } from 'react-intl';
-import { Button } from 'components/button/loadmore-button';
-import { GET_PRODUCTS } from 'graphql/query/products.query';
+} from "./product-list.style";
+import { CURRENCY } from "utils/constant";
+import { useQuery, NetworkStatus } from "@apollo/client";
+import Placeholder from "components/placeholder/placeholder";
+import Fade from "react-reveal/Fade";
+import NoResultFound from "components/no-result/no-result";
+import { FormattedMessage } from "react-intl";
+import { Button } from "components/button/loadmore-button";
+import { GET_PRODUCTS } from "graphql/query/products.query";
+import { useAppState } from "contexts/app/app.provider";
 
 const ErrorMessage = dynamic(
-  () => import('components/error-message/error-message')
+  () => import("components/error-message/error-message")
 );
 
 const GeneralCard = dynamic(
-  import('components/product-card/product-card-one/product-card-one')
+  import("components/product-card/product-card-one/product-card-one")
 );
 
 type ProductsProps = {
@@ -43,13 +44,15 @@ export const Products: React.FC<ProductsProps> = ({
   type,
 }) => {
   const router = useRouter();
+  const workFlowPolicy=useAppState("workFlowPolicy");
+  const storeId=useAppState("activeStoreId");
   const { data, error, loading, fetchMore, networkStatus } = useQuery(
     GET_PRODUCTS,
     {
       // context: { linkName: 'auth' },
       variables: {
         userStoreProductsFindInputDto: {
-          storeId: process.env.NEXT_PUBLIC_STG_CLIENT_ID,
+          storeId,
           paginate: {
             page: 1,
             perPage: 10,
@@ -61,7 +64,12 @@ export const Products: React.FC<ProductsProps> = ({
   );
   const loadingMore = networkStatus === NetworkStatus.fetchMore;
 
-  if (error) return <ErrorMessage message={error.message} />;
+  if (error)
+    return (
+      <ErrorMessage>
+        <FormattedMessage id="error" defaultMessage={error.message} />
+      </ErrorMessage>
+    );
   if (loading && !loadingMore) {
     return (
       <LoaderWrapper>
@@ -115,13 +123,13 @@ export const Products: React.FC<ProductsProps> = ({
           (product: any, index: number) => (
             <ProductsCol
               key={index}
-              style={type === 'book' ? { paddingLeft: 0, paddingRight: 1 } : {}}
+              style={type === "book" ? { paddingLeft: 0, paddingRight: 1 } : {}}
             >
               <ProductCardWrapper>
                 <Fade
                   duration={800}
                   delay={index * 10}
-                  style={{ height: '100%' }}
+                  style={{ height: "100%" }}
                 >
                   {renderCard(product)}
                 </Fade>

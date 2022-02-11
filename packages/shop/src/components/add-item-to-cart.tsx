@@ -15,7 +15,11 @@ import { M_UPDATE_PRODUCT_QUANTITY } from "graphql/mutation/update-product-quant
 import SuccessNotification from "../components/Notification/SuccessNotification";
 import DangerNotification from "../components/Notification/DangerNotification";
 import Loader from "./loader/loader";
-import {ERROR_CART_DELETED} from '../utils/constant';
+import { ERROR_CART_DELETED } from "../utils/constant";
+import { refactorProductbeforeAddingToCart } from "utils/refactor-product-before-adding-to-cart";
+import { getCartId } from "utils/localStorage";
+import { handlePrevOrderPending } from "./prev-order-pending/handleprevorderpending";
+import { useAppState } from "contexts/app/app.provider";
 
 const Icon = styled.span<any>(
   _variant({
@@ -85,11 +89,13 @@ export const AddItemToCart = ({ data, variant, buttonText }: Props) => {
     isInCart,
     cartItemsCount,
     getParticularItemCount,
+    items,
   } = useCart();
 
   const { notify } = useNotifier();
+  const workFlowPolicy=useAppState("workFlowPolicy")
 
-  const storeId = process.env.NEXT_PUBLIC_STG_CLIENT_ID;
+  const storeId = useAppState("activeStoreId");
   const entityId = storeId;
 
   const [addProductToCart, { loading: addProductLoading }] = useMutation(
@@ -102,7 +108,7 @@ export const AddItemToCart = ({ data, variant, buttonText }: Props) => {
           resData.addProductToCart.productId
         ) {
           addItem({
-            ...data,
+            ...refactorProductbeforeAddingToCart(data),
             inCartProductId: resData.addProductToCart.productId,
           });
         } else {
@@ -149,6 +155,7 @@ export const AddItemToCart = ({ data, variant, buttonText }: Props) => {
     });
   }
 
+
   async function addItemHandler() {
     const {
       _id,
@@ -170,6 +177,9 @@ export const AddItemToCart = ({ data, variant, buttonText }: Props) => {
       },
     };
     const itemCountInCart = getParticularItemCount(data._id);
+    // if(getCartId()){
+    //   return handlePrevOrderPending();
+    // }
     if (itemCountInCart === 0) {
       addProductToCart({ variables: { addProductInput } });
     } else {
@@ -193,7 +203,7 @@ export const AddItemToCart = ({ data, variant, buttonText }: Props) => {
           res.data.updateCartProductQuantity &&
           res.data.updateCartProductQuantity.totalPrice
         ) {
-          addItem(data);
+          addItem(refactorProductbeforeAddingToCart(data));
         } else {
           throw new Error(`could not add ${data.productName.en} to the cart!`);
         }

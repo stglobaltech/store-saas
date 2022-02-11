@@ -9,13 +9,13 @@ export const handleModal = (
   openModal({
     show: true,
     config: {
-      width: 360,
+      width: 1000,
       height: 'auto',
       enableResizing: false,
       disableDragging: true,
       className: className,
     },
-    closeOnClickOutside: true,
+    closeOnClickOutside: false,
     component: modalComponent,
     componentProps: { item: modalProps },
   });

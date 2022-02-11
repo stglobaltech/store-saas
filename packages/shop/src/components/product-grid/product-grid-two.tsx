@@ -17,6 +17,12 @@ import Loader from "components/loader/loader";
 import { Paginate } from "components/pagination/pagination";
 import { Q_SEARCH_PRODUCT_BASED_ON_STORE } from "graphql/query/searchProductInStore.query";
 import { Q_SEARCH_PRODUCTS_BASED_ON_CATEGORY_FOR_USER } from "graphql/query/search-products-based-on-category-for-user.query";
+import { useCart } from "contexts/cart/use-cart";
+import { Q_GET_CART } from "graphql/query/get-cart.query";
+import { refactorGetCartDataBeforeAddingToCart } from "utils/refactor-product-before-adding-to-cart";
+import { getToken } from "utils/localStorage";
+import { Q_GET_STORE_ID } from "graphql/query/loggedIn-queries.query";
+import { useAppState } from "contexts/app/app.provider";
 
 const Grid = styled.div(
   css({
@@ -55,18 +61,17 @@ interface Props {
   loadMore?: boolean;
   fetchLimit?: number;
   style?: any;
-  storeId?: string;
   firstPageProducts?: any;
 }
 
 export const ProductGrid = ({
   style,
-  storeId,
   fetchLimit = 30,
-  firstPageProducts,
   loadMore = true,
 }: Props) => {
   const router = useRouter();
+  const workFlowPolicy = useAppState("workFlowPolicy") as any;
+  const storeId = useAppState("activeStoreId");
   const [page, setPage] = useState(1);
   const {
     query: { category, search },
@@ -87,7 +92,7 @@ export const ProductGrid = ({
         },
       },
     },
-    skip: category !== "all_products" || page === 1 || !!search,
+    skip: category !== undefined || !!search,
   });
 
   const {
@@ -105,7 +110,7 @@ export const ProductGrid = ({
         },
       },
     },
-    skip: category === "all_products" || page === 1 || !!search,
+    skip: category === undefined || !!search,
   });
 
   const {
@@ -152,14 +157,17 @@ export const ProductGrid = ({
     searchedProductError
   )
     return (
-      <ErrorMessage
-        message={
-          error.message ||
-          categoryProductsError.message ||
-          searchedProductInCategoryError.message ||
-          searchedProductError.message
-        }
-      />
+      <ErrorMessage>
+        <FormattedMessage
+          id="error"
+          defaultMessage={
+            error.message ||
+            categoryProductsError.message ||
+            searchedProductInCategoryError.message ||
+            searchedProductError.message
+          }
+        />
+      </ErrorMessage>
     );
   if (
     loading ||
@@ -171,35 +179,57 @@ export const ProductGrid = ({
   }
 
   if (
-    !(
-      data &&
-      data.getStoreProductsForUser &&
-      data.getStoreProductsForUser.products.length
-    ) &&
-    category === "all_products" &&
-    page !== 1
+    data &&
+    data.getStoreProductsForUser &&
+    data.getStoreProductsForUser.products &&
+    !data.getStoreProductsForUser.products.length
   ) {
     return (
       <NoResultFound
-        forPagination={true}
-        prevPagePagination={() => setPage((page) => page - 1)}
+        forPagination={page !== 1 ? true : false}
+        prevPagePagination={() => setPage((page) => (page >= 2 ? page - 1 : 1))}
       />
     );
   }
 
   if (
-    !(
-      categoryProductsData &&
-      !categoryProductsData.getProductsBasedOnCategoryForUser &&
-      categoryProductsData.getProductsBasedOnCategoryForUser.products.length
-    ) &&
-    category !== "all_products" &&
-    page !== 1
+    categoryProductsData &&
+    categoryProductsData.getProductsBasedOnCategoryForUser &&
+    categoryProductsData.getProductsBasedOnCategoryForUser.products &&
+    !categoryProductsData.getProductsBasedOnCategoryForUser.products.length
   ) {
     return (
       <NoResultFound
-        forPagination={true}
-        prevPagePagination={() => setPage((page) => page - 1)}
+        forPagination={page !== 1 ? true : false}
+        prevPagePagination={() => setPage((page) => (page >= 2 ? page - 1 : 1))}
+      />
+    );
+  }
+
+  if (
+    searchedProductInCategory &&
+    searchedProductInCategory.searchProductForUser &&
+    searchedProductInCategory.searchProductForUser.products &&
+    !searchedProductInCategory.searchProductForUser.products.length
+  ) {
+    return (
+      <NoResultFound
+        forPagination={page !== 1 ? true : false}
+        prevPagePagination={() => setPage((page) => (page >= 2 ? page - 1 : 1))}
+      />
+    );
+  }
+
+  if (
+    searchedProduct &&
+    searchedProduct.searchProductForUser &&
+    searchedProduct.searchProductForUser.products &&
+    !searchedProduct.searchProductForUser.products.length
+  ) {
+    return (
+      <NoResultFound
+        forPagination={page !== 1 ? true : false}
+        prevPagePagination={() => setPage((page) => (page >= 2 ? page - 1 : 1))}
       />
     );
   }
@@ -211,57 +241,89 @@ export const ProductGrid = ({
   let fetchedProducts: any = [],
     fetchedProductsPagination: any = {};
 
-  if (page !== 1) {
-    if (data && data.getStoreProductsForUser) {
-      const { products, pagination } = data.getStoreProductsForUser;
-      fetchedProducts = products;
-      fetchedProductsPagination = pagination;
-    } else {
-      const {
-        products: categoryProducts,
-        pagination: categoryProductsPagination,
-      } = categoryProductsData?.getProductsBasedOnCategoryForUser;
-      fetchedProducts = categoryProducts;
-      fetchedProductsPagination = categoryProductsPagination;
-    }
-  } else {
-    if (category === "all_products" && !search) {
-      const {
-        products,
-        pagination,
-      } = firstPageProducts.getStoreProductsForUser;
-      fetchedProducts = products;
-      fetchedProductsPagination = pagination;
-    } else if (category !== "all_products" && !search) {
-      if (
-        firstPageProducts &&
-        firstPageProducts.getProductsBasedOnCategoryForUser
-      ) {
-        fetchedProducts = firstPageProducts.getProductsBasedOnCategoryForUser.products;
-        fetchedProductsPagination = firstPageProducts.getProductsBasedOnCategoryForUser.pagination;
-      }
-    } else if (category !== "all_products" && search) {
-      const {
-        products: searchedProductsInCategory,
-        pagination: searchedProductsPaginationInCategory,
-      } = searchedProductInCategory.searchProductForUser;
-      fetchedProducts = searchedProductsInCategory;
-      fetchedProductsPagination = searchedProductsPaginationInCategory;
-    } else {
-      const {
-        products: searchedProducts,
-        pagination: searchedProductsPagination,
-      } = searchedProduct.searchProductForUser;
-      fetchedProducts = searchedProducts;
-      fetchedProductsPagination = searchedProductsPagination;
-    }
+  if (data && data.getStoreProductsForUser) {
+    const { products, pagination } = data.getStoreProductsForUser;
+    fetchedProducts = products;
+    fetchedProductsPagination = pagination;
   }
+  if (
+    categoryProductsData &&
+    categoryProductsData.getProductsBasedOnCategoryForUser &&
+    categoryProductsData.getProductsBasedOnCategoryForUser.products
+  ) {
+    const {
+      products: categoryProducts,
+      pagination: categoryProductsPagination,
+    } = categoryProductsData?.getProductsBasedOnCategoryForUser;
+    fetchedProducts = categoryProducts;
+    fetchedProductsPagination = categoryProductsPagination;
+  }
+  if (
+    searchedProductInCategory &&
+    searchedProductInCategory.searchProductForUser &&
+    searchedProductInCategory.searchProductForUser.products
+  ) {
+    const {
+      products: searchedProductsInCategory,
+      pagination: searchedProductsPaginationInCategory,
+    } = searchedProductInCategory.searchProductForUser;
+    fetchedProducts = searchedProductsInCategory;
+    fetchedProductsPagination = searchedProductsPaginationInCategory;
+  }
+  if (
+    searchedProduct &&
+    searchedProduct.searchProductForUser &&
+    searchedProduct.searchProductForUser.products
+  ) {
+    const {
+      products: searchedProducts,
+      pagination: searchedProductsPagination,
+    } = searchedProduct.searchProductForUser;
+    fetchedProducts = searchedProducts;
+    fetchedProductsPagination = searchedProductsPagination;
+  }
+  // if (category === "all_products" && !search) {
+  //   const { products, pagination } = firstPageProducts.getStoreProductsForUser;
+  //   fetchedProducts = products;
+  //   fetchedProductsPagination = pagination;
+  // } else if (category !== "all_products" && !search) {
+  //   if (
+  //     firstPageProducts &&
+  //     firstPageProducts.getProductsBasedOnCategoryForUser
+  //   ) {
+  //     fetchedProducts =
+  //       firstPageProducts.getProductsBasedOnCategoryForUser.products;
+  //     fetchedProductsPagination =
+  //       firstPageProducts.getProductsBasedOnCategoryForUser.pagination;
+  //   }
+  // } else if (category !== "all_products" && search) {
+  //   const {
+  //     products: searchedProductsInCategory,
+  //     pagination: searchedProductsPaginationInCategory,
+  //   } = searchedProductInCategory.searchProductForUser;
+  //   fetchedProducts = searchedProductsInCategory;
+  //   fetchedProductsPagination = searchedProductsPaginationInCategory;
+  // } else {
+  //   const {
+  //     products: searchedProducts,
+  //     pagination: searchedProductsPagination,
+  //   } = searchedProduct.searchProductForUser;
+  //   fetchedProducts = searchedProducts;
+  //   fetchedProductsPagination = searchedProductsPagination;
+  // }
 
   return (
-    <section>
+    <section style={{ marginTop: "50px" }}>
+      <h4 style={{ marginBottom: "20px", color: "#04aa6d", padding: "10px" }}>
+        Products
+      </h4>
       <Grid style={style}>
         {fetchedProducts.map((product) => (
-          <ProductCard data={product} key={product._id} />
+          <ProductCard
+            data={product}
+            key={product._id}
+            currency={workFlowPolicy.currency}
+          />
         ))}
       </Grid>
 

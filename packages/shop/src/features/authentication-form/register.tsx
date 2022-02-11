@@ -2,6 +2,7 @@ import React, { useContext, useState } from "react";
 import Link from "next/link";
 import { Input } from "components/forms/input";
 import { Select } from "components/forms/select";
+import { useNotifier } from "react-headless-notifier";
 import {
   Button,
   IconWrapper,
@@ -21,15 +22,10 @@ import { FormattedMessage, useIntl } from "react-intl";
 import { useLazyQuery, useMutation } from "@apollo/client";
 import { SEND_OTP } from "graphql/query/sendotp.query";
 import { M_USER_SIGNUP } from "graphql/mutation/signup.mutation";
-
-const countryCodes = [
-  { name: "+91", value: "IND" },
-  { name: "+965", value: "KWT" },
-  { name: "+966", value: "KSA" },
-  { name: "+968", value: "OMN" },
-  { name: "+971", value: "UAE" },
-  { name: "+974", value: "QAT" },
-];
+import { countryCodes } from "../../utils/country-codes";
+import SuccessNotification from "../../components/Notification/SuccessNotification";
+import DangerNotification from "../../components/Notification/DangerNotification";
+import { useAppState } from "contexts/app/app.provider";
 
 //verify user by sending otp
 function VerifyUser({ handleSentOtp }) {
@@ -60,7 +56,7 @@ function VerifyUser({ handleSentOtp }) {
         },
       });
     } else {
-      handleSentOtp();
+      handleSentOtp(verifyState.mobile, verifyState.countryCode);
     }
   }
 
@@ -80,24 +76,25 @@ function VerifyUser({ handleSentOtp }) {
           />
         </SubHeading>
         <form onSubmit={handleSendOtp}>
-          <Input
-            type="text"
-            placeholder="eg: 900900900900"
-            height="48px"
-            backgroundColor="#F7F7F7"
-            mb="10px"
-            onChange={(e) =>
-              setVerifyState({ ...verifyState, mobile: e.target.value })
-            }
-          />
           <Select
             options={countryCodes}
             handleChange={(value) =>
               setVerifyState({ ...verifyState, countryCode: value })
             }
           />
+          <Input
+            type="text"
+            placeholder="Mobile"
+            height="48px"
+            backgroundColor="#F7F7F7"
+            mt="10px"
+            mb="20px"
+            onChange={(e) =>
+              setVerifyState({ ...verifyState, mobile: e.target.value })
+            }
+          />
           {verifyState.sentOtp ? (
-            <FormattedMessage id="otpSent" defaultMessage="Otp Sent" />
+            <FormattedMessage id="signUpOtpSent" defaultMessage="Otp Sent" />
           ) : null}
           {!verifyState.sentOtp ? (
             <Button
@@ -106,6 +103,7 @@ function VerifyUser({ handleSentOtp }) {
               width="100%"
               type="submit"
               style={{ margin: "20px 0" }}
+              disabled={!verifyState.mobile || !verifyState.countryCode}
             >
               <FormattedMessage id="sendOtp" defaultMessage="Continue" />
             </Button>
@@ -116,6 +114,7 @@ function VerifyUser({ handleSentOtp }) {
               width="100%"
               type="submit"
               style={{ margin: "20px 0" }}
+              disabled={!verifyState.mobile || !verifyState.countryCode}
             >
               <FormattedMessage id="signUpAfterOtp" defaultMessage="Continue" />
             </Button>
@@ -127,11 +126,17 @@ function VerifyUser({ handleSentOtp }) {
 }
 
 //signup user with sent otp
-function SignUp() {
+
+type SignUpProps = {
+  mobile: string;
+  countryCode:string;
+};
+
+function SignUp({ mobile,countryCode }: SignUpProps) {
   const [signup, setSignup] = React.useState({
     email: "",
-    mobile: "",
-    countryCode: "",
+    mobile,
+    countryCode,
     name: "",
     status: "ON",
     deviceType: "WEB",
@@ -141,7 +146,12 @@ function SignUp() {
     otp: "",
   });
   const intl = useIntl();
+  const { notify } = useNotifier();
   const { authDispatch } = useContext<any>(AuthContext);
+  const workFlowPolicy=useAppState("workFlowPolicy");
+  const storeId=useAppState("activeStoreId");
+
+
   const toggleSignInForm = () => {
     authDispatch({
       type: "SIGNIN",
@@ -155,6 +165,7 @@ function SignUp() {
         authDispatch({
           type: "SIGNIN",
         });
+        notify(<SuccessNotification message={`${signup.name} signup successful!`} dismiss/>)
       }
     },
   });
@@ -175,6 +186,7 @@ function SignUp() {
           osVersion: "WEB",
           deviceModel: "WEB",
           versionCode: "WEB",
+          storeId
         },
       },
     });
@@ -215,7 +227,7 @@ function SignUp() {
             mb="10px"
             onChange={(e) => setSignup({ ...signup, email: e.target.value })}
           />
-          <Input
+          {/* <Input
             type="text"
             placeholder={intl.formatMessage({
               id: "userSignupMobile",
@@ -231,7 +243,7 @@ function SignUp() {
             handleChange={(value) =>
               setSignup({ ...signup, countryCode: value })
             }
-          />
+          /> */}
           <Input
             type="text"
             placeholder={intl.formatMessage({
@@ -258,7 +270,7 @@ function SignUp() {
               </a>
             </Link>
           </HelperText>
-          <Button variant="primary" size="big" width="100%" type="submit">
+          <Button variant="primary" size="big" width="100%" type="submit" disabled={!signup.name || !signup.email || !signup.otp}>
             <FormattedMessage id="continueBtn" defaultMessage="Continue" />
           </Button>
         </form>
@@ -278,15 +290,23 @@ function SignUp() {
 
 const forms = ["VERIFY_USER", "SIGNUP"];
 export default function SignOutModal() {
-  const [form, setForm] = React.useState(forms[0]);
+  const [form, setForm] = React.useState({
+    form: forms[0],
+    userMobile: "",
+    userCountryCode: "",
+  });
 
-  function toggleSignUpForm() {
-    setForm(forms[1]);
+  function toggleSignUpForm(mobile: string, countryCode: string) {
+    setForm({
+      form: forms[1],
+      userMobile: mobile,
+      userCountryCode: countryCode,
+    });
   }
 
-  return form === forms[0] ? (
+  return form.form === forms[0] ? (
     <VerifyUser handleSentOtp={toggleSignUpForm} />
   ) : (
-    <SignUp />
+    <SignUp mobile={form.userMobile} countryCode={form.userCountryCode} />
   );
 }

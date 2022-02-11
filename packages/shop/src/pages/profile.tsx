@@ -1,18 +1,20 @@
-import { NextPage } from 'next';
-import { useQuery } from '@apollo/client';
-import { Modal } from '@redq/reuse-modal';
-import { GET_LOGGED_IN_CUSTOMER } from 'graphql/query/customer.query';
-import { ProfileProvider } from 'contexts/profile/profile.provider';
-import SettingsContent from 'features/user-profile/settings/settings';
+import { NextPage } from "next";
+import { useQuery } from "@apollo/client";
+import { Modal } from "@redq/reuse-modal";
+import { GET_LOGGED_IN_CUSTOMER } from "graphql/query/customer.query";
+import { ProfileProvider } from "contexts/profile/profile.provider";
+import SettingsContent from "features/user-profile/settings/settings";
 import {
   PageWrapper,
   SidebarSection,
   ContentBox,
-} from 'features/user-profile/user-profile.style';
-import Sidebar from 'features/user-profile/sidebar/sidebar';
-import { SEO } from 'components/seo';
-import Footer from 'layouts/footer';
-import ErrorMessage from 'components/error-message/error-message';
+} from "features/user-profile/user-profile.style";
+import Sidebar from "features/user-profile/sidebar/sidebar";
+import { SEO } from "components/seo";
+import Footer from "layouts/footer";
+import ErrorMessage from "components/error-message/error-message";
+import { FormattedMessage } from "react-intl";
+import { GENERAL_ERROR_MSG } from "utils/constant";
 
 type Props = {
   deviceType?: {
@@ -26,7 +28,15 @@ const ProfilePage: NextPage<Props> = ({ deviceType }) => {
   if (!data || loading) {
     return <div>loading...</div>;
   }
-  if (error) return <ErrorMessage message={error.message} />;
+  if (error)
+    return (
+      <ErrorMessage>
+        <FormattedMessage
+          id="error"
+          defaultMessage={error.message || GENERAL_ERROR_MSG}
+        />
+      </ErrorMessage>
+    );
   return (
     <>
       <SEO title="Profile - PickBazar" description="Profile Details" />

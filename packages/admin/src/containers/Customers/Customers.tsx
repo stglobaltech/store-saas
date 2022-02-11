@@ -208,6 +208,7 @@ export default function Customers() {
                           gridColumnStart: '1',
                           gridColumnEnd: 'one',
                         }}
+                        msg={"No customers ordered so far"}
                       />
                     )
                   ) : null}

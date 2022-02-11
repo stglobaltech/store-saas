@@ -13,18 +13,49 @@ import { isCategoryPage } from "../is-home-page";
 import Search from "features/search/search";
 import { removeToken } from "utils/localStorage";
 import { useCart } from "contexts/cart/use-cart";
+import { useQuery } from "@apollo/client";
+import { Q_GET_STORE } from "graphql/query/getstore.query";
+import { Q_GET_STORE_BRANCHES } from "graphql/query/store-branches.query";
+import { useAppDispatch, useAppState } from "contexts/app/app.provider";
+import { privatePaths } from "utils/routes";
 
 type Props = {
   className?: string;
 };
 
 const Header: React.FC<Props> = ({ className }) => {
+  let logo = LogoImage;
+  let isStoreLogo = false;
   const {
     authState: { isAuthenticated },
     authDispatch,
   } = React.useContext<any>(AuthContext);
   const { clearCart } = useCart();
+  const storeId=useAppState("activeStoreId");
   const { pathname, query } = useRouter();
+
+  const { data: storeData } = useQuery(Q_GET_STORE, {
+    variables: {
+      input: {
+        paginate: {
+          page: 1,
+          perPage: 10,
+        },
+        _id:storeId
+      },
+    },
+    fetchPolicy: "cache-and-network",
+    skip:!storeId
+  });
+  if (
+    storeData &&
+    storeData.getStoresForUser &&
+    storeData.getStoresForUser.stores &&
+    storeData.getStoresForUser.stores[0]?.logo
+  ) {
+    logo = storeData.getStoresForUser.stores[0].logo;
+    isStoreLogo = true;
+  }
 
   const handleLogout = () => {
     if (typeof window !== "undefined") {
@@ -55,22 +86,19 @@ const Header: React.FC<Props> = ({ className }) => {
       },
     });
   };
-  // const showSearch =
-  //   isCategoryPage(query.type) ||
-  //   pathname === '/furniture-two' ||
-  //   pathname === '/grocery-two' ||
-  //   pathname === '/bakery';
+  const showSearch = !privatePaths.includes(pathname);
   return (
     <HeaderWrapper className={className} id="layout-header">
-      <LeftMenu logo={LogoImage} />
-      <SearchWrapper>
-        {" "}
-        <Search
-          minimal={false}
-          className="banner-search"
-          shadow="2px 2px 4px rgba(0,0,0,0.05)"
-        />
-      </SearchWrapper>
+      <LeftMenu logo={logo} isStoreLogo={isStoreLogo} showLogo={true} />
+      {showSearch ? (
+        <SearchWrapper>
+          <Search
+            minimal={false}
+            className="banner-search"
+            shadow="2px 2px 4px rgba(0,0,0,0.05)"
+          />
+        </SearchWrapper>
+      ) : null}
       <RightMenu
         isAuthenticated={isAuthenticated}
         onJoin={handleJoin}
