@@ -4,3 +4,4 @@ export { USFlag } from 'assets/icons/USFlag';
 export { ILFlag } from 'assets/icons/ILFlag';
 export { ESFlag } from 'assets/icons/ESFlag';
 export { SAFlag } from 'assets/icons/SAFlag';
+export { INFlag } from 'assets/icons/INFlag';

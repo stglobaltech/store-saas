@@ -4,6 +4,7 @@ import localEs from './lang/es.json';
 import localDe from './lang/de.json';
 import localCn from './lang/zh.json';
 import localIl from './lang/he.json';
+import localTa from './lang/ta.json';
 
 export const messages = {
   en: localEn,
@@ -12,4 +13,5 @@ export const messages = {
   de: localDe,
   zh: localCn,
   he: localIl,
+  ta: localTa
 };
