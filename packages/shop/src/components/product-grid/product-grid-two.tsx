@@ -315,7 +315,7 @@ export const ProductGrid = ({
   return (
     <section style={{ marginTop: "50px" }}>
       <h4 style={{ marginBottom: "20px", color: "#04aa6d", padding: "10px" }}>
-        Products
+        <FormattedMessage id="products" defaultMessage="Products" />
       </h4>
       <Grid style={style}>
         {fetchedProducts.map((product) => (

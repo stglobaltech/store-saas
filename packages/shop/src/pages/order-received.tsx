@@ -38,14 +38,14 @@ const OrderReceivedPage = () => {
     if (error.message === UNAUTHORIZED) {
       return (
         <ErrorMessage>
-          <FormattedMessage id="error" defaultMessage={UNAUTHORIZED_MSG} />
+          <FormattedMessage id="errorUnauthorizedMsg" defaultMessage={UNAUTHORIZED_MSG} />
         </ErrorMessage>
       );
     } else {
       return (
         <ErrorMessage>
           <FormattedMessage
-            id="error"
+            id="errorFetchingOrders"
             defaultMessage={ERROR_FETCHING_ACTIVE_ORDERS}
           />
         </ErrorMessage>
@@ -57,7 +57,7 @@ const OrderReceivedPage = () => {
     return (
       <ErrorMessage>
         <FormattedMessage
-          id="error"
+          id="errorActiveOrder"
           defaultMessage={CURRENT_ACTIVE_ORDER_NOT_FOUND}
         />
       </ErrorMessage>
@@ -70,7 +70,7 @@ const OrderReceivedPage = () => {
     return (
       <ErrorMessage>
         <FormattedMessage
-          id="error"
+          id="errorActiveOrder"
           defaultMessage={CURRENT_ACTIVE_ORDER_NOT_FOUND}
         />
       </ErrorMessage>

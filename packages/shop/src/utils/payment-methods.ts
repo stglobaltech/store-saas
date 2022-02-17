@@ -1,18 +1,30 @@
+import { useIntl } from 'react-intl';
+const intl = useIntl();
+
 const paymentoptions = [
   {
     id: "1",
     title: "cash",
-    content: "Pay by cash once you receive your order",
+    content: intl.formatMessage({
+      id: 'paymentTypeCashDesc',
+      defaultMessage: 'Pay by cash once you receive your order'
+    })
   },
   {
     id: "2",
     title: "card",
-    content: "Pay now using your card",
+    content: intl.formatMessage({
+      id: 'paymentTypeCardDesc',
+      defaultMessage: 'Pay now using your card'
+    })
   },
   {
     id: "3",
     title: "wallet",
-    content: "Use your wallet amount to pay",
+    content: intl.formatMessage({
+      id: 'paymentTypeWalletDesc',
+      defaultMessage: 'Use your wallet amount to pay'
+    })
   },
 ];
 

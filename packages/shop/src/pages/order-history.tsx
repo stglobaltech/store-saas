@@ -36,7 +36,7 @@ const OrderHistory = () => {
     return (
       <ErrorMessage>
         <FormattedMessage
-          id="error"
+          id="errorOrderHistory"
           defaultMessage={ERROR_FETCHING_ORDER_HISTORY}
         />
       </ErrorMessage>

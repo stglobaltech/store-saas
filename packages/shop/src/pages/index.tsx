@@ -157,7 +157,7 @@ export default function Categories({
     return (
       <ErrorMessage>
         <FormattedMessage
-          id="error"
+          id="errorStoreNotConfigured"
           defaultMessage={WORK_FLOW_POLICY_NOT_CONFIGURED}
         />
       </ErrorMessage>
@@ -167,7 +167,7 @@ export default function Categories({
   if (error || storeBranchesError)
     return (
       <ErrorMessage>
-        <FormattedMessage id="error" defaultMessage={GENERAL_ERROR_MSG} />
+        <FormattedMessage id="errorMessage" defaultMessage={GENERAL_ERROR_MSG} />
       </ErrorMessage>
     );
 

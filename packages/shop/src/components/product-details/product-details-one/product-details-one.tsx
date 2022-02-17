@@ -31,7 +31,7 @@ import { CartIcon } from "assets/icons/CartIcon";
 import ReadMore from "components/truncate/truncate";
 import CarouselWithCustomDots from "components/multi-carousel/multi-carousel";
 import Products from "components/product-grid/product-list/product-list";
-import { FormattedMessage } from "react-intl";
+import { FormattedMessage, useIntl } from "react-intl";
 import { useLocale } from "contexts/language/language.provider";
 import { Counter } from "components/counter/counter";
 
@@ -76,7 +76,8 @@ const ProductDetails: React.FunctionComponent<ProductDetailsProps> = ({
   const storeId = useAppState("activeStoreId");
   const entityId = storeId;
 
-  const { isRtl } = useLocale();
+  const intl = useIntl();
+  const { isRtl, locale } = useLocale();
   const data = product;
 
   const {
@@ -105,7 +106,13 @@ const ProductDetails: React.FunctionComponent<ProductDetailsProps> = ({
           });
         } else {
           notify(
-            <DangerNotification message={ADD_PRODUCT_TO_CART_FAILED} dismiss />
+            <DangerNotification
+              message={intl.formatMessage({
+                id: 'errorAddProductToCart',
+                defaultMessage: ADD_PRODUCT_TO_CART_FAILED,
+              })}
+              dismiss
+            />
           );
         }
       },
@@ -284,10 +291,12 @@ const ProductDetails: React.FunctionComponent<ProductDetailsProps> = ({
         <ProductInfo dir={isRtl ? "rtl" : "ltr"}>
           <ProductTitlePriceWrapper>
             <ProductTitle>
-              {!isRtl ? product.productName.en : product.productName?.ar}
+              {locale === 'en' ? product.productName.en : product.productName?.ar}
             </ProductTitle>
             <ProductPriceWrapper>
-              <MetaData>per piece</MetaData>
+              <MetaData>
+                <FormattedMessage id="perPiece" defaultMessage="per piece" />
+              </MetaData>
               {product.discountInPercent ? (
                 <SalePrice>
                   {workFlowPolicy.currency + " "}
@@ -303,7 +312,10 @@ const ProductDetails: React.FunctionComponent<ProductDetailsProps> = ({
           </ProductTitlePriceWrapper>
 
           <ProductWeight>
-            <b>maximum quantity</b> : {product.maxQuantity}
+            <b>
+              <FormattedMessage id="maximumQuantity" defaultMessage="maximum quantity" />
+            </b>{" "}
+            : {product.maxQuantity}
           </ProductWeight>
 
           <ProductCartWrapper>
@@ -349,7 +361,10 @@ const ProductDetails: React.FunctionComponent<ProductDetailsProps> = ({
                   style={{ width: "20px", height: "20px" }}
                 />
                 <ProductMetaItemDes>
-                  Dispatched within 24 hours
+                  <FormattedMessage
+                    id="dispatchHours"
+                    defaultMessage="Dispatched within 24 hours"
+                  />
                 </ProductMetaItemDes>
               </ProductMetaItem>
               <ProductMetaItem>
@@ -358,20 +373,27 @@ const ProductDetails: React.FunctionComponent<ProductDetailsProps> = ({
                   style={{ width: "20px", height: "20px" }}
                 />
                 <ProductMetaItemDes>
-                  Pay on delivery available
+                  <FormattedMessage
+                    id="payOnDeliveryAvailable"
+                    defaultMessage="Pay on delivery available"
+                  />
                 </ProductMetaItemDes>
               </ProductMetaItem>
               <ProductMetaItem>
                 <Image url={Return} style={{ width: "20px", height: "20px" }} />
-                <ProductMetaItemDes> Track your order</ProductMetaItemDes>
+                <ProductMetaItemDes> 
+                  <FormattedMessage id="trackYourOrder" defaultMessage="Track your order" />
+                </ProductMetaItemDes>
               </ProductMetaItem>
             </ProductMetaSingle>
           </ProductMeta>
 
           <ProductDescription>
-            <ProductDescriptionTitle>Product Details</ProductDescriptionTitle>
+            <ProductDescriptionTitle>
+              <FormattedMessage id="productDetails" defaultMessage="Product Details" />
+            </ProductDescriptionTitle>
             <ReadMore character={600}>
-              {!isRtl ? product.description.en : product.description?.ar}
+              {locale === 'en' ? product.description.en : product.description?.ar}
             </ReadMore>
           </ProductDescription>
         </ProductInfo>

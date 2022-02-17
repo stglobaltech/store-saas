@@ -134,7 +134,7 @@ export const ProductCard = ({ data, currency }: Props) => {
     _id,
   } = data;
 
-  const { isRtl } = useLocale();
+  const { isRtl, locale } = useLocale();
 
   return (
     <Link href="/product/[slug]" as={`/product/${_id}`}>
@@ -153,7 +153,7 @@ export const ProductCard = ({ data, currency }: Props) => {
             <Price>{currency + " " + price}</Price>
             {/* <SalePrice>{basePrice}</SalePrice> */}
           </PriceWrapper>
-          <Title>{!isRtl ? productName.en : productName?.ar}</Title>
+          <Title>{locale === 'en' ? productName.en : productName?.ar}</Title>
           <AddItemToCart data={data} variant="full"/>
         </Box>
       </Card>

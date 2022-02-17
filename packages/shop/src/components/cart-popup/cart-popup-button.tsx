@@ -1,4 +1,5 @@
 import React from "react";
+import { FormattedMessage } from 'react-intl';
 import {
   CartPopupButtonStyled,
   ButtonImgBox,
@@ -59,7 +60,7 @@ export const BoxedCartButton: React.FC<CartButtonProps> = ({
       {itemCount} {itemPostfix}
     </TotalItems>
     <PriceBoxAlt>
-      Cart
+      <FormattedMessage id="cart" defaultMessage="Cart" />
     </PriceBoxAlt>
   </CartPopupBoxButton>
 );

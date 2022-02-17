@@ -52,7 +52,7 @@ function transactions() {
     return (
       <ErrorMessage>
         <FormattedMessage
-          id="erroruserTransactions"
+          id="errorUserTransactions"
           defaultMessage={error.message || USER_TRANSACTIONS_ERROR}
         />
       </ErrorMessage>

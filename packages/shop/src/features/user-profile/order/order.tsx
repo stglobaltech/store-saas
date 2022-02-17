@@ -127,7 +127,7 @@ const OrdersContent: React.FC<{
     return (
       <ErrorMessage>
         <FormattedMessage
-          id="error"
+          id="errorFetchingOrders"
           defaultMessage={ERROR_FETCHING_ACTIVE_ORDERS}
         />
       </ErrorMessage>

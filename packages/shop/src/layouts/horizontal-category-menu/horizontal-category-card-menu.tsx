@@ -85,7 +85,7 @@ interface Props {
 export const HorizontalCategoryCardMenu = ({}: Props) => {
   const router = useRouter();
   const storeId = useAppState("activeStoreId");
-  const { isRtl } = useLocale();
+  const { isRtl, locale } = useLocale();
 
   const { data, loading, error } = useQuery(GET_CATEGORIES_BY_STOREID, {
     variables: { storeId },
@@ -129,7 +129,7 @@ export const HorizontalCategoryCardMenu = ({}: Props) => {
                     />
                   </ImageWrapper>
                 </Box>
-                <Title>{!isRtl ? category.name.en : category.name.ar}</Title>
+                <Title>{locale === 'en' ? category.name.en : category.name.ar}</Title>
               </Card>
             </SwiperSlide>
           );
@@ -167,7 +167,7 @@ export const HorizontalCategoryCardMenu = ({}: Props) => {
   return (
     <CategoryWrapper>
       <h4 style={{ marginBottom: "20px", color: "#04aa6d", padding: "10px" }}>
-        Categories
+        <FormattedMessage id="categories" defaultMessage="Categories" />
       </h4>
       <CategoryInner>
         <Swiper
@@ -191,7 +191,9 @@ export const HorizontalCategoryCardMenu = ({}: Props) => {
                   <img src={All} alt={"All Categories"} />
                 </ImageWrapper>
               </Box>
-              <Title>{!isRtl ? "All" : "All"}</Title>
+              <Title>
+                <FormattedMessage id="all" defaultMessage="All" />
+              </Title>
             </Card>
           </SwiperSlide>
           {sliderContent()}

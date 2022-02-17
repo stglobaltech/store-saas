@@ -188,11 +188,6 @@ export const PROFILE_SIDEBAR_BOTTOM_MENU = [PROFILE_MENU_ITEM];
 
 export const LANGUAGE_MENU = [
   {
-    id: "ar",
-    defaultMessage: "Arabic",
-    icon: "SAFlag",
-  },
-  {
     id: "en",
     defaultMessage: "English",
     icon: "USFlag",
