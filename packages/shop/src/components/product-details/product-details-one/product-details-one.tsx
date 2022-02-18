@@ -48,6 +48,7 @@ import DangerNotification from "../../../components/Notification/DangerNotificat
 import {
   ADD_PRODUCT_TO_CART_FAILED,
   ERROR_CART_DELETED,
+  ERROR_CART_EMPTY
 } from "../../../utils/constant";
 import { useAppState } from "contexts/app/app.provider";
 import { getCartId } from "utils/localStorage";
@@ -232,7 +233,13 @@ const ProductDetails: React.FunctionComponent<ProductDetailsProps> = ({
       if (error.message === ERROR_CART_DELETED) {
         removeItem(data);
         notify(
-          <SuccessNotification message={`Your cart is empty now!`} dismiss />
+          <SuccessNotification
+            message={intl.formatMessage({
+              id: 'errorCartEmpty',
+              defaultMessage: ERROR_CART_EMPTY,
+            })}
+            dismiss
+          />
         );
       }
     }

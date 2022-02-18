@@ -26,6 +26,7 @@ import { countryCodes } from "../../utils/country-codes";
 import SuccessNotification from "../../components/Notification/SuccessNotification";
 import DangerNotification from "../../components/Notification/DangerNotification";
 import { useAppState } from "contexts/app/app.provider";
+import { SIGNUP_SUCCESS_MSG } from '../../utils/constant';
 
 //verify user by sending otp
 function VerifyUser({ handleSentOtp }) {
@@ -165,7 +166,15 @@ function SignUp({ mobile,countryCode }: SignUpProps) {
         authDispatch({
           type: "SIGNIN",
         });
-        notify(<SuccessNotification message={`${signup.name} signup successful!`} dismiss/>)
+        notify(
+          <SuccessNotification
+            message={intl.formatMessage({
+              id: 'signupSuccessMsg',
+              defaultMessage: `${signup.name} ${SIGNUP_SUCCESS_MSG}`,
+            })}
+            dismiss
+          />
+        )
       }
     },
   });

@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { FormattedMessage } from "react-intl";
+import { FormattedMessage, useIntl } from "react-intl";
 import { useNotifier } from "react-headless-notifier";
 import RadioGroup from "components/radio-group/radio-group";
 import RadioCard from "components/radio-card/radio-card";
@@ -16,7 +16,14 @@ import { M_UPDATE_CART_ADDRESS } from "graphql/mutation/update-cart-address.muta
 import SuccessNotification from "../../components/Notification/SuccessNotification";
 import DangerNotification from "../../components/Notification/DangerNotification";
 import { M_DELETE_USER_ADDRESS } from "graphql/mutation/delete-user-address.mutations";
-import { ADDRESS_DELETED } from "utils/constant";
+import {
+  ADDRESS_DELETED,
+  ADDRESS_DELETED_MSG,
+  ERROR_DELETE_ADDRESS,
+  DELIVERY_ADDRESS_SET,
+  DELIVERY_ADDRESS_NOT_SET,
+  ERROR_CANNOT_DELETE_ADDRESS
+} from "utils/constant";
 
 interface Props {
   increment?: boolean;
@@ -40,6 +47,7 @@ const Address = ({
   cartId,
   storeId,
 }: Props) => {
+  const intl = useIntl();
   const { notify } = useNotifier();
 
   const {
@@ -54,11 +62,22 @@ const Address = ({
         data.deleteAddress &&
         data.deleteAddress.status === ADDRESS_DELETED
       ) {
-        notify(<SuccessNotification message="address deleted!" dismiss />);
+        notify(
+          <SuccessNotification
+            message={intl.formatMessage({
+              id: 'addressDeletedMsg',
+              defaultMessage: ADDRESS_DELETED_MSG,
+            })}
+            dismiss
+          />
+        );
       } else {
         notify(
           <DangerNotification
-            message="address could not be deleted :("
+            message={intl.formatMessage({
+              id: 'errorCannotDeleteAddress',
+              defaultMessage: ERROR_CANNOT_DELETE_ADDRESS,
+            })}
             dismiss
           />
         );
@@ -75,14 +94,20 @@ const Address = ({
         });
         notify(
           <SuccessNotification
-            message={`${data.updateCartAddress.name} set as delivery address!`}
+            message={intl.formatMessage({
+              id: 'deliveryAddressSet',
+              defaultMessage: `${data.updateCartAddress.name} ${DELIVERY_ADDRESS_SET}`,
+            })}
             dismiss
           />
         );
       } else {
         notify(
           <DangerNotification
-            message="delivery address could not be set"
+            message={intl.formatMessage({
+              id: 'deliveryAddressNotSet',
+              defaultMessage: DELIVERY_ADDRESS_NOT_SET,
+            })}
             dismiss
           />
         );
@@ -103,7 +128,15 @@ const Address = ({
         dispatch({ type: "DELETE_ADDRESS", payload: item.id });
       }
     } catch (error) {
-      notify(<DangerNotification message="address not deleted :(" dismiss />);
+      notify(
+        <DangerNotification
+          message={intl.formatMessage({
+            id: 'errorDeleteAddress',
+            defaultMessage: ERROR_DELETE_ADDRESS,
+          })}
+          dismiss
+        />
+      );
     }
   };
 

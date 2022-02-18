@@ -18,12 +18,13 @@ import {
   Total,
   RemoveButton,
 } from "./cart-item.style";
-import { ERROR_CART_DELETED } from "../../utils/constant";
+import { ERROR_CART_DELETED, ERROR_CART_EMPTY } from "../../utils/constant";
 import Loader from "components/loader/loader";
 import { M_REMOVE_PRODUCT_FROM_CART } from "graphql/mutation/remove-product-from-cart.mutation";
 import { useAppState } from "contexts/app/app.provider";
 import { getCartId } from "utils/localStorage";
 import { handlePrevOrderPending } from "components/prev-order-pending/handleprevorderpending";
+import { useIntl } from 'react-intl';
 
 interface Props {
   data: any;
@@ -38,6 +39,7 @@ export const CartItem: React.FC<Props> = ({
   onIncrement,
   onRemove,
 }) => {
+  const intl = useIntl();
   const workFlowPolicy=useAppState("workFlowPolicy") as any;
   const storeId =useAppState("activeStoreId");
   const entityId = storeId;
@@ -123,7 +125,13 @@ export const CartItem: React.FC<Props> = ({
       if (error.message === ERROR_CART_DELETED) {
         onRemove();
         notify(
-          <SuccessNotification message={`Your cart is empty now!`} dismiss />
+          <SuccessNotification
+            message={intl.formatMessage({
+              id: 'errorCartEmpty',
+              defaultMessage: ERROR_CART_EMPTY,
+            })}
+            dismiss
+          />
         );
       }
     }

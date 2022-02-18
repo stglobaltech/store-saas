@@ -37,6 +37,20 @@ export const PAYMENT_STATUS_PENDING =
   "We are yet to confirm your payment. Please wait for your order summary to reflect,try refreshing your page. You can't place another order meanwhile";
 export const USER_TRANSACTIONS_ERROR =
   "Error getting your transactions :(. Please try after some time";
+export const OTP_SUCCESS_MSG = "Otp sent to your phone/email";
+export const OTP_ERROR_MSG = "Something went wrong! OTP could not be sent...";
+export const ERROR_INVALID_OTP = "Please enter the correct otp sent to your mobile number and email";
+export const LOGIN_SUCCESS = "Login successful! Shop now...";
+export const SIGNUP_SUCCESS_MSG = "signup successful!";
+export const ERROR_CART_EMPTY = "Your cart is empty now!";
+export const ADDRESS_ADDED_SUCCESSFULLY = "Address added successfully";
+export const ERROR_ADD_ADDRESS = "failed to add address :(";
+export const ADDRESS_DELETED_MSG = "address deleted!";
+export const ERROR_DELETE_ADDRESS = "address not deleted :(";
+export const ERROR_CANNOT_DELETE_ADDRESS = "address could not be deleted :(";
+export const DELIVERY_ADDRESS_SET = "set as delivery address!";
+export const DELIVERY_ADDRESS_NOT_SET = "delivery address could not be set";
+export const PAYMENT_METHOD_SET = "set as the payment method for this order";
 //active orders tracking status
 export const USER_PLACED_ORDER = {
   label: "Order Placed",

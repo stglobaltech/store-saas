@@ -9,7 +9,7 @@ import { useMutation } from "@apollo/client";
 import { M_ADD_ADDRESS } from "graphql/mutation/add-address.mutation";
 import { FieldWrapper, Heading } from "./address-card.style";
 import { ProfileContext } from "contexts/profile/profile.context";
-import { FormattedMessage } from "react-intl";
+import { FormattedMessage, useIntl } from "react-intl";
 import AddressMap from "components/map/map-wrapper";
 import { useCallback } from "react";
 import { useState } from "react";
@@ -17,6 +17,7 @@ import ngeohash from "ngeohash";
 
 import SuccessNotification from "../../components/Notification/SuccessNotification";
 import DangerNotification from "../../components/Notification/DangerNotification";
+import { ADDRESS_ADDED_SUCCESSFULLY, ERROR_ADD_ADDRESS } from '../../utils/constant';
 
 // Shape of form values
 interface FormValues {
@@ -74,6 +75,7 @@ const UpdateAddress = (props: FormikProps<FormValues> & MyFormProps) => {
     buildingNo: values.buildingNo,
   };
 
+  const intl = useIntl();
   const { notify } = useNotifier();
   const { state, dispatch } = useContext(ProfileContext);
   const [addressCoordinates, updateAddressCoordinates] = useState({
@@ -94,13 +96,25 @@ const UpdateAddress = (props: FormikProps<FormValues> & MyFormProps) => {
           buildingNo: saveAddress.buildingNo,
         };
         notify(
-          <SuccessNotification message={"address added successfully"} dismiss />
+          <SuccessNotification
+            message={intl.formatMessage({
+              id: 'addressAddedSuccessfully',
+              defaultMessage: ADDRESS_ADDED_SUCCESSFULLY,
+            })}
+            dismiss
+          />
         );
         dispatch({ type: "ADD_OR_UPDATE_ADDRESS", payload: newAddress });
         closeModal();
       } else {
         notify(
-          <DangerNotification message={"failed to add address :("} dismiss />
+          <DangerNotification
+            message={intl.formatMessage({
+              id: 'errorAddAddress',
+              defaultMessage: ERROR_ADD_ADDRESS,
+            })}
+            dismiss
+          />
         );
       }
     },

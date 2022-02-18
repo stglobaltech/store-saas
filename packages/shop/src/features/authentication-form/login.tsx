@@ -29,6 +29,12 @@ import { Q_GET_ROLES, Q_GET_USERID } from "graphql/query/loggedIn-queries.query"
 import { useCart } from "contexts/cart/use-cart";
 import SuccessNotification from "../../components/Notification/SuccessNotification";
 import DangerNotification from "../../components/Notification/DangerNotification";
+import {
+  OTP_SUCCESS_MSG,
+  LOGIN_SUCCESS,
+  OTP_ERROR_MSG,
+  ERROR_INVALID_OTP
+} from '../../utils/constant';
 
 const countryCodes = [
   { name: "+91", value: "IND" },
@@ -52,7 +58,10 @@ function SendOtp({ handleVerifyOtp }) {
       if (data && data.sendOtp && data.sendOtp.success) {
         notify(
           <SuccessNotification
-            message="Otp sent to your phone/email"
+            message={intl.formatMessage({
+              id: 'otpSuccessMsg',
+              defaultMessage: OTP_SUCCESS_MSG,
+            })}
             dismiss
           />
         );
@@ -60,7 +69,10 @@ function SendOtp({ handleVerifyOtp }) {
       } else {
         notify(
           <DangerNotification
-            message="Something went wrong! OTP could not be sent..."
+            message={intl.formatMessage({
+              id: 'otpErrorMsg',
+              defaultMessage: OTP_ERROR_MSG,
+            })}
             dismiss
           />
         );
@@ -139,7 +151,10 @@ function VerifyOtp({ mobile, countryCode, handleLoginSuccess }) {
       if (data && data.userLogin && data.userLogin.success) {
         notify(
           <SuccessNotification
-            message="Login successful! Shop now..."
+            message={intl.formatMessage({
+              id: 'loginSuccess',
+              defaultMessage: LOGIN_SUCCESS,
+            })}
             dismiss
           />
         );
@@ -162,7 +177,10 @@ function VerifyOtp({ mobile, countryCode, handleLoginSuccess }) {
       } else if(data && data.userLogin && data.userLogin.accessToken===null && data.userLogin.refreshToken===null) {
         notify(
           <DangerNotification
-            message={`Please enter the correct otp sent to your mobile number and email`}
+            message={intl.formatMessage({
+              id: 'errorInvalidOtp',
+              defaultMessage: ERROR_INVALID_OTP,
+            })}
             dismiss
           />
         );

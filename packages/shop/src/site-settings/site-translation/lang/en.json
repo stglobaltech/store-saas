@@ -188,5 +188,19 @@
   "errorAddProductToCart": "Something went wrong!Product could not be added to cart!",
   "errorFetchingUser": "Error fetching your details! Login again and try or try after sometime :(",
   "errorFetchingCart": "Error fetching your cart :(",
-  "errorMessage": "Something went wrong :("
+  "errorMessage": "Something went wrong :(",
+  "otpSuccessMsg": "Otp sent to your phone/email",
+  "otpErrorMsg": "Something went wrong! OTP could not be sent...",
+  "errorInvalidOtp": "Please enter the correct otp sent to your mobile number and email",
+  "loginSuccess": "Login successful! Shop now...",
+  "signupSuccessMsg": "signup successful!",
+  "errorCartEmpty": "Your cart is empty now!",
+  "addressAddedSuccessfully": "Address added successfully",
+  "errorAddAddress": "failed to add address :(",
+  "addressDeletedMsg": "address deleted!",
+  "errorDeleteAddress": "address not deleted :(",
+  "errorCannotDeleteAddress": "address could not be deleted :(",
+  "deliveryAddressSet": "set as delivery address!",
+  "deliveryAddressNotSet": "delivery address could not be set",
+  "paymentMethodSet": "set as the payment method for this order"
 }
