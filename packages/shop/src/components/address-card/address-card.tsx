@@ -160,7 +160,11 @@ const UpdateAddress = (props: FormikProps<FormValues> & MyFormProps) => {
   //
   return (
     <>
-      <Heading>{item && item.id ? "Edit Address" : "Add New Address"}</Heading>
+      <Heading>
+        {item && item.id 
+          ? <FormattedMessage id='editAddress' defaultMessage='Edit Address' />
+          : <FormattedMessage id='addNewAddress' defaultMessage='Add New Address' />}
+        </Heading>
       <form>
         <AddressMap
           handleAddress={handleAddressChange}
@@ -170,7 +174,10 @@ const UpdateAddress = (props: FormikProps<FormValues> & MyFormProps) => {
           <TextField
             id="name"
             type="text"
-            placeholder="Enter Title"
+            placeholder={intl.formatMessage({
+              id: 'enterTitle',
+              defaultMessage: 'Enter Title',
+            })}
             error={touched.name && errors.name}
             value={values.name}
             onChange={handleChange}
@@ -182,7 +189,10 @@ const UpdateAddress = (props: FormikProps<FormValues> & MyFormProps) => {
           <TextField
             id="buildingNo"
             type="text"
-            placeholder="Building And Building No."
+            placeholder={intl.formatMessage({
+              id: 'buildingDetails',
+              defaultMessage: 'Building And Building No.',
+            })}
             value={values.buildingNo}
             error={touched.buildingNo && errors.buildingNo}
             onChange={handleChange}
@@ -194,7 +204,10 @@ const UpdateAddress = (props: FormikProps<FormValues> & MyFormProps) => {
           <TextField
             id="info"
             as="textarea"
-            placeholder="Enter Address"
+            placeholder={intl.formatMessage({
+              id: 'enterAddress',
+              defaultMessage: 'Enter Address',
+            })}
             error={touched.info && errors.info}
             value={values.info}
             onChange={handleChange}

@@ -25,57 +25,59 @@ import useComponentSize from "utils/useComponentSize";
 import { FormattedMessage } from "react-intl";
 import { useAppState } from "contexts/app/app.provider";
 import { Paginate } from "components/pagination/pagination";
-
-const orderTableColumns = [
-  {
-    title: <FormattedMessage id="cartItems" defaultMessage="Items" />,
-    dataIndex: "",
-    key: "items",
-    width: 250,
-    ellipsis: true,
-    render: (text, record) => {
-      return (
-        <ItemWrapper>
-          <ImageWrapper>
-            {/* <img src={record.image} alt={record.title} /> */}
-          </ImageWrapper>
-
-          <ItemDetails>
-            <ItemName>{record.name.en}</ItemName>
-            <ItemSize>{record.quantity}</ItemSize>
-            <ItemPrice>
-              {Math.floor(record.quotedPrice / record.quantity)}
-            </ItemPrice>
-          </ItemDetails>
-        </ItemWrapper>
-      );
-    },
-  },
-  {
-    title: (
-      <FormattedMessage id="intlTableColTitle2" defaultMessage="Quantity" />
-    ),
-    dataIndex: "quantity",
-    key: "quantity",
-    align: "center",
-    width: 100,
-  },
-  {
-    title: <FormattedMessage id="intlTableColTitle3" defaultMessage="Price" />,
-    dataIndex: "",
-    key: "price",
-    align: "right",
-    width: 100,
-    render: (text, record) => {
-      return <p>{record.quotedPrice}</p>;
-    },
-  },
-];
+import { useLocale } from 'contexts/language/language.provider';
 
 const OrdersContent: React.FC<{
   data: any;
   handleNextPage: (nextPage: number) => void;
 }> = ({ data, handleNextPage }) => {
+  const locale = useLocale();
+  const orderTableColumns = [
+    {
+      title: <FormattedMessage id="cartItems" defaultMessage="Items" />,
+      dataIndex: "",
+      key: "items",
+      width: 250,
+      ellipsis: true,
+      render: (text, record) => {
+        return (
+          <ItemWrapper>
+            <ImageWrapper>
+              {/* <img src={record.image} alt={record.title} /> */}
+            </ImageWrapper>
+  
+            <ItemDetails>
+              <ItemName>{locale === 'en' ? record.name.en : record.name.ar}</ItemName>
+              <ItemSize>{record.quantity}</ItemSize>
+              <ItemPrice>
+                {Math.floor(record.quotedPrice / record.quantity)}
+              </ItemPrice>
+            </ItemDetails>
+          </ItemWrapper>
+        );
+      },
+    },
+    {
+      title: (
+        <FormattedMessage id="intlTableColTitle2" defaultMessage="Quantity" />
+      ),
+      dataIndex: "quantity",
+      key: "quantity",
+      align: "center",
+      width: 100,
+    },
+    {
+      title: <FormattedMessage id="intlTableColTitle3" defaultMessage="Price" />,
+      dataIndex: "",
+      key: "price",
+      align: "right",
+      width: 100,
+      render: (text, record) => {
+        return <p>{record.quotedPrice}</p>;
+      },
+    },
+  ];
+
   const [order, setOrder] = useState(null);
   const [active, setActive] = useState("");
 

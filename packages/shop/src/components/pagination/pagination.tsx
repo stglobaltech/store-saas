@@ -1,4 +1,5 @@
 import React from "react";
+import { FormattedMessage } from 'react-intl';
 import styled from "styled-components";
 
 const StyledPaginateWrapper = styled.div`
@@ -59,7 +60,7 @@ export const Paginate = ({
           disabled={!hasPrevPage}
           onClick={(e) => handlePageChange(e, page - 1)}
         >
-          Prev
+          <FormattedMessage id='prev' defaultMessage='Prev' />
         </StyledPaginateComponentButton>
         <StyledPaginateComponentButton>
           {currentPage}
@@ -68,7 +69,7 @@ export const Paginate = ({
           disabled={!hasNextPage}
           onClick={(e) => handlePageChange(e, page + 1)}
         >
-          Next
+          <FormattedMessage id='next' defaultMessage='Next' />
         </StyledPaginateComponentButton>
       </StyledPaginate>
     </StyledPaginateWrapper>

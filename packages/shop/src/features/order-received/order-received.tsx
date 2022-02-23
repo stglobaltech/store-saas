@@ -15,6 +15,7 @@ import OrderReceivedWrapper, {
   Item,
 } from "./order-received.style";
 import { FormattedMessage } from "react-intl";
+import { useLocale } from 'contexts/language/language.provider';
 
 type OrderReceivedProps = {
   orderDetails: any;
@@ -25,6 +26,8 @@ const OrderReceived: React.FunctionComponent<OrderReceivedProps> = ({
   orderDetails,
   currency,
 }) => {
+  const locale = useLocale();
+
   return (
     <OrderReceivedWrapper>
       <OrderReceivedContainer>
@@ -127,7 +130,7 @@ const OrderReceived: React.FunctionComponent<OrderReceivedProps> = ({
                 {orderDetails.orderCart.products.map((product, index) => {
                   return (
                     <Item key={index}>
-                      {product.name.en} X {product.quantity}
+                      {locale === 'en' ? product.name.en : product.name.ar} X {product.quantity}
                     </Item>
                   );
                 })}

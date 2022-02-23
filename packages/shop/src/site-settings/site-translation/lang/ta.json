@@ -202,5 +202,18 @@
   "errorCannotDeleteAddress": "முகவரி நீக்க ப்பட :(",
   "deliveryAddressSet": "டெலிவரி முகவரியாக அமைக்கவும்!",
   "deliveryAddressNotSet": "டெலிவரி முகவரியை அமைக்க முடியவில்லை",
-  "paymentMethodSet": "இந்த ஆர்டருக்கு கட்டணம் செலுத்தும் முறையாக அமைக்கவும்"
+  "paymentMethodSet": "இந்த ஆர்டருக்கு கட்டணம் செலுத்தும் முறையாக அமைக்கவும்",
+  "prev": "முன்",
+  "next": "அடுத்தது",
+  "editAddress": "முகவரியை திருத்து",
+  "addNewAddress": "புதிய முகவரியை சேர்",
+  "enterTitle": "தலைப்பை உள்ளிடு",
+  "buildingDetails": "கட்டிடம் மற்றும் கட்டிடம் எண்",
+  "enterAddress": "முகவரியை உள்ளிடவும்",
+  "orderId": "ஆர்டர் ஐடி",
+  "transactionId": "பரிவர்த்தனை ஐடி",
+  "operation": "நடவடிக்கை",
+  "orderDate": "ஆர்டர் தேதி",
+  "amount": "மொத்தம்",
+  "purpose": "செயல்நோக்கம்"
 }

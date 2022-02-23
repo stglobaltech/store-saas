@@ -202,5 +202,18 @@
   "errorCannotDeleteAddress": "address could not be deleted :(",
   "deliveryAddressSet": "set as delivery address!",
   "deliveryAddressNotSet": "delivery address could not be set",
-  "paymentMethodSet": "set as the payment method for this order"
+  "paymentMethodSet": "set as the payment method for this order",
+  "prev": "Prev",
+  "next": "Next",
+  "editAddress": "Edit Address",
+  "addNewAddress": "Add New Address",
+  "enterTitle": "Enter Title",
+  "buildingDetails": "Building And Building No.",
+  "enterAddress": "Enter Address",
+  "orderId": "Order Id",
+  "transactionId": "Transaction Id",
+  "operation": "Operation",
+  "orderDate": "Order Date",
+  "amount": "Amount",
+  "purpose": "Purpose"
 }

@@ -25,6 +25,7 @@ import { useAppState } from "contexts/app/app.provider";
 import { getCartId } from "utils/localStorage";
 import { handlePrevOrderPending } from "components/prev-order-pending/handleprevorderpending";
 import { useIntl } from 'react-intl';
+import { useLocale } from 'contexts/language/language.provider';
 
 interface Props {
   data: any;
@@ -40,6 +41,7 @@ export const CartItem: React.FC<Props> = ({
   onRemove,
 }) => {
   const intl = useIntl();
+  const locale = useLocale();
   const workFlowPolicy=useAppState("workFlowPolicy") as any;
   const storeId =useAppState("activeStoreId");
   const entityId = storeId;
@@ -151,7 +153,7 @@ export const CartItem: React.FC<Props> = ({
       )}
       <Image src={picture} />
       <Information>
-        <Name>{productName.en}</Name>
+        <Name>{locale === 'en' ? productName.en : productName.ar}</Name>
         <Price>
           {workFlowPolicy.currency}{" "}
           {displayPrice}
