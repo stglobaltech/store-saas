@@ -55,7 +55,7 @@ const Dashboard = () => {
   });
 
   const { loading: graphLoader, error: graphError, data: graph } = useQuery(Q_GRAPH_REPORT_ORDER_STATS, {
-    variables: { storeId }
+    variables: { reportsDto: { storeId } }
   });
 
   const daysInMonth = (month, year) => {
