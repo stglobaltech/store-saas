@@ -1,23 +1,36 @@
-const paymentoptions = [
-  {
-    id: "1",
-    title: "cash",
-    content: "Pay by cash once you receive your order",
-  },
-  {
-    id: "2",
-    title: "card",
-    content: "Pay now using your card",
-  },
-  {
-    id: "3",
-    title: "wallet",
-    content: "Use your wallet amount to pay",
-  },
-];
+import { useIntl } from 'react-intl';
 
 export const refactorPaymentMethods = (workFlowPolicyData) => {
+  const intl = useIntl();
   let policies = {};
+
+  const paymentoptions = [
+    {
+      id: "1",
+      title: "cash",
+      content: intl.formatMessage({
+        id: 'paymentTypeCashDesc',
+        defaultMessage: "Pay by cash once you receive your order",
+      }),
+    },
+    {
+      id: "2",
+      title: "card",
+      content: intl.formatMessage({
+        id: 'paymentTypeCardDesc',
+        defaultMessage: "Pay now using your card",
+      }),
+    },
+    {
+      id: "3",
+      title: "wallet",
+      content: intl.formatMessage({
+        id: 'paymentTypeWalletDesc',
+        defaultMessage: "Use your wallet amount to pay",
+      }),
+    },
+  ];
+
   if (
     workFlowPolicyData &&
     workFlowPolicyData.paymentType &&

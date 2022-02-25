@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { FormattedMessage } from "react-intl";
+import { FormattedMessage, useIntl } from "react-intl";
 import { useNotifier } from "react-headless-notifier";
 import { handleModal } from "features/checkouts/checkout-modal";
 import { ProfileContext } from "contexts/profile/profile.context";
@@ -13,6 +13,7 @@ import PaymentRadioCard from "components/payment-options/payment-options";
 import { M_UPDATE_CART_PAYMENT_TYPE } from "graphql/mutation/update-cart-payment-type.mutation";
 import SuccessNotification from "../../components/Notification/SuccessNotification";
 import DangerNotification from "../../components/Notification/DangerNotification";
+import { PAYMENT_METHOD_SET } from '../../utils/constant';
 
 interface Props {
   deviceType: any;
@@ -29,6 +30,7 @@ const Payment = ({
   cartId,
   walletBalance,
 }: Props) => {
+  const intl = useIntl();
   const [deletePaymentCardMutation] = useMutation(DELETE_CARD);
   const [updateOrderPayType] = useMutation(M_UPDATE_CART_PAYMENT_TYPE);
   const { notify } = useNotifier();
@@ -66,7 +68,10 @@ const Payment = ({
       ) {
         notify(
           <SuccessNotification
-            message={`${value} set as the payment method for this order`}
+            message={intl.formatMessage({
+              id: 'paymentMethodSet',
+              defaultMessage: `${value} ${PAYMENT_METHOD_SET}`,
+            })}
             dismiss
           />
         );

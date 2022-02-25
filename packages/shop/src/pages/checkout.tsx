@@ -21,8 +21,8 @@ import {
   ERROR_FETCHING_USER_DETAILS,
 } from "utils/constant";
 import { FormattedMessage } from "react-intl";
-import { useAppState } from "contexts/app/app.provider";import { refactorPaymentMethods } from "utils/payment-methods";
-5
+import { useAppState } from "contexts/app/app.provider";
+import { refactorPaymentMethods } from "utils/payment-methods";
 
 type Props = {
   deviceType: {
@@ -73,7 +73,7 @@ const CheckoutPage: NextPage<Props> = ({ deviceType }) => {
     return (
       <ErrorMessage>
         <FormattedMessage
-          id="error"
+          id="errorFetchingCart"
           defaultMessage={cartError.message || ERROR_FETCHING_CART}
         />
       </ErrorMessage>
@@ -82,7 +82,7 @@ const CheckoutPage: NextPage<Props> = ({ deviceType }) => {
     return (
       <ErrorMessage>
         <FormattedMessage
-          id="error"
+          id="errorFetchingUser"
           defaultMessage={ERROR_FETCHING_USER_DETAILS}
         />
       </ErrorMessage>

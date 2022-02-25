@@ -52,7 +52,7 @@ function transactions() {
     return (
       <ErrorMessage>
         <FormattedMessage
-          id="erroruserTransactions"
+          id="errorUserTransactions"
           defaultMessage={error.message || USER_TRANSACTIONS_ERROR}
         />
       </ErrorMessage>
@@ -78,22 +78,22 @@ function transactions() {
           <TableHead>
             <TableRow>
               <TableCell>
-                <b>Order Id</b>
+                <b><FormattedMessage id='orderId' defaultMessage='Order Id' /></b>
               </TableCell>
               <TableCell>
-                <b>Transaction Id</b>
+                <b><FormattedMessage id='transactionId' defaultMessage='Transaction Id' /></b>
               </TableCell>
               <TableCell>
-                <b>Operation</b>
+                <b><FormattedMessage id='operation' defaultMessage='Operation' /></b>
               </TableCell>
               <TableCell>
-                <b>Order Date</b>
+                <b><FormattedMessage id='orderDate' defaultMessage='Order Date' /></b>
               </TableCell>
               <TableCell>
-                <b>Amount</b>
+                <b><FormattedMessage id='amount' defaultMessage='Amount' /></b>
               </TableCell>
               <TableCell>
-                <b>Purpose</b>
+                <b><FormattedMessage id='purpose' defaultMessage='Purpose' /></b>
               </TableCell>
             </TableRow>
           </TableHead>

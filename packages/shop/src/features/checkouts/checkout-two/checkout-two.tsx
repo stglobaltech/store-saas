@@ -71,6 +71,7 @@ type CartItemProps = {
 };
 
 const OrderItem: React.FC<CartItemProps> = ({ product, currency }) => {
+  const { locale } = useLocale();
   const { _id, quantity, title, productName, unit, price, salePrice } = product;
   const displayPrice = salePrice ? salePrice : price;
   return (
@@ -78,7 +79,7 @@ const OrderItem: React.FC<CartItemProps> = ({ product, currency }) => {
       <Quantity>{quantity}</Quantity>
       <Multiplier>x</Multiplier>
       <ItemInfo>
-        {productName ? productName.en : title} {unit ? `| ${unit}` : ""}
+        {productName ? (locale === 'en' ? productName.en : productName.ar) : title} {unit ? `| ${unit}` : ""}
       </ItemInfo>
       <Price>{(displayPrice.price * quantity).toFixed(2)}</Price>
     </Items>

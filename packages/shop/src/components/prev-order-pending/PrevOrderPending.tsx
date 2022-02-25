@@ -9,7 +9,7 @@ function PrevOrderPending() {
   return (
     <ErrorMessage>
       <FormattedMessage
-        id="prevOrederPending"
+        id="prevOrderPending"
         defaultMessage={PREV_ORDER_INCOMPLETE}
       />
       <Link href="/order-received">

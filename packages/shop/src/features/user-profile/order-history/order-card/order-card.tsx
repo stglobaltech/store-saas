@@ -58,7 +58,7 @@ const OrderCard: React.FC<OrderCardProps> = ({
             : <span>{new Date(date).toDateString()}</span>
           </Meta>
           <Meta>
-            <FormattedMessage id="sss" defaultMessage="Payment Method" />:{" "}
+            <FormattedMessage id="paymenMethodText" defaultMessage="Payment Method" />:{" "}
             <span>{orderPayType}</span>
           </Meta>
           <Meta className="price">

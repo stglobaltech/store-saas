@@ -29,52 +29,7 @@ import { Q_GET_USERID } from "graphql/query/loggedIn-queries.query";
 import { Q_GET_USER_ACTIVE_ORDERS } from "graphql/query/get-user-active-order.query";
 import ErrorMessage from "components/error-message/error-message";
 import { ERROR_FETCHING_ACTIVE_ORDERS } from "utils/constant";
-
-const orderTableColumns = [
-  {
-    title: <FormattedMessage id="cartItems" defaultMessage="Items" />,
-    dataIndex: "",
-    key: "items",
-    width: 250,
-    ellipsis: true,
-    render: (text, record) => {
-      return (
-        <ItemWrapper>
-          <ImageWrapper>
-            {/* <img src={record.image} alt={record.title} /> */}
-          </ImageWrapper>
-
-          <ItemDetails>
-            <ItemName>{record.name.en}</ItemName>
-            <ItemSize>{record.quantity}</ItemSize>
-            <ItemPrice>
-              {Math.floor(record.quotedPrice / record.quantity)}
-            </ItemPrice>
-          </ItemDetails>
-        </ItemWrapper>
-      );
-    },
-  },
-  {
-    title: (
-      <FormattedMessage id="intlTableColTitle2" defaultMessage="Quantity" />
-    ),
-    dataIndex: "quantity",
-    key: "quantity",
-    align: "center",
-    width: 100,
-  },
-  {
-    title: <FormattedMessage id="intlTableColTitle3" defaultMessage="Price" />,
-    dataIndex: "",
-    key: "price",
-    align: "right",
-    width: 100,
-    render: (text, record) => {
-      return <p>{record.quotedPrice}</p>;
-    },
-  },
-];
+import { useLocale } from 'contexts/language/language.provider';
 
 const OrdersContent: React.FC<{
   data: any;
@@ -82,6 +37,53 @@ const OrdersContent: React.FC<{
   loading: any;
   refetch: () => void;
 }> = ({ data, error, loading, refetch }) => {
+  const locale = useLocale();
+  const orderTableColumns = [
+    {
+      title: <FormattedMessage id="cartItems" defaultMessage="Items" />,
+      dataIndex: "",
+      key: "items",
+      width: 250,
+      ellipsis: true,
+      render: (text, record) => {
+        return (
+          <ItemWrapper>
+            <ImageWrapper>
+              {/* <img src={record.image} alt={record.title} /> */}
+            </ImageWrapper>
+  
+            <ItemDetails>
+              <ItemName>{locale === 'en' ? record.name.en : record.name.ar}</ItemName>
+              <ItemSize>{record.quantity}</ItemSize>
+              <ItemPrice>
+                {Math.floor(record.quotedPrice / record.quantity)}
+              </ItemPrice>
+            </ItemDetails>
+          </ItemWrapper>
+        );
+      },
+    },
+    {
+      title: (
+        <FormattedMessage id="intlTableColTitle2" defaultMessage="Quantity" />
+      ),
+      dataIndex: "quantity",
+      key: "quantity",
+      align: "center",
+      width: 100,
+    },
+    {
+      title: <FormattedMessage id="intlTableColTitle3" defaultMessage="Price" />,
+      dataIndex: "",
+      key: "price",
+      align: "right",
+      width: 100,
+      render: (text, record) => {
+        return <p>{record.quotedPrice}</p>;
+      },
+    },
+  ];
+
   const [order, setOrder] = useState(null);
   const [active, setActive] = useState("");
 
@@ -127,7 +129,7 @@ const OrdersContent: React.FC<{
     return (
       <ErrorMessage>
         <FormattedMessage
-          id="error"
+          id="errorFetchingOrders"
           defaultMessage={ERROR_FETCHING_ACTIVE_ORDERS}
         />
       </ErrorMessage>

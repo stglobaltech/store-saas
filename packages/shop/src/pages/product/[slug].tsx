@@ -52,7 +52,7 @@ const ProductPage: NextPage<Props> = ({ data, deviceType }) => {
   if (productDetailError)
     return (
       <ErrorMessage>
-        <FormattedMessage id="error" defaultMessage={GENERAL_ERROR_MSG} />
+        <FormattedMessage id="errorMessage" defaultMessage={GENERAL_ERROR_MSG} />
       </ErrorMessage>
     );
 

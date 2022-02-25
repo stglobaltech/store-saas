@@ -32,7 +32,7 @@ const ProfilePage: NextPage<Props> = ({ deviceType }) => {
     return (
       <ErrorMessage>
         <FormattedMessage
-          id="error"
+          id="errorMessage"
           defaultMessage={error.message || GENERAL_ERROR_MSG}
         />
       </ErrorMessage>

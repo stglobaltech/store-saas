@@ -15,11 +15,12 @@ import { M_UPDATE_PRODUCT_QUANTITY } from "graphql/mutation/update-product-quant
 import SuccessNotification from "../components/Notification/SuccessNotification";
 import DangerNotification from "../components/Notification/DangerNotification";
 import Loader from "./loader/loader";
-import { ERROR_CART_DELETED } from "../utils/constant";
+import { ERROR_CART_DELETED, ERROR_CART_EMPTY, ADD_PRODUCT_TO_CART_FAILED } from "../utils/constant";
 import { refactorProductbeforeAddingToCart } from "utils/refactor-product-before-adding-to-cart";
 import { getCartId } from "utils/localStorage";
 import { handlePrevOrderPending } from "./prev-order-pending/handleprevorderpending";
 import { useAppState } from "contexts/app/app.provider";
+import { useIntl } from 'react-intl';
 
 const Icon = styled.span<any>(
   _variant({
@@ -92,6 +93,7 @@ export const AddItemToCart = ({ data, variant, buttonText }: Props) => {
     items,
   } = useCart();
 
+  const intl = useIntl();
   const { notify } = useNotifier();
   const workFlowPolicy=useAppState("workFlowPolicy")
 
@@ -115,7 +117,10 @@ export const AddItemToCart = ({ data, variant, buttonText }: Props) => {
           //todo: handle failure case (might be session expiry or server error)
           notify(
             <DangerNotification
-              message="Something went wrong!Product could not be added to cart!"
+              message={intl.formatMessage({
+                id: 'errorAddProductToCart',
+                defaultMessage: ADD_PRODUCT_TO_CART_FAILED,
+              })}
               dismiss
             />
           );
@@ -238,7 +243,13 @@ export const AddItemToCart = ({ data, variant, buttonText }: Props) => {
       if (error.message === ERROR_CART_DELETED) {
         removeItem(data);
         notify(
-          <SuccessNotification message={`Your cart is empty now!`} dismiss />
+          <SuccessNotification
+            message={intl.formatMessage({
+              id: 'errorCartEmpty',
+              defaultMessage: ERROR_CART_EMPTY,
+            })}
+            dismiss
+          />
         );
       }
     }
