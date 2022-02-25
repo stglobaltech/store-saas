@@ -215,5 +215,17 @@
   "operation": "Operation",
   "orderDate": "Order Date",
   "amount": "Amount",
-  "purpose": "Purpose"
+  "purpose": "Purpose",
+  "userOrderHistory": "My Orders",
+  "statusOrderPlaced": "Order Placed",
+  "statusChefAcceptedOrder": "Chef Accepted Order",
+  "statusChefDeclinedOrder": "Chef Declined Order",
+  "statusStoreCancelledOrder": "Store Cancelled Order",
+  "statusDelivered": "Delivered",
+  "statusDriverFound": "Driver Found",
+  "statusOrderIsReady": "Your Order Is Ready",
+  "statusDriverReachedStore": "Driver Reached Store",
+  "statusDriverPickedYourOrder": "Driver Picked Your Order",
+  "statusOrderOutForDelivery": "Order Out For Delivery",
+  "statusOrderWasDelivered": "Your Order Was Delivered"
 }

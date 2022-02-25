@@ -10,6 +10,7 @@ import {
   SingleProgressStep,
 } from "./progress-box.style";
 import { CheckMark } from "assets/icons/CheckMark";
+import { FormattedMessage } from "react-intl";
 
 type ProgressProps = {
   data?: any;
@@ -54,7 +55,11 @@ const ProgressBox: React.FC<ProgressProps> = ({ status, data }) => {
                 <ProgressBar />
               </ProgressBarWrapper>
               <StatusDetails>
-                {item ? <StatusTitle>{item.label}</StatusTitle> : ""}
+                {item
+                  ? <StatusTitle>
+                      <FormattedMessage id={item.intlKey} defaultMessage={item.label} />
+                    </StatusTitle>
+                  : ""}
               </StatusDetails>
             </ProgressStep>
           ))}
@@ -78,7 +83,11 @@ const ProgressBox: React.FC<ProgressProps> = ({ status, data }) => {
                 <ProgressBar />
               </ProgressBarWrapper>
               <StatusDetails>
-                {item ? <StatusTitle>{item.label}</StatusTitle> : ""}
+                {item
+                  ? <StatusTitle>
+                      <FormattedMessage id={item.intlKey} defaultMessage={item.label} />
+                    </StatusTitle>
+                  : ""}
               </StatusDetails>
             </SingleProgressStep>
           ))}

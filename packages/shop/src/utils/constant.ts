@@ -53,46 +53,57 @@ export const DELIVERY_ADDRESS_NOT_SET = "delivery address could not be set";
 export const PAYMENT_METHOD_SET = "set as the payment method for this order";
 //active orders tracking status
 export const USER_PLACED_ORDER = {
+  intlKey: "statusOrderPlaced",
   label: "Order Placed",
   description: "User placed the order",
 };
 export const CHEF_ACCEPTED_ORDER = {
+  intlKey: "statusChefAcceptedOrder",
   label: "Chef Accepted Order",
   description: "Chef accepted the order",
 };
 export const CHEF_DECLINED_THE_ORDER = {
+  intlKey: "statusChefDeclinedOrder",
   label: "Chef Declined Order",
   description: "Chef declined the order",
 };
 export const CHEF_CANCELLED_THE_ORDER = {
+  intlKey: "statusStoreCancelledOrder",
   label: "Store Cancelled Order",
   description: "Chef cancelled the order",
 };
 export const DELIVERED={
+  intlKey: "statusDelivered",
   label:"Delivered",
   description:"User,RecievedOrder"
 }
 export const DRIVER_ACCEPTED_ORDER = {
+  intlKey: "statusDriverFound",
   label: "Driver Found",
   description: "Driver accepted the order",
 };
 export const ORDER_READY_BY_CHEF = {
+  intlKey: "statusOrderIsReady",
   label: "Your Order Is Ready",
   description: "Order Ready by chef",
 };
 export const DRIVER_REACHED_STORE = {
+  intlKey: "statusDriverReachedStore",
   label: "Driver Reached Store",
   description: "Trip,ReachedStore",
 };
 export const DRIVER_COLLECTED_ORDER = {
+  intlKey: "statusDriverPickedYourOrder",
   label: "Driver Picked Your Order",
   description: "Trip,Collected",
 };
 export const DRIVER_STARTED_JOURNEY = {
+  intlKey: "statusOrderOutForDelivery",
   label: "Order Out For Delivery",
   description: "Trip,Delivered",
 };
 export const ORDER_DELIVERED = {
+  intlKey: "statusOrderWasDelivered",
   label: "Your Order Was Delivered",
   description: "Trip,Delivered",
 };

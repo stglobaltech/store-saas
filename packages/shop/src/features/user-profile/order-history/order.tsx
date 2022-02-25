@@ -131,7 +131,7 @@ const OrdersContent: React.FC<{
               ) : (
                 <NoOrderFound>
                   <FormattedMessage
-                    id="userOrderHistoryNotFound"
+                    id="intlNoOrderFound"
                     defaultMessage="No order found"
                   />
                 </NoOrderFound>
