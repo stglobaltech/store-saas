@@ -13,7 +13,11 @@ import PaymentRadioCard from "components/payment-options/payment-options";
 import { M_UPDATE_CART_PAYMENT_TYPE } from "graphql/mutation/update-cart-payment-type.mutation";
 import SuccessNotification from "../../components/Notification/SuccessNotification";
 import DangerNotification from "../../components/Notification/DangerNotification";
-import { PAYMENT_METHOD_SET } from '../../utils/constant';
+import {
+  PAYMENT_METHOD_SET_CASH,
+  PAYMENT_METHOD_SET_CARD,
+  PAYMENT_METHOD_SET_WALLET
+} from '../../utils/constant';
 
 interface Props {
   deviceType: any;
@@ -44,6 +48,28 @@ const Payment = ({
     });
   };
 
+  const paymentMethodSetMessage = (payType) => {
+    switch (payType) {
+      case 'cash':
+        return {
+          id: 'paymentMethodSetCash',
+          defaultMessage: PAYMENT_METHOD_SET_CASH,
+        };
+      case 'card':
+        return {
+          id: 'paymentMethodSetCard',
+          defaultMessage: PAYMENT_METHOD_SET_CARD,
+        };
+      case 'wallet':
+        return {
+          id: 'paymentMethodSetWallet',
+          defaultMessage: PAYMENT_METHOD_SET_WALLET,
+        };
+      default:
+        break;
+    }
+  };
+
   async function handlePaymentOptionChange(e) {
     const {
       target: { id, value },
@@ -66,12 +92,10 @@ const Payment = ({
         data.updateOrderPaymentType &&
         data.updateOrderPaymentType.success
       ) {
+        const paymentMethodSetIntl = paymentMethodSetMessage(value);
         notify(
           <SuccessNotification
-            message={intl.formatMessage({
-              id: 'paymentMethodSet',
-              defaultMessage: `${value} ${PAYMENT_METHOD_SET}`,
-            })}
+            message={intl.formatMessage(paymentMethodSetIntl)}
             dismiss
           />
         );

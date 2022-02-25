@@ -227,7 +227,7 @@ const UpdateAddress = (props: FormikProps<FormValues> & MyFormProps) => {
           }
         >
           <FormattedMessage
-            id={item && item.id ? "updateAddressBtn" : "saveAddressBtn"}
+            id={item && item.id ? "updateAddressBtn" : "savedAddressId"}
             defaultMessage="Save Address"
           />
         </Button>

@@ -159,6 +159,7 @@
   "userLoginPageModalTextForVerifyOTP": "Enter your one-time password",
   "processCheckout": "Place Order",
   "rechargeWallet": "Topup Wallet",
+  "topupAmount": "Topup Amount",
   "products": "Products",
   "categories": "Categories",
   "all": "All",
@@ -202,7 +203,9 @@
   "errorCannotDeleteAddress": "address could not be deleted :(",
   "deliveryAddressSet": "set as delivery address!",
   "deliveryAddressNotSet": "delivery address could not be set",
-  "paymentMethodSet": "set as the payment method for this order",
+  "paymentMethodSetCash": "Cash set as the payment method for this order",
+  "paymentMethodSetCard": "Card set as the payment method for this order",
+  "paymentMethodSetWallet": "Wallet set as the payment method for this order",
   "prev": "Prev",
   "next": "Next",
   "editAddress": "Edit Address",
@@ -227,5 +230,6 @@
   "statusDriverReachedStore": "Driver Reached Store",
   "statusDriverPickedYourOrder": "Driver Picked Your Order",
   "statusOrderOutForDelivery": "Order Out For Delivery",
-  "statusOrderWasDelivered": "Your Order Was Delivered"
+  "statusOrderWasDelivered": "Your Order Was Delivered",
+  "itemUnitsOrdered": "Total Item Units Ordered"
 }
