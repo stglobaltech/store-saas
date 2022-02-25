@@ -41,7 +41,9 @@ function TopupWallet() {
   return (
     <Wrapper>
       <Container>
-        <Heading>Topup Amount</Heading>
+        <Heading>
+          <FormattedMessage id='topupAmount' defaultMessage='Topup Amount' />
+        </Heading>
         <form>
           <Input
             type="text"
@@ -64,7 +66,7 @@ function TopupWallet() {
           type="submit"
           onClick={handleSubmit}
         >
-          <FormattedMessage id="topupWallet" defaultMessage="Topup Wallet" />
+          <FormattedMessage id='rechargeWallet' defaultMessage='Topup Wallet' />
         </Button>
       </Container>
     </Wrapper>

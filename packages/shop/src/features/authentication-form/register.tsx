@@ -168,10 +168,10 @@ function SignUp({ mobile,countryCode }: SignUpProps) {
         });
         notify(
           <SuccessNotification
-            message={intl.formatMessage({
+            message={`${signup.name} ${intl.formatMessage({
               id: 'signupSuccessMsg',
-              defaultMessage: `${signup.name} ${SIGNUP_SUCCESS_MSG}`,
-            })}
+              defaultMessage: SIGNUP_SUCCESS_MSG,
+            })}`}
             dismiss
           />
         )

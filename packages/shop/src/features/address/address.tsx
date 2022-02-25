@@ -94,10 +94,10 @@ const Address = ({
         });
         notify(
           <SuccessNotification
-            message={intl.formatMessage({
+            message={`${data.updateCartAddress.name} ${intl.formatMessage({
               id: 'deliveryAddressSet',
-              defaultMessage: `${data.updateCartAddress.name} ${DELIVERY_ADDRESS_SET}`,
-            })}
+              defaultMessage: DELIVERY_ADDRESS_SET,
+            })}`}
             dismiss
           />
         );

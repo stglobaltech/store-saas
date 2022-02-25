@@ -50,7 +50,9 @@ export const ERROR_DELETE_ADDRESS = "address not deleted :(";
 export const ERROR_CANNOT_DELETE_ADDRESS = "address could not be deleted :(";
 export const DELIVERY_ADDRESS_SET = "set as delivery address!";
 export const DELIVERY_ADDRESS_NOT_SET = "delivery address could not be set";
-export const PAYMENT_METHOD_SET = "set as the payment method for this order";
+export const PAYMENT_METHOD_SET_CASH = "Cash set as the payment method for this order";
+export const PAYMENT_METHOD_SET_CARD = "Card set as the payment method for this order";
+export const PAYMENT_METHOD_SET_WALLET = "Wallet set as the payment method for this order";
 //active orders tracking status
 export const USER_PLACED_ORDER = {
   intlKey: "statusOrderPlaced",

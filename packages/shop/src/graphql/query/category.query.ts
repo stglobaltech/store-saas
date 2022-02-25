@@ -42,6 +42,7 @@ export const GET_CATEGORIES_BY_STOREID = gql`
         _id
         name {
           en
+          ar
         }
         isEnable
         imageUrl
