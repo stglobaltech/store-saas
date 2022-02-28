@@ -231,5 +231,6 @@
   "statusDriverPickedYourOrder": "Driver Picked Your Order",
   "statusOrderOutForDelivery": "Order Out For Delivery",
   "statusOrderWasDelivered": "Your Order Was Delivered",
-  "itemUnitsOrdered": "Total Item Units Ordered"
+  "itemUnitsOrdered": "Total Item Units Ordered",
+  "errorMaximumCartItemsAdded": "Maximum of {quantity} {product} can be added to the cart!"
 }

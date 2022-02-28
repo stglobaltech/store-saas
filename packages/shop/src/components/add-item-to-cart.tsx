@@ -21,6 +21,7 @@ import { getCartId } from "utils/localStorage";
 import { handlePrevOrderPending } from "./prev-order-pending/handleprevorderpending";
 import { useAppState } from "contexts/app/app.provider";
 import { useIntl } from 'react-intl';
+import { useLocale } from 'contexts/language/language.provider';
 
 const Icon = styled.span<any>(
   _variant({
@@ -94,6 +95,7 @@ export const AddItemToCart = ({ data, variant, buttonText }: Props) => {
   } = useCart();
 
   const intl = useIntl();
+  const locale = useLocale();
   const { notify } = useNotifier();
   const workFlowPolicy=useAppState("workFlowPolicy")
 
@@ -191,9 +193,15 @@ export const AddItemToCart = ({ data, variant, buttonText }: Props) => {
       const currentItem = getItem(data._id);
       try {
         if (currentItem.maxQuantity < itemCountInCart + 1)
-          throw new Error(
-            `maximum of ${data.maxQuantity} ${data.productName.en} can be added to the cart!`
-          );
+          throw new Error(intl.formatMessage({
+            id: 'errorMaximumCartItemsAdded',
+            defaultMessage: 'Maximum of {quantity} {product} can be added to the cart!',
+          },
+          {
+            quantity: data.maxQuantity,
+            product: locale === 'en' ? data.productName.en : data.productName.ar
+          }
+          ));
         const res = (await updateProductQuantity({
           variables: {
             quantityUpdateInput: {

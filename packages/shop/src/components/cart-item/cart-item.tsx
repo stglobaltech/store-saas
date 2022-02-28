@@ -76,9 +76,15 @@ export const CartItem: React.FC<Props> = ({
     // }
     try {
       if (currentItem.maxQuantity < itemCountInCart + 1)
-        throw new Error(
-          `maximum of ${data.maxQuantity} ${data.productName.en} can be added to the cart!`
-        );
+        throw new Error(intl.formatMessage({
+          id: 'errorMaximumCartItemsAdded',
+          defaultMessage: 'Maximum of {quantity} {product} can be added to the cart!',
+        },
+        {
+          quantity: data.maxQuantity,
+          product: locale === 'en' ? data.productName.en : data.productName.ar
+        }
+        ));
       const res = (await updateProductQuantity({
         variables: {
           quantityUpdateInput: {
