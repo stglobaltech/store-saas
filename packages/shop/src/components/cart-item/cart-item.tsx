@@ -41,7 +41,7 @@ export const CartItem: React.FC<Props> = ({
   onRemove,
 }) => {
   const intl = useIntl();
-  const locale = useLocale();
+  const { locale } = useLocale();
   const workFlowPolicy=useAppState("workFlowPolicy") as any;
   const storeId =useAppState("activeStoreId");
   const entityId = storeId;
@@ -82,7 +82,7 @@ export const CartItem: React.FC<Props> = ({
         },
         {
           quantity: data.maxQuantity,
-          product: data.productName.en
+          product: locale === 'en' ? data.productName.en : data.productName.ar
         }
         ));
       const res = (await updateProductQuantity({
@@ -144,8 +144,6 @@ export const CartItem: React.FC<Props> = ({
       }
     }
   }
-  console.log(locale);
-  
 
   return (
     <ItemBox>
@@ -161,7 +159,7 @@ export const CartItem: React.FC<Props> = ({
       )}
       <Image src={picture} />
       <Information>
-        <Name>{productName.en}</Name>
+        <Name>{locale === 'en' ? productName.en : productName.ar}</Name>
         <Price>
           {workFlowPolicy.currency}{" "}
           {displayPrice}

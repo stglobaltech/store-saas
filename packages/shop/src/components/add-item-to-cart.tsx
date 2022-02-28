@@ -95,7 +95,7 @@ export const AddItemToCart = ({ data, variant, buttonText }: Props) => {
   } = useCart();
 
   const intl = useIntl();
-  const locale = useLocale();
+  const { locale } = useLocale();
   const { notify } = useNotifier();
   const workFlowPolicy=useAppState("workFlowPolicy")
 
