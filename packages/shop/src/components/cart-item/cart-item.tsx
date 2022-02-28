@@ -82,7 +82,7 @@ export const CartItem: React.FC<Props> = ({
         },
         {
           quantity: data.maxQuantity,
-          product: locale === 'en' ? data.productName.en : data.productName.ar
+          product: data.productName.en
         }
         ));
       const res = (await updateProductQuantity({
@@ -144,6 +144,8 @@ export const CartItem: React.FC<Props> = ({
       }
     }
   }
+  console.log(locale);
+  
 
   return (
     <ItemBox>
@@ -159,7 +161,7 @@ export const CartItem: React.FC<Props> = ({
       )}
       <Image src={picture} />
       <Information>
-        <Name>{locale === 'en' ? productName.en : productName.ar}</Name>
+        <Name>{productName.en}</Name>
         <Price>
           {workFlowPolicy.currency}{" "}
           {displayPrice}
