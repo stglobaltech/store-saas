@@ -231,5 +231,6 @@
   "statusDriverPickedYourOrder": "உங்கள் ஆர்டரை டிரைவர் தேர்ந்தெடுத்தார்",
   "statusOrderOutForDelivery": "டெலிவரிக்கு ஆர்டர் அவுட்",
   "statusOrderWasDelivered": "உங்கள் ஆர்டர் வழங்கப்பட்டது",
-  "itemUnitsOrdered": "ஆர்டர் செய்யப்பட்ட மொத்த பொருள் அலகுகள்"
+  "itemUnitsOrdered": "ஆர்டர் செய்யப்பட்ட மொத்த பொருள் அலகுகள்",
+  "errorMaximumCartItemsAdded": "வண்டியில் அதிகபட்சம் {quantity} {product} சேர்க்கலாம்!"
 }
