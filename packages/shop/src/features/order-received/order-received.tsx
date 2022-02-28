@@ -26,7 +26,7 @@ const OrderReceived: React.FunctionComponent<OrderReceivedProps> = ({
   orderDetails,
   currency,
 }) => {
-  const locale = useLocale();
+  const { locale } = useLocale();
 
   return (
     <OrderReceivedWrapper>

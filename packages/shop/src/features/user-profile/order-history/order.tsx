@@ -31,7 +31,7 @@ const OrdersContent: React.FC<{
   data: any;
   handleNextPage: (nextPage: number) => void;
 }> = ({ data, handleNextPage }) => {
-  const locale = useLocale();
+  const { locale } = useLocale();
   const orderTableColumns = [
     {
       title: <FormattedMessage id="cartItems" defaultMessage="Items" />,

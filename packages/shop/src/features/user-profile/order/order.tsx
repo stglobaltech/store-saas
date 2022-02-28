@@ -37,7 +37,7 @@ const OrdersContent: React.FC<{
   loading: any;
   refetch: () => void;
 }> = ({ data, error, loading, refetch }) => {
-  const locale = useLocale();
+  const { locale } = useLocale();
   const orderTableColumns = [
     {
       title: <FormattedMessage id="cartItems" defaultMessage="Items" />,
