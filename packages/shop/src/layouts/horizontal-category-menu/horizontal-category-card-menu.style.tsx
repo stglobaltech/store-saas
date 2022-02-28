@@ -50,10 +50,9 @@ export const Title = styled.span<any>(
     fontWeight: 'bolder',
     color: 'text.bold',
     textAlign: 'center',
-    padding: '15px',
+    padding: '5px 6px 10px',
     display: 'block',
-    letterSpacing:"3px",
-    lineHeight:"3px"
+    letterSpacing:"1px"
   })
 );
 
