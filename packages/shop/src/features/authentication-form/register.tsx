@@ -30,6 +30,7 @@ import { SIGNUP_SUCCESS_MSG } from '../../utils/constant';
 
 //verify user by sending otp
 function VerifyUser({ handleSentOtp }) {
+  const intl = useIntl();
   const [verifyState, setVerifyState] = useState({
     mobile: "",
     countryCode: "",
@@ -85,7 +86,10 @@ function VerifyUser({ handleSentOtp }) {
           />
           <Input
             type="text"
-            placeholder="Mobile"
+            placeholder={intl.formatMessage({
+              id: "userSignupMobile",
+              defaultMessage: "Mobile",
+            })}
             height="48px"
             backgroundColor="#F7F7F7"
             mt="10px"
