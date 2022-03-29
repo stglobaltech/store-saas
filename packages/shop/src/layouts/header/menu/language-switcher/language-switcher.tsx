@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Box, SelectedItem, Flag, MenuItem } from './language-switcher.style';
 import Popover from 'components/popover/popover';
 import { FormattedMessage } from 'react-intl';
 import * as flagIcons from 'assets/icons/flags';
 import { useLocale } from 'contexts/language/language.provider';
 import { LANGUAGE_MENU } from 'site-settings/site-navigation';
+import { useAppState } from 'contexts/app/app.provider';
 
 const FlagIcon = ({ name }) => {
   const TagName = flagIcons[name];
@@ -12,16 +13,28 @@ const FlagIcon = ({ name }) => {
 };
 
 const LanguageMenu = ({ onClick }) => {
+  const storePolicy = useAppState("workFlowPolicy");
+  const [languageOptions, setLanguageOptions] = useState(
+    storePolicy['language'] ? ['en', storePolicy['language']] : ['en']
+  );
+
   return (
     <>
-      {LANGUAGE_MENU.map((item) => (
-        <MenuItem onClick={onClick} key={item.id} value={item.id}>
-          <span>
-            <FlagIcon name={item.icon} />
-          </span>
-          <FormattedMessage id={item.id} defaultMessage={item.defaultMessage} />
-        </MenuItem>
-      ))}
+      {LANGUAGE_MENU.map((item) => {
+        if (languageOptions.includes(item.id)) {
+          return (
+            <MenuItem onClick={onClick} key={item.id} value={item.id}>
+              <span>
+                <FlagIcon name={item.icon} />
+              </span>
+              <FormattedMessage
+                id={item.id}
+                defaultMessage={item.defaultMessage}
+              />
+            </MenuItem>
+          );
+        }
+      })}
     </>
   );
 };

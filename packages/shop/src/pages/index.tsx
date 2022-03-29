@@ -195,7 +195,7 @@ export default function Categories({
             type={PAGE_TYPE}
             productCategoriesSSR={productCategories}
           />
-          <CustomSpacing />
+          {/* <CustomSpacing /> */}
           <Box padding={["0 15px 100px ", "0 15px 30px ", "0 30px 30px"]}>
             <ProductGrid type={PAGE_TYPE} firstPageProducts={products} />
           </Box>

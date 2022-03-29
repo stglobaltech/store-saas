@@ -28,6 +28,7 @@ export const Q_WORK_FLOW_POLICY_BASED_ON_DOMAIN = gql`
           paymentType
           gateWayName
           currency
+          language
         }
       }
     }

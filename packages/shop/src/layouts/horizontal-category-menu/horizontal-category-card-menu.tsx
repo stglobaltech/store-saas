@@ -121,14 +121,14 @@ export const HorizontalCategoryCardMenu = ({}: Props) => {
                 onClick={() => onCategoryClick(category._id)}
                 active={selectedQueries === category._id}
               >
-                <Box position="relative" padding={10}>
+                {/* <Box position="relative" padding={10}>
                   <ImageWrapper>
                     <Image
                       url={category?.imageUrl?.length ? category.imageUrl : Bag}
                       alt={category?.title}
                     />
                   </ImageWrapper>
-                </Box>
+                </Box> */}
                 <Title>{locale === 'en' ? category.name.en : category.name.ar}</Title>
               </Card>
             </SwiperSlide>
@@ -186,11 +186,11 @@ export const HorizontalCategoryCardMenu = ({}: Props) => {
               onClick={() => router.replace("/")}
               active={router.asPath === "/"}
             >
-              <Box position="relative" padding={10}>
+              {/* <Box position="relative" padding={10}>
                 <ImageWrapper>
                   <img src={All} alt={"All Categories"} />
                 </ImageWrapper>
-              </Box>
+              </Box> */}
               <Title>
                 <FormattedMessage id="all" defaultMessage="All" />
               </Title>
