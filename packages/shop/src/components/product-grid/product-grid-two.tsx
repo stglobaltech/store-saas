@@ -313,7 +313,7 @@ export const ProductGrid = ({
   // }
 
   return (
-    <section style={{ marginTop: "50px" }}>
+    <section style={{ marginTop: "15px" }}>
       <h4 style={{ marginBottom: "20px", color: "#04aa6d", padding: "10px" }}>
         <FormattedMessage id="products" defaultMessage="Products" />
       </h4>
