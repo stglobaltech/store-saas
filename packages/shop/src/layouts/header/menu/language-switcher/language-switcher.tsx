@@ -14,9 +14,9 @@ const FlagIcon = ({ name }) => {
 
 const LanguageMenu = ({ onClick }) => {
   const storePolicy = useAppState("workFlowPolicy");
-  const [languageOptions, setLanguageOptions] = useState(storePolicy["language"]?['en',storePolicy["language"]]:["en"]);
-
-  console.log("languageOptions",languageOptions);
+  const [languageOptions, setLanguageOptions] = useState(
+    storePolicy['language'] ? ['en', storePolicy['language']] : ['en']
+  );
 
   return (
     <>
