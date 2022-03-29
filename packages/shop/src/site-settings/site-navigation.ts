@@ -197,4 +197,9 @@ export const LANGUAGE_MENU = [
     defaultMessage: "Tamil",
     icon: "INFlag",
   },
+  {
+    id: "ar",
+    defaultMessage: "Arabic",
+    icon: "SAFlag",
+  },
 ];
