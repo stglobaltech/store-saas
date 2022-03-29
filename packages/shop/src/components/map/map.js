@@ -11,8 +11,8 @@ function Map(props) {
   const [mapLocation, setMapLocation] = useState({
     bounds: null,
     center: {
-      lat: 12.998410555533955,
-      lng: 80.20282586889495,
+      lat: 24.6739429,
+      lng: 46.2323927,
     },
   });
 
