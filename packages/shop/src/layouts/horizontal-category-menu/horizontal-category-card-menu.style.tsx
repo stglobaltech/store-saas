@@ -48,9 +48,8 @@ export const Title = styled.span<any>(
   css({
     fontSize: 'base',
     fontWeight: 'bolder',
-    color: 'text.bold',
     textAlign: 'center',
-    padding: '5px 6px 10px',
+    padding: '12px 6px',
     display: 'block',
     letterSpacing:"1px"
   })

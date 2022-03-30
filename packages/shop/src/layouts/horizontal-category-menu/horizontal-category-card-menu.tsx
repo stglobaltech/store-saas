@@ -63,15 +63,14 @@ const Grid = styled.div(
 
 const Card = styled.div<any>((props) => {
   return {
-    backgroundColor: "#fff",
     position: "relative",
     overflow: "hidden",
     borderRadius: 6,
     display: "flex",
     flexDirection: "column",
     justifyContent: "space-between",
-    border: props.active ? "2px solid #04aa6d" : "2px solid #fff",
-    borderColor: props.active ? "primary.regular" : "#fff",
+    color: props.active ? "#fff" : "text.bold",
+    backgroundColor: props.active ? "#04aa6d" : "#fff",
     cursor: "pointer",
     transition: "0.25s ease-in-out",
   };
