@@ -344,7 +344,7 @@ const OrderDetail: React.FC<Props> = (props) => {
                           },
                         }}
                       >
-                        Cancel
+                        Cancel Order
                       </Button>
                     </Col>
                   </Row>
